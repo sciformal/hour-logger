@@ -1,1 +1,2 @@
-# hour-logger
+# Sci Formal Hour Tracking
+
