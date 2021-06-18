@@ -1,0 +1,99 @@
+service: hour-logger
+
+frameworkVersion: '2'
+
+package:
+  individually: true
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  stage: dev
+  region: us-west-1
+  environment:
+    USER_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamobd:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+      Resource: "*"
+      
+plugins:
+  - serverless-webpack
+  - serverless-offline
+  - serverless-dotenv-plugin
+
+custom:
+  webpack:
+    webpackConfig: './webpack.config.js'
+    includeModules:
+      forceExclude:
+        -aws-sdk
+
+functions:
+  create-user:
+    handler: handler.create
+    memorySize: 128
+    description: "Creates user"
+    events:
+      - http:
+            path: users/create
+            method: post
+  
+  get-user:
+    handler: handler.me
+    memorySize: 128
+    description: "Gets current user informations"
+    events:
+      - http:
+            path: users/me
+            method: get
+  
+  get-hours:
+    handler: handler.hours
+    memorySize: 128
+    description: "Gets user's hours"
+    events:
+      - http:
+            path: users/hours
+            method: get
+  
+  edit-hours:
+    handler: handler.editHours
+    memorySize: 128
+    description: "Edit user's hours"
+    events:
+      - http:
+            path: users/editHours
+            method: post
+
+  make-payment:
+    handler: handler.payment
+    memorySize: 128
+    description: "Processes user's payment"
+    events:
+      - http:
+            path: users/payment
+            method: post
+
+resources:
+  Resources:
+    UserDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: id
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.USER_TABLE}
