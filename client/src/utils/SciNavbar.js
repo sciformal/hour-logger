@@ -1,21 +1,16 @@
-import React, { Component } from 'react';
-import { Navbar, Form, FormControl, Button, Table, Modal } from 'react-bootstrap';
 import axios from 'axios';
+import React, { Component } from 'react';
+import { Navbar } from 'react-bootstrap';
 import Nav from 'react-bootstrap/Nav';
+import { Link } from 'react-router-dom';
 import engsoclogo from '../img/EngSoc-Logo-Black-2.png';
-import { HashRouter as Router, Route, Link, NavLink } from 'react-router-dom';
 
 class SciNavbar extends Component {
-
-    constructor(props){
-        super(props);
-    }
-
     render(){
         return (
             <div>
                 <Navbar bg="light" expand="lg">
-                    <Navbar.Brand href="/"><img src={engsoclogo} className="nav-logo" /></Navbar.Brand>
+                    <Navbar.Brand href="/"><img alt="Engsoc Logo" src={engsoclogo} className="nav-logo" /></Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <h1>Ava Little</h1>
                     <Navbar.Collapse id="basic-navbar-nav">
