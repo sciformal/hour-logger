@@ -11,7 +11,7 @@ provider:
   stage: dev
   region: us-west-1
   environment:
-    USER_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+    userTable: ${env:userTable}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -35,7 +35,7 @@ custom:
 
 functions:
   create-user:
-    handler: handler.create
+    handler: src/handlers/users.main
     memorySize: 128
     description: "Creates user"
     events:
@@ -87,13 +87,13 @@ resources:
       Properties:
         AttributeDefinitions:
           -
-            AttributeName: id
-            AttributeType: S
+            AttributeName: "userId"
+            AttributeType: "S"
         KeySchema:
           -
-            AttributeName: id
-            KeyType: HASH
+            AttributeName: "userId"
+            KeyType: "HASH"
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-        TableName: ${self:provider.environment.USER_TABLE}
+        TableName: ${self:provider.environment.userTable}
