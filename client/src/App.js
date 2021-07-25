@@ -1,60 +1,53 @@
-// template code
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import Login from './Login.js';
-import Manager from './Manager.js';
-import { Switch } from 'react-router';
-import { BrowserRouter, Router, Route, Link, NavLink } from 'react-router-dom';
 import { createBrowserHistory } from "history";
-//import { library } from '@fortawesome/fontawesome-svg-core';
-import SignUpForm from './SignUpForm';
-import SignInForm from './SignInForm';
-import Admin from './Admin';
-import User from './User';
-import Forgot from './Forgot.js';
-import Reset from './Reset.js';
-import './App.css';
+import React from "react";
+import { Switch } from "react-router";
+import { Link, Route, Router } from "react-router-dom";
+import Admin from "./components/Admin";
+import Forgot from "./components/auth/Forgot.js";
+import Register from "./components/auth/Register";
+import Reset from "./components/auth/Reset.js";
+import Landing from "./components/Landing.js";
+import Manager from "./components/Manager.js";
+import User from "./components/User";
+// Styles
+import "./styles/App.css";
+
+
 
 const NoMatch = ({ location }) => (
   <div>
     <h3 className="AppTitle">404 Page Not Found</h3>
     <div className="center">
-    <Link className="" to="/">Go Home</Link>
+      <Link className="" to="/">
+        Go Home
+      </Link>
     </div>
-    
   </div>
 );
 
 const hist = createBrowserHistory();
 
+export default function App() {
+  return (
+    <Router history={hist}>
+      <>
+        {/* <Nav /> */}
+        <Switch>
+          {/* Landing Page (TODO: Landing page only if not signed in) */}
+          <Route exact path="/" component={Landing} />
 
-class App extends Component {
+          {/* Auth Routes */}
+          <Route path="/register" component={Register} />
+          <Route path="/forgot-password" component={Forgot} />
+          <Route path="/reset/:token" component={Reset} />
 
-  render() {
+          <Route path="/manager" component={Manager} />
+          <Route path="/user" component={User} />
+          <Route path="/admin" component={Admin} />
 
-    return (
-      <Router history={hist}>
-        <div>
-          <Switch>
-            <Route exact path="/" render={() => <SignInForm type={2}/>} />
-            <Route path="/sign-up" component={SignUpForm} />
-            <Route path="/manager" component={Manager} />
-            <Route path="/login-manager" render={() => <SignInForm type={1}/>} />
-            <Route path="/user" component={User} />
-            <Route path="/admin" component={Admin} />
-            <Route path="/login-admin" render={() => <SignInForm type={0}/>} />
-            <Route path="/forgot" component={Forgot} />
-            <Route path="/reset/:token" component={Reset} />
-            <Route component={NoMatch} />
-          </Switch>
-          {/*<Route render={() => <Redirect to="/404" />} /> */}
-        </div>
-
-
-      </Router>
-
-
-    );
-  }
+          <Route component={NoMatch} />
+        </Switch>
+      </>
+    </Router>
+  );
 }
-export default App;
