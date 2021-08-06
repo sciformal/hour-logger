@@ -8,10 +8,10 @@ package:
 provider:
   name: aws
   runtime: nodejs12.x
-  stage: dev
+  stage: ${opt:stage, 'dev'}
   region: us-west-1
   environment:
-    userTable: ${env:userTable}
+    userTable: ${env:userTable}-${self:provider.stage}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -29,9 +29,9 @@ plugins:
 custom:
   webpack:
     webpackConfig: './webpack.config.js'
-    includeModules:
-      forceExclude:
-        -aws-sdk
+    includeModules: false
+    packager: 'yarn'
+    excludeFiles: src/**/*.test.js
 
 functions:
   create-user:
@@ -56,27 +56,27 @@ functions:
             authorizer: aws_iam
             cors: true
   
-  get-hours:
-    handler: handler.hours
-    memorySize: 128
-    description: "Gets user's hours"
-    events:
-      - http:
-            path: users/hours
-            method: get
-            authorizer: aws_iam
-            cors: true
+  # get-hours:
+  #   handler: handler.hours
+  #   memorySize: 128
+  #   description: "Gets user's hours"
+  #   events:
+  #     - http:
+  #           path: users/hours
+  #           method: get
+  #           authorizer: aws_iam
+  #           cors: true
   
-  edit-hours:
-    handler: handler.editHours
-    memorySize: 128
-    description: "Edit user's hours"
-    events:
-      - http:
-            path: users/hours
-            method: post
-            authorizer: aws_iam
-            cors: true
+  # edit-hours:
+  #   handler: handler.editHours
+  #   memorySize: 128
+  #   description: "Edit user's hours"
+  #   events:
+  #     - http:
+  #           path: users/hours
+  #           method: post
+  #           authorizer: aws_iam
+  #           cors: true
 
 resources:
   Resources:
