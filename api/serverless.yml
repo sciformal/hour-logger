@@ -29,9 +29,9 @@ plugins:
 custom:
   webpack:
     webpackConfig: './webpack.config.js'
-    includeModules:
-      forceExclude:
-        -aws-sdk
+    includeModules: false
+    packager: 'yarn'
+    excludeFiles: src/**/*.test.js
 
 functions:
   create-user:
