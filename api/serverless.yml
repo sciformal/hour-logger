@@ -1,4 +1,4 @@
-service: hour-logger-${self:provider.stage}
+service: hour-logger
 
 frameworkVersion: '2'
 
