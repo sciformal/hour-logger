@@ -1,4 +1,4 @@
-service: hour-logger
+service: ${self:provider.stage}-hour-logger
 
 frameworkVersion: '2'
 
@@ -8,7 +8,7 @@ package:
 provider:
   name: aws
   runtime: nodejs12.x
-  stage: dev
+  stage: ${opt:stage, 'dev'}
   region: us-west-1
   environment:
     userTable: ${env:userTable}
