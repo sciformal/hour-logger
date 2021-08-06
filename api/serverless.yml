@@ -1,4 +1,4 @@
-service: ${self:provider.stage}-hour-logger
+service: hour-logger-${self:provider.stage}
 
 frameworkVersion: '2'
 
@@ -11,7 +11,7 @@ provider:
   stage: ${opt:stage, 'dev'}
   region: us-west-1
   environment:
-    userTable: ${env:userTable}
+    userTable: ${env:userTable}-${self:provider.stage}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -56,27 +56,27 @@ functions:
             authorizer: aws_iam
             cors: true
   
-  get-hours:
-    handler: handler.hours
-    memorySize: 128
-    description: "Gets user's hours"
-    events:
-      - http:
-            path: users/hours
-            method: get
-            authorizer: aws_iam
-            cors: true
+  # get-hours:
+  #   handler: handler.hours
+  #   memorySize: 128
+  #   description: "Gets user's hours"
+  #   events:
+  #     - http:
+  #           path: users/hours
+  #           method: get
+  #           authorizer: aws_iam
+  #           cors: true
   
-  edit-hours:
-    handler: handler.editHours
-    memorySize: 128
-    description: "Edit user's hours"
-    events:
-      - http:
-            path: users/hours
-            method: post
-            authorizer: aws_iam
-            cors: true
+  # edit-hours:
+  #   handler: handler.editHours
+  #   memorySize: 128
+  #   description: "Edit user's hours"
+  #   events:
+  #     - http:
+  #           path: users/hours
+  #           method: post
+  #           authorizer: aws_iam
+  #           cors: true
 
 resources:
   Resources:
