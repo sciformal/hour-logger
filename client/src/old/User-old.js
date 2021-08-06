@@ -154,67 +154,11 @@ class User extends Component {
   }
 
   render() {
-<<<<<<< Updated upstream:client/src/components/User.js
-    // if(!this.state.mounted){
-    //   this.getUserData();
-    //   return (<div></div>)
-    // }
-    return (
-      (this.state.redirect) ? (
-        <Redirect push to={{
-          pathname: '/',
-        }} />
-      ) : (
-          (this.state.loaded) ? (
-            <div className="App">
-              <Navbar link={this.otherLink()} linkAction={() => {this.togglePage(this)}} user={this.state.user} redirect={this.redirect} />
-                {(!this.state.paymentPage) ? (
-                  <div class="center">
-                    <div class="cards-list">
-
-                      <div class="card bg-gradient1 1">
-                        <div class="card_title title-white">
-                          <p>{this.state.user.hoursWorked} / {this.state.user.hoursRequired}</p>
-                        </div>
-                        <div class="card_title2 title-white">
-                          <p>Regular Hours Completed</p>
-                        </div>
-                      </div>
-                      <div className="col-auto center">
-                        <h1 className="AppTitle " fontWeight="700">Sci Formal is in</h1>
-                        <Countdown color='#6e6e6e' date={`2019-11-02T09:00:00`} />
-                      </div>
-                      <div class="card bg-gradient1 4">
-                        <div class="card_title title-white">
-                          <p>{this.state.user.finalHoursWorked} / {this.state.user.finalHoursRequired}</p>
-                        </div>
-                        <div class="card_title2 title-white">
-                          <p>Final Hours Completed</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ):(
-                  <div class="payment center">
-                    <PaymentForm complete={this.state.user.firstPayment} onComplete={() => {this.onCompletePayment(this)}}/>
-                    <p>Any Questions please email sciformal.finance@engsoc.queensu.ca</p>
-                  </div>
-                )}
-            </div>
-          )
-            : (
-              <div>
-              </div>
-            )
-        )
-    );
-=======
     return (
       <div>
         { this.state.ava }
       </div>
     )
->>>>>>> Stashed changes:client/src/User.js
   }
   // render() {
   //   // if(!this.state.mounted){

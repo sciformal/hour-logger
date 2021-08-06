@@ -1,53 +1,44 @@
-import { createBrowserHistory } from "history";
-import React from "react";
-import { Switch } from "react-router";
-import { Link, Route, Router } from "react-router-dom";
-import Admin from "./components/Admin";
-import Forgot from "./components/auth/Forgot.js";
-import Register from "./components/auth/Register";
-import Reset from "./components/auth/Reset.js";
-import Landing from "./components/Landing.js";
-import Manager from "./components/Manager.js";
-import User from "./components/User";
-// Styles
+import { API, Auth } from "aws-amplify";
+import React, { useEffect, useState } from "react";
+import Routes from "Routes";
+import { AuthenticationContext, UserContext } from "./libs/contextLib";
 import "./styles/App.css";
 
-
-
-const NoMatch = ({ location }) => (
-  <div>
-    <h3 className="AppTitle">404 Page Not Found</h3>
-    <div className="center">
-      <Link className="" to="/">
-        Go Home
-      </Link>
-    </div>
-  </div>
-);
-
-const hist = createBrowserHistory();
-
 export default function App() {
-  return (
-    <Router history={hist}>
-      <>
-        {/* <Nav /> */}
-        <Switch>
-          {/* Landing Page (TODO: Landing page only if not signed in) */}
-          <Route exact path="/" component={Landing} />
+  const [isAuthenticating, setIsAuthenticating] = useState(true); // has the users session loaded yet?
+  const [isAuthenticated, userHasAuthenticated] = useState(false); // is the user signed in?
+  const [user, setUser] = useState(null);
 
-          {/* Auth Routes */}
-          <Route path="/register" component={Register} />
-          <Route path="/forgot-password" component={Forgot} />
-          <Route path="/reset/:token" component={Reset} />
+  useEffect(() => {
+    onLoad();
+  }, []);
 
-          <Route path="/manager" component={Manager} />
-          <Route path="/user" component={User} />
-          <Route path="/admin" component={Admin} />
+  async function onLoad() {
+    try {
+      await Auth.currentSession();
+      userHasAuthenticated(true);
+      const user = await API.get("hour-logger", "/users/me");
+        setUser(user.Item);
+    } catch (e) {
+      // If any errors are encountered in the login - block authentication.
+      userHasAuthenticated(false);
+    }
+    setIsAuthenticating(false);
+  }
 
-          <Route component={NoMatch} />
-        </Switch>
-      </>
-    </Router>
-  );
+  if (isAuthenticating) {
+    return <div>Loading...</div>;
+  } else {
+    return (
+      <div className="App">
+        <AuthenticationContext.Provider
+          value={{ isAuthenticated, userHasAuthenticated }}
+        >
+          <UserContext.Provider value={{ user, setUser }}>
+            <Routes />
+          </UserContext.Provider>
+        </AuthenticationContext.Provider>
+      </div>
+    );
+  }
 }
