@@ -11491,7 +11491,7 @@ react-clientside-effect@^1.2.0:
   dependencies:
     "@babel/runtime" "^7.12.13"
 
-react-date-countdown-timer@^1.0.3:
+react-date-countdown-timer@^1.0.9:
   version "1.0.9"
   resolved "https://registry.yarnpkg.com/react-date-countdown-timer/-/react-date-countdown-timer-1.0.9.tgz#cf710db1c2ab16405b307f96c15453f3b969a643"
   integrity sha512-tpe9dw3di4QY3ZiRkwyNalNP7s872t00AmfN4SlKggcoH0f0sLkTXLoQJCEGpwhtVIn7IrW9C6S27a6rBpf7Fg==

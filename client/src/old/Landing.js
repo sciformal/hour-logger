@@ -1,6 +1,6 @@
 import React from "react";
-import SignInForm from "./auth/SignInForm";
-import Countdown from "./Countdown";
+import SignInForm from "../components/auth/SignInForm";
+import Countdown from "../components/global/Countdown";
 
 export default function Landing() {
   return (
