@@ -73,18 +73,7 @@ functions:
     description: "Edit user's hours"
     events:
       - http:
-            path: users/editHours
-            method: post
-            authorizer: aws_iam
-            cors: true
-
-  make-payment:
-    handler: handler.payment
-    memorySize: 128
-    description: "Processes user's payment"
-    events:
-      - http:
-            path: users/payment
+            path: users/hours
             method: post
             authorizer: aws_iam
             cors: true
