@@ -7,7 +7,7 @@ import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import { Redirect } from "react-router";
 import "../styles/adminTable.css";
-import Navbar from "./SciNavbar.js";
+import Navbar from "../utils/SciNavbar.js";
 
 const { SearchBar } = Search;
 

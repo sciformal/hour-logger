@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import { Redirect } from 'react-router';
 import '../styles/App.css';
 import logo from '../img/gear.png';
-import Navbar from './SciNavbar.js';
+import Navbar from '../utils/SciNavbar.js';
 
 class Manager extends Component {
   constructor(props, context){
@@ -48,29 +48,29 @@ class Manager extends Component {
     this.setState({redirect: true});
   }
 
-  // componentDidMount() {
+  componentDidMount() {
 
-  //   let success = (res) =>{
-  //     // runs on success
-  //     this.setState({
-  //       users: res.data.data,
-  //       loaded: true
-  //     });
-  //   }
+    let success = (res) =>{
+      // runs on success
+      this.setState({
+        users: res.data.data,
+        loaded: true
+      });
+    }
 
-  //   let failure = () => {
-  //     this.setState({redirect: true});
-  //   }
+    let failure = () => {
+      this.setState({redirect: true});
+    }
 
-  //   if(!this.props.location.state){
-  //     this.loadData(success, failure);
-  //   }else{
-  //     this.setState({
-  //       users: this.props.location.state.data,
-  //       loaded: true
-  //     });
-  //   }
-  // }
+    if(!this.props.location.state){
+      this.loadData(success, failure);
+    }else{
+      this.setState({
+        users: this.props.location.state.data,
+        loaded: true
+      });
+    }
+  }
 
   handleSubmit(e){
     e.preventDefault();
