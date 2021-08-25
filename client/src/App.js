@@ -1,6 +1,8 @@
 import { API, Auth } from "aws-amplify";
+import Loader from "components/global/Loader";
 import React, { useEffect, useState } from "react";
 import Routes from "Routes";
+import Nav from './components/global/Nav';
 import { AuthenticationContext, UserContext } from "./libs/contextLib";
 import "./styles/App.css";
 
@@ -10,8 +12,11 @@ export default function App() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    onLoad();
-  }, []);
+    if (!isAuthenticated) {
+      onLoad();
+
+    }
+  }, [isAuthenticated]);
 
   async function onLoad() {
     try {
@@ -27,7 +32,7 @@ export default function App() {
   }
 
   if (isAuthenticating) {
-    return <div>Loading...</div>;
+    return <Loader />;
   } else {
     return (
       <div className="App">
@@ -35,6 +40,7 @@ export default function App() {
           value={{ isAuthenticated, userHasAuthenticated }}
         >
           <UserContext.Provider value={{ user, setUser }}>
+            <Nav />
             <Routes />
           </UserContext.Provider>
         </AuthenticationContext.Provider>

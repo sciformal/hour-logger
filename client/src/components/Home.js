@@ -1,13 +1,11 @@
-import { Button } from "@material-ui/core";
-import { Auth } from "aws-amplify";
 import { useAuthenticationContext, useUserContext } from "libs/contextLib";
 import React, { useEffect } from "react";
 import "../styles/Home.css";
 import SignInForm from "./auth/SignInForm";
-import Countdown from "./global/Countdown";
+import Admin from './roles/Admin';
 import User from "./roles/User";
 export default function Home() {
-  const { isAuthenticated, userHasAuthenticated } = useAuthenticationContext();
+  const { isAuthenticated } = useAuthenticationContext();
   const { user } = useUserContext();
 
   useEffect(() => {
@@ -18,25 +16,19 @@ export default function Home() {
     }
   }, [user]);
 
-  const handleLogout = async () => {
-    await Auth.signOut();
-    userHasAuthenticated(false);
-  }
   // Signed in
   if (isAuthenticated) {
 
     // Render User Component
-    if (user?.type === 'USER') {
+    if (user?.type === 'ADMIN') {
       return (
         <div className="landing">
-           <Button
-              fullWidth
-              variant="contained"
-              color="primary"
-              onClick={handleLogout}
-            >
-              Logout
-            </Button>
+          <Admin user={user} />
+        </div>
+      )
+    } else {
+      return (
+        <div className="landing">
           <User user={user} />
         </div>
       )
@@ -48,13 +40,7 @@ export default function Home() {
   } else { // Show sign in form
     return (
       <div className="landing">
-      <div style={{ textAlign: "center", margin: "auto" }}>
-      <div style={{ textAlign: "center" }}>
-        <h2>Countdown</h2>
-        <Countdown />
-      </div>
       <SignInForm />
-    </div>
     </div>
     )
   }

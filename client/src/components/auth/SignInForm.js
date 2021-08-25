@@ -10,7 +10,7 @@ import Typography from "@material-ui/core/Typography";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import { API, Auth } from "aws-amplify";
 import React, { useState } from "react";
-import { useAuthenticationContext } from "../../libs/contextLib";
+import { useAuthenticationContext, useUserContext } from "../../libs/contextLib";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -34,6 +34,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SignInForm() {
   const { userHasAuthenticated } = useAuthenticationContext();
+  const { setUser } = useUserContext();
   const classes = useStyles();
 
   const [email, setEmail] = useState("");
@@ -53,7 +54,8 @@ export default function SignInForm() {
 
     try {
       await Auth.signIn(email, password);
-      await API.get("hour-logger", "/users/me");
+      const user = await API.get("hour-logger", "/users/me");
+      setUser(user.Item);
       userHasAuthenticated(true);
     } catch (err) {
       if (err.code === 'NotAuthorizedException') {
