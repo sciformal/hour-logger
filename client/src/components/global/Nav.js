@@ -26,15 +26,15 @@ export default function HourLoggerNav() {
               <Nav.Link href="/payment">Ticket Purchase</Nav.Link>
 
               {/* Show Volunteer Check-in for all managers */}
-              {(type == "ADMIN" || type == "MANAGER" || type == "COMMS") && (
+              {(type === "ADMIN" || type === "MANAGER" || type === "COMMS") && (
                 <Nav.Link href="/check-in">Volunteer Check-In</Nav.Link>
               )}
-              {(type == "ADMIN" || type == "COMMS") && (
+              {(type === "ADMIN" || type === "COMMS") && (
                 <Nav.Link href="/reduction-request">
                   Reduction Requests
                 </Nav.Link>
               )}
-              {type == "ADMIN" && (
+              {type === "ADMIN" && (
                 <Nav.Link href="/edit-hours">Edit Hours</Nav.Link>
               )}
               <Nav.Link onClick={handleLogout}>Logout</Nav.Link>

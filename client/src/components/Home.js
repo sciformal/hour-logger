@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import "../styles/Home.css";
 import SignInForm from "./auth/SignInForm";
 import Admin from './roles/Admin';
-import User from "./roles/User";
+
 export default function Home() {
   const { isAuthenticated } = useAuthenticationContext();
   const { user } = useUserContext();
@@ -24,12 +24,6 @@ export default function Home() {
       return (
         <div className="landing">
           <Admin user={user} />
-        </div>
-      )
-    } else {
-      return (
-        <div className="landing">
-          <User user={user} />
         </div>
       )
     } else {
