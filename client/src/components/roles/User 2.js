@@ -2,22 +2,22 @@ import React from 'react';
 
 // TODO: Add thing to apply for hour reduction.
 
-export default function User(props) {
+export default function User({ user }) {
     return (
         <div>
             <h2>
-                Welcome back { props.user.name }!
+                Welcome back { user.firstName } { user.lastName} !
             </h2>
 
             <br/>
             <br/>
 
             <div>
-                { props.user.hours} / { props.user.hoursNeeded} Regular Hours Completed
+                { user.hours} / { user.hoursNeeded } Regular Hours Completed
             </div>
 
             <div>
-                { props.user.finalHours} final hours completed
+                { user.finalHours } final hours completed
             </div>
         </div>
     )

@@ -40,6 +40,10 @@ export default function Home() {
           <User user={user} />
         </div>
       )
+    } else {
+      return (
+        <div>The user is not signed in yet.</div>
+      )
     }
   } else { // Show sign in form
     return (

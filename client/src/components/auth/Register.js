@@ -122,7 +122,8 @@ export default function SignUp() {
         },
       }).then(user => {
         setUser(user);
-      })
+      });
+      
       userHasAuthenticated(true);
       history.push("/");
     } catch (e) {
