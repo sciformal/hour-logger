@@ -2,7 +2,6 @@ import { API, Auth } from "aws-amplify";
 import Loader from "components/global/Loader";
 import React, { useEffect, useState } from "react";
 import Routes from "Routes";
-import Nav from './components/global/Nav';
 import { AuthenticationContext, UserContext } from "./libs/contextLib";
 import "./styles/App.css";
 
@@ -40,7 +39,6 @@ export default function App() {
           value={{ isAuthenticated, userHasAuthenticated }}
         >
           <UserContext.Provider value={{ user, setUser }}>
-            <Nav />
             <Routes />
           </UserContext.Provider>
         </AuthenticationContext.Provider>
