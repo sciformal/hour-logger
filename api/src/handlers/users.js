@@ -82,7 +82,7 @@ export function createUser(event, context, callback) {
   const params = {
     TableName: process.env.userTable,
     Item: {
-      userId: event.requestContext.identity.cognitoIdentityId,
+      userId: data.userId,
       firstName: data.firstName,
       lastName: data.lastName,
       email: data.email,

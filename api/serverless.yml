@@ -42,7 +42,7 @@ functions:
       - http:
             path: users/create
             method: post
-            authorizer: aws_iam
+            # authorizer: aws_iam
             cors: true
   
   get-user:
@@ -53,9 +53,21 @@ functions:
       - http:
             path: users/me
             method: get
-            authorizer: aws_iam
+            # authorizer: aws_iam
+            cors: true
+
+  check-in:
+    handler: src/handlers/hours.checkIn
+    memorySize: 128
+    description: "Creates new hour transaction"
+    events:
+      - http:
+            path: check-in
+            method: post
+            # authorizer: aws_iam
             cors: true
   
+
   # get-hours:
   #   handler: handler.hours
   #   memorySize: 128
@@ -88,10 +100,23 @@ resources:
           -
             AttributeName: "userId"
             AttributeType: "S"
+          -
+            AttributeName: "studentNumber"
+            AttributeType: "S"
         KeySchema:
           -
             AttributeName: "userId"
             KeyType: "HASH"
+        GlobalSecondaryIndexes:
+          - IndexName: StudentNumberIndex
+            KeySchema:
+              - AttributeName: studentNumber
+                KeyType: HASH
+            Projection:
+              ProjectionType: 'ALL'
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
