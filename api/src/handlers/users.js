@@ -114,10 +114,14 @@ export function createUser(event, context, callback) {
 }
 
 export function getUser(event, context, callback) {
+
+  const userId = event.requestContext.identity.cognitoIdentityId || 'abcdefg';
+
+
   const params = {
     TableName: process.env.userTable,
     Key: {
-      userId: event.requestContext.identity.cognitoIdentityId
+      userId
     }
   }
 
@@ -137,7 +141,7 @@ export function getUser(event, context, callback) {
     const response = {
       statusCode: 200,
       headers: headers,
-      body: JSON.stringify(data),
+      body: JSON.stringify(data.Item),
     };
     callback(null, response);
   });
