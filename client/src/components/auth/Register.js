@@ -34,10 +34,6 @@ const useStyles = makeStyles((theme) => ({
 export default function SignUp() {
   const classes = useStyles();
 
-
-  // UseState:
-  // First Variable (Value) = the variable value
-  // Second Variable (Function to change the value)
   const [firstName, setFirstName] = useState("Justin");
   const [lastName, setLastName] = useState("Bieber");
   const [studentNumber, setStudentNumber] = useState("42069696");
@@ -89,17 +85,13 @@ export default function SignUp() {
       .catch((err) => {
         // TODO: Handle this
         console.log(err);
-        if (err.code == 'InvalidPasswordException') {
+        if (err.code === 'InvalidPasswordException') {
           setIsPasswordInvalid(true);
           setPasswordError(err.message);
         }
         // User already exists?
         console.log(err);
       });
-  };
-
-  const resendConfirmationCode = async (e) => {
-    await Auth.resendSignUp
   };
 
   const handleConfirmRegister = async (e) => {
