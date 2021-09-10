@@ -1,193 +1,146 @@
-import Avatar from "@material-ui/core/Avatar";
-import Button from "@material-ui/core/Button";
-import Container from "@material-ui/core/Container";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Grid from "@material-ui/core/Grid";
-import { makeStyles } from "@material-ui/core/styles";
-import TextField from "@material-ui/core/TextField";
-import Typography from "@material-ui/core/Typography";
-import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
-import { Auth } from "aws-amplify";
+import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.css';
-import { useAuthenticationContext } from "libs/contextLib";
-import React, { useState } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+import verify from '../../utils/input-helper.js';
 
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    marginTop: theme.spacing(8),
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-  },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main,
-  },
-  form: {
-    width: "100%", // Fix IE 11 issue.
-    marginTop: theme.spacing(3),
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 2),
-  },
-}));
+class Forgot extends Component {
 
-export default function ForgotPassword() {
-  const classes = useStyles();
-  const history = useHistory();
+  //type of login in the props
+  constructor(props) {
+    super(props);
+    this.state = {
+      email: '',
+      error: 0,
+      success: 0,
+      message: '',
+      submitted: false
+    };
 
-  // Form Inputs
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmationCode, setConfirmationCode] = useState("");
-  const { userHasAuthenticated } = useAuthenticationContext();
-
-  // For moving between form & confirmation code.
-  const [signUpStep, setSignUpStep] = useState(1);
-
-  const handleEmailChange = (e) => {
-    setEmail(e.target.value);
-  };
-
-  const handlePasswordChange = (e) => {
-    setPassword(e.target.value);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.getMessage = this.getMessage.bind(this);
+    
   }
 
-  const handleConfirmationCodeChange = (e) => {
-    setConfirmationCode(e.target.value);
-  };
-
-  const handlePasswordRecovery = async (e) => {
-    e.preventDefault();
-    try {
-      await Auth.forgotPassword(email);
-      setSignUpStep(2);
-    } catch (err) {
-    }
-  };
-
-  const handlePasswordConfirm = async (e) => {
-    e.preventDefault();
-    try {
-      await Auth.forgotPasswordSubmit(email, confirmationCode, password);
-      await Auth.signIn(email, password);
-      userHasAuthenticated(true);
-      
-      history.push("/");
-    } catch (err) {
-      userHasAuthenticated(false);
-    }
-  };
-
-  if (signUpStep === 1) {
-    return (
-      <Container component="main" maxWidth="xs">
-        <CssBaseline />
-        <div className={classes.paper}>
-          <Avatar className={classes.avatar}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Password Recovery
-          </Typography>
-          <form className={classes.form} noValidate>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  autoComplete="email"
-                  onChange={handleEmailChange}
-                  value={email}
-                />
-              </Grid>
-            </Grid>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
-              className={classes.submit}
-              onClick={handlePasswordRecovery}
-            >
-              Restore Password
-            </Button>
-            <Grid container justifyContent="center">
-              <Grid item>
-                <Link href="/" variant="body2">
-                  Already have an account? Sign in
-                </Link>
-                <br />
-                <Link
-                  href="#confirm"
-                  variant="body2"
-                  onClick={() => setSignUpStep(2)}
-                >
-                  Already have a confirmation code?
-                </Link>
-              </Grid>
-            </Grid>
-          </form>
-        </div>
-      </Container>
-    );
-  } else if (signUpStep === 2) {
-    return (
-      <Container component="main" maxWidth="xs">
-        <div className={classes.paper}>
-          <Avatar className={classes.avatar}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Confirm Your Account
-          </Typography>
-          <form className={classes.form} noValidate>
-            <Grid container spacing={2}>
-            <Grid item xs={12}>
-                <TextField
-                  name="password"
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="password"
-                  label="New Password"
-                  onChange={handlePasswordChange}
-                  value={password}
-                  autoFocus
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  name="confirmationCode"
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="confirmationCode"
-                  label="Confirmation Code"
-                  onChange={handleConfirmationCodeChange}
-                  value={confirmationCode}
-                  autoFocus
-                />
-              </Grid>
-            </Grid>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
-              className={classes.submit}
-              onClick={handlePasswordConfirm}
-            >
-              Confirm Registration
-            </Button>
-          </form>
-        </div>
-      </Container>
-    );
+  getMessage(){
+      if(this.state.error){
+        return (<div className="error-message"><p>{this.state.message}</p></div>)
+      }
+      else if(this.state.success){
+        return (<div className="success-message"><p>{this.state.message}</p></div>)
+      }
+      else{
+          return (<div><br /><br /></div>)
+      }
   }
+
+  handleChange(e) {
+    let target = e.target;
+    let value = target.type === 'checkbox' ? target.checked : target.value;
+    let name = target.name;
+
+    this.setState({
+      [name]: value
+    });
+  }
+
+  handleSubmit(event) {
+    event.preventDefault();
+    if(!this.state.submitted){
+        if(verify.email(this.state.email)){
+            this.setState({
+                submitted: true
+            });
+            axios.post('./api/forgot', {email: this.state.email})
+            .then(res => {
+                if(res.data.success){
+                    this.setState({
+                        error: 0,
+                        success: 1,
+                        message: res.data.message,
+                        submitted: false
+                    });
+                }
+                else if(res.data.error){
+                    this.setState({
+                        success: 0,
+                        error: 1,
+                        message: res.data.message,
+                        submitted: false
+                    });
+                }
+                else{
+                    this.setState({
+                        success: 0,
+                        error: 1,
+                        message: res.data.message,
+                        submitted: false
+                    });
+                }
+            }).catch(err => {
+                this.setState({
+                    success: 0,
+                    error: 1,
+                    message: err,
+                    submitted: false
+                });
+                alert(err)
+            });
+        }
+        else{
+            alert('Please enter a valid email');
+        }
+    }
+  }
+
+  render() {
+      return (
+            <div className="d-md-flex h-md-100 align-items-center">
+              <div className="col-md-6 p-0 h-md-100">
+                <div className="d-md-flex align-items-center bg-space-admin  h-100 p-5 text-center justify-content-center">
+                  <div className="logoarea pt-5 pb-5">
+                    
+                  </div>
+                </div>
+              </div>
+  
+              <div className="col-md-6 p-0 bg-white h-md-100 loginarea">
+                <div className="d-md-flex align-items-center h-md-100 p-5 bg-space-input justify-content-center">
+                  <div className="FormCenter ">
+                    <form onSubmit={this.handleSubmit} className="FormFields">
+                      <i className="fas fa-7x fa-user-astronaut astro"></i>
+                      <h1 className="AppTitle">Forgot Your Password?</h1>
+                      <h4 >Enter Your Account Email Below:</h4>
+                      <p>A reset link will be sent to your email address</p>
+                      <br/>
+                      <div className="forgot input input--kohana">
+                        <input className="input__field input__field--kohana center" value={this.state.email} type="text" id="input-3" name="email" onChange={this.handleChange}/>
+                        <label className="input__label input__label--kohana" for="input-3">
+                          <i className="fas fa-fw fa-crown icon-c icon--kohana"></i>
+                          <span className="input__label-content input__label-content--kohana"><i className="fas fa-crown icon-before"></i>&nbsp;&nbsp;&nbsp;&nbsp;Email</span>
+                        </label>
+                      </div>
+                      <br />
+                      <div className="FormField">
+                        <Link to="/sign-up" className="FormField__Link">Don't have an account?</Link>
+                      </div>
+                      <div className="FormField">
+                        <Link to="/" className="FormField__Link">Oh wait! I remember my password!</Link>
+                      </div>
+                      <br />
+                      <div className="FormField">
+                        <button type="submit" className="FormField__Button" onClick={this.handleSubmit}>Request Reset</button>
+                      </div>
+                      {this.getMessage()}
+                      <br />
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+        );
+    }
 }
+
+export default Forgot;

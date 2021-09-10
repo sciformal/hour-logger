@@ -27,6 +27,11 @@
  *      isCheckedIn: boolean;
  * }
  *  
+ * 
+ * - create new dynamo db table "transactions"
+ * - query transactions to see if they are checked in
+ * - do logic above
+ * - curent check out logic, we will delete the record from transaction table
  * */
 
 import AWS from "aws-sdk";
@@ -73,7 +78,95 @@ export function checkIn(event, context, callback) {
       headers: headers,
       body: JSON.stringify(data),
     };
-    console.log(response);
+
+    const user = data.Items[0];
+
+    if (user.isCheckedIn) { // check them out
+      const newUser = user;
+      newUser.isCheckedIn = false;
+      let timeElapsed;
+
+      const updatedTransactions = [];
+
+      newUser.transactions.forEach(el => {
+        if (el.checkOutTime == null) {
+          el.checkOutTime = new Date().toString();
+          // result of date arithmetic is in milliseconds and then converted to hours
+          timeElapsed = (Date.parse(el.checkOutTime) - Date.parse(el.checkInTime)) / (60 * 60 * 1000);
+          // TODO: loop over transactions and recalculate hours
+          newUser.hours += timeElapsed;
+        }
+        updatedTransactions.push(el);
+      });
+
+      newUser.transactions = updatedTransactions;
+
+      const params = {
+        TableName: process.env.userTable,
+        Item: newUser
+      };
+      dynamoDb.put(params, (error, data) => {
+        if (error) {
+          const response = {
+            statusCode: 500,
+            headers: headers,
+            body: JSON.stringify({ error }),
+          };
+          callback(null, response);
+          return;
+        }
+    
+        const response = {
+          statusCode: 200,
+          headers: headers,
+          body: JSON.stringify(params.Item),
+        };
+        callback(null, response);
+      });
+
+    } else {
+      const checkInTime = new Date().toString();
+      const newUser = user;
+
+      newUser.isCheckedIn = true;
+      const newTransaction = {
+        checkInTime,
+        checkOutTime: null
+      }
+
+      if (newUser.transactions) {
+        newUser.transactions.push(newTransaction)
+      } else {
+        var transactions = [];
+        transactions.push(newTransaction)
+        newUser.transactions = transactions;
+      }
+      
+      const params = {
+        TableName: process.env.userTable,
+        Item: newUser
+      };
+    
+      dynamoDb.put(params, (error, data) => {
+        if (error) {
+          const response = {
+            statusCode: 500,
+            headers: headers,
+            body: JSON.stringify({ error }),
+          };
+          callback(null, response);
+          return;
+        }
+    
+        const response = {
+          statusCode: 200,
+          headers: headers,
+          body: JSON.stringify(params.Item),
+        };
+        callback(null, response);
+      });
+    }
+
     callback(null, response);
   });
 }

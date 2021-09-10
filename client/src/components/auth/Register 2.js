@@ -9,7 +9,9 @@ import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import { Auth, API } from "aws-amplify";
+import { useAuthenticationContext, useUserContext } from "libs/contextLib";
 import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -33,18 +35,22 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SignUp() {
   const classes = useStyles();
+  const history = useHistory();
+  const { userHasAuthenticated } = useAuthenticationContext();
+  const { setUser } = useUserContext();
 
-
-  // UseState:
-  // First Variable (Value) = the variable value
-  // Second Variable (Function to change the value)
-  const [firstName, setFirstName] = useState("Justin");
-  const [lastName, setLastName] = useState("Bieber");
-  const [studentNumber, setStudentNumber] = useState("42069696");
-  const [email, setEmail] = useState("ava.little@queensu.ca");
-  const [password, setPassword] = useState("Password123!");
+  // Form Inputs
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [studentNumber, setStudentNumber] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [confirmationCode, setConfirmationCode] = useState("");
-  const [signUpStep, setSignUpStep] = useState(2);
+
+  // For moving between form & confirmation code.
+  const [signUpStep, setSignUpStep] = useState(1);
+
+  // Error handling
   const [isPasswordInvalid, setIsPasswordInvalid] = useState(false);
   const [passwordError, setPasswordError] = useState("");
 
@@ -89,7 +95,7 @@ export default function SignUp() {
       .catch((err) => {
         // TODO: Handle this
         console.log(err);
-        if (err.code == 'InvalidPasswordException') {
+        if (err.code === "InvalidPasswordException") {
           setIsPasswordInvalid(true);
           setPasswordError(err.message);
         }
@@ -98,29 +104,33 @@ export default function SignUp() {
       });
   };
 
-  const resendConfirmationCode = async (e) => {
-    await Auth.resendSignUp
-  };
-
   const handleConfirmRegister = async (e) => {
     e.preventDefault();
     try {
-      // await Auth.confirmSignUp(email, confirmationCode);
-      // // TODO: Call CreateUser in here
+      await Auth.confirmSignUp(email, confirmationCode);
 
-      await Auth.signIn(email, password);
+      const res = await Auth.signIn(email, password);
+
+      // TODO: What if cognito succeeds but db table doesn't?
       API.post("hour-logger", "/users/create", {
-        "firstName" : firstName,
-        "lastName" : lastName,
-        "email": email,
-        "studentNumber" : studentNumber,
-      })
-      console.log("Confirming user");
+        body: {
+          userId: res.username,
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          studentNumber: studentNumber,
+        },
+      }).then(user => {
+        setUser(user);
+      });
+      
+      userHasAuthenticated(true);
+      history.push("/");
     } catch (e) {
-      // Expired code?
+      // TODO: Research and implement whatever error handling required here.
       console.log(e);
     }
-  }
+  };
 
   if (signUpStep === 1) {
     return (
@@ -204,10 +214,7 @@ export default function SignUp() {
               </Grid>
             </Grid>
             {/* Show password error if the password is not valid */}
-            {
-              isPasswordInvalid &&
-              <div>{ passwordError }</div>
-            }
+            {isPasswordInvalid && <div>{passwordError}</div>}
             <Button
               type="submit"
               fullWidth
@@ -224,7 +231,11 @@ export default function SignUp() {
                   Already have an account? Sign in
                 </Link>
                 <br />
-                <Link href="#confirm" variant="body2" onClick={() => setSignUpStep(2)}>
+                <Link
+                  href="#confirm"
+                  variant="body2"
+                  onClick={() => setSignUpStep(2)}
+                >
                   Already have a confirmation code?
                 </Link>
               </Grid>
