@@ -1,39 +1,3 @@
-/**
- * 
- * POST /check-in
- * {
- *      "studentNumber",
- *      "time"
- * }
- * 
- * - Using the student number, find the user from the user table.
- * - Using the userId, find their hours transaction table.
- * - If (isCheckedIn) {
- *      - now they are signing out.
-*       - complete the transaction (add checkout time)
-        - update their user object in the user table.
- * } else {
-     add a new entry in "transactions", with checkOutTime = null and isCheckIn = true;
- }
- * 
- * {
- *      userId: "",
- *      transactions: [
- *          {
- *              checkInTime: "blah"
- *              checkOutTime: "blah"
- *          }
- *      ],
- *      isCheckedIn: boolean;
- * }
- *  
- * 
- * - create new dynamo db table "transactions"
- * - query transactions to see if they are checked in
- * - do logic above
- * - curent check out logic, we will delete the record from transaction table
- * */
-
 import AWS from "aws-sdk";
 
 const dynamoDb = new AWS.DynamoDB.DocumentClient();

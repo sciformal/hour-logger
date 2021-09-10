@@ -1,45 +1,27 @@
+import { useAuthenticationContext, useUserContext } from "libs/contextLib";
 import React from "react";
-import SignInForm from "./auth/SignInForm";
-import Countdown from "./global/Countdown";
-import User from "./roles/User";
 import "../styles/Home.css";
+import SignInForm from "./auth/SignInForm";
+
+const types = ["USER", "ADMIN", "MANAGER", "BOUNCER"];
+
 export default function Home() {
-  // TODO: Get this from cognito pool
-  const userLoggedIn = false;
-
-  const getUserInformation = () => {
-    return {
-      name: 'Ava',
-      hours: 10,
-      finalHours: 10,
-      hoursNeeded: 20,
-      type: "USER",
-    };
-  };
-
-  // TODO: Pull this from the db table.
-  const user = getUserInformation();
+  const { isAuthenticated } = useAuthenticationContext();
+  const { user } = useUserContext();
 
   // Signed in
-  if (userLoggedIn) {
-    if (user.type === 'USER') {
-      return (
-        <div className="landing">
-          <User user={user} />
-        </div>
-      )
-    }
-  } else { // Show sign in form
+  if (isAuthenticated && user && types.includes(user.type)) {
+    return <div className="landing">
+      <h2 style={{textAlign: 'center'}}>Welcome back {user.firstName}!</h2>
+      <div>Hours Summary</div>
+      <div>Hours Table</div>
+    </div>;
+  } else {
+    // Show sign in form
     return (
       <div className="landing">
-      <div style={{ textAlign: "center", margin: "auto" }}>
-      <div style={{ textAlign: "center" }}>
-        <h2>Countdown</h2>
-        <Countdown />
+        <SignInForm />
       </div>
-      <SignInForm />
-    </div>
-    </div>
-    )
+    );
   }
 }

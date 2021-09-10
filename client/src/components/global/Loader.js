@@ -5,7 +5,7 @@ import React from 'react';
 export default function Loader() {
 
   return (
-    <div>
+    <div style={{textAlign: 'center', paddingTop: '40vh'}}>
       <CircularProgress />
     </div>
   );

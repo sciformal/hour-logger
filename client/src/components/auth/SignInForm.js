@@ -11,7 +11,8 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import { Auth } from "aws-amplify";
+import { API, Auth } from "aws-amplify";
+import { useAuthenticationContext, useUserContext } from "libs/contextLib";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -38,6 +39,8 @@ export default function SignInForm() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { userHasAuthenticated } = useAuthenticationContext();
+  const { setUser } = useUserContext();
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
@@ -48,8 +51,12 @@ export default function SignInForm() {
   };
 
   const handleSignIn = async (e) => {
+    e.preventDefault();
     try {
       await Auth.signIn(email, password);
+      const user = await API.get("hour-logger", "/users/me");
+      setUser(user);
+      userHasAuthenticated(true);
     } catch (e) {
       console.log(e);
     }

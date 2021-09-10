@@ -11,27 +11,24 @@ export default function App() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      onLoad();
+    loadUserInformation();
+  }, []);
 
-    }
-  }, [isAuthenticated]);
-
-  async function onLoad() {
-    try {
-      await Auth.currentSession();
+  const loadUserInformation = async () => {
+    if (await Auth.currentSession()) {
       userHasAuthenticated(true);
       const user = await API.get("hour-logger", "/users/me");
-        setUser(user.Item);
-    } catch (e) {
-      // If any errors are encountered in the login - block authentication.
-      userHasAuthenticated(false);
+      setUser(user);
     }
     setIsAuthenticating(false);
-  }
+  };
 
   if (isAuthenticating) {
-    return <Loader />;
+    return (
+      <div className="App">
+        <Loader />
+      </div>
+    );
   } else {
     return (
       <div className="App">
