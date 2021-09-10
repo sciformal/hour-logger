@@ -7,6 +7,7 @@ import Register from "./components/auth/Register";
 import Reset from "./components/auth/Reset.js";
 import Manager from "./old/Manager.js";
 import HourLoggerNav from "components/global/Nav";
+import CheckIn from "pages/CheckIn";
 
 export default function Routes() {
   return (
@@ -19,6 +20,7 @@ export default function Routes() {
         <Route exact path="/reset/:token" component={Reset} />
         <Route exact path="/manager" component={Manager} />
         <Route exact path="/admin" component={Admin} />
+        <Route exact path="/check-in" component={CheckIn} />
         <Route component={NoMatch} />
       </Switch>
     </>

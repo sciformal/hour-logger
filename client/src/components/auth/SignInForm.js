@@ -1,16 +1,17 @@
+import React, { useState } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
-import Container from "@material-ui/core/Container";
 import CssBaseline from "@material-ui/core/CssBaseline";
-import Grid from "@material-ui/core/Grid";
-import Link from "@material-ui/core/Link";
-import { makeStyles } from "@material-ui/core/styles";
 import TextField from "@material-ui/core/TextField";
-import Typography from "@material-ui/core/Typography";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Checkbox from "@material-ui/core/Checkbox";
+import Link from "@material-ui/core/Link";
+import Grid from "@material-ui/core/Grid";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
-import { API, Auth } from "aws-amplify";
-import React, { useState } from "react";
-import { useAuthenticationContext, useUserContext } from "../../libs/contextLib";
+import Typography from "@material-ui/core/Typography";
+import { makeStyles } from "@material-ui/core/styles";
+import Container from "@material-ui/core/Container";
+import { Auth } from "aws-amplify";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -33,13 +34,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function SignInForm() {
-  const { userHasAuthenticated } = useAuthenticationContext();
-  const { setUser } = useUserContext();
   const classes = useStyles();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [signInError, setSignInError] = useState("");
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
@@ -50,18 +48,10 @@ export default function SignInForm() {
   };
 
   const handleSignIn = async (e) => {
-    e.preventDefault();
-
     try {
       await Auth.signIn(email, password);
-      const user = await API.get("hour-logger", "/users/me");
-      setUser(user.Item);
-      userHasAuthenticated(true);
-    } catch (err) {
-      if (err.code === 'NotAuthorizedException') {
-        setSignInError(err.message);
-      }
-      userHasAuthenticated(false);
+    } catch (e) {
+      console.log(e);
     }
   }
 
@@ -102,17 +92,10 @@ export default function SignInForm() {
             onChange={handlePasswordChange}
             value={password}
           />
-          {/* TODO: Implement this in cognito pool settings. */}
-          {/* <FormControlLabel
+          <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"
-          /> */}
-          {
-            signInError !== "" &&
-            <div>
-            { signInError }
-            </div>
-          }
+          />
           <Button
             type="submit"
             fullWidth

@@ -1,7 +1,8 @@
+import axios from 'axios';
+import 'bootstrap/dist/css/bootstrap.css';
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import verify from '../../libs/input-helper.js';
-import axios from 'axios';
+import verify from '../../utils/input-helper.js';
 
 class Reset extends Component {
 
