@@ -1,6 +1,6 @@
 import React from "react";
 import SignInForm from "./auth/SignInForm";
-import Countdown from "./Countdown";
+import Countdown from "./global/Countdown";
 import User from "./roles/User";
 import "../styles/Home.css";
 export default function Home() {
