@@ -9,7 +9,8 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "aws-sdk": "^2.831.0",
+        "@types/aws-lambda": "^8.10.83",
+        "aws-sdk": "^2.987.0",
         "jest": "^27.0.6",
         "serverless-bundle": "^4.2.0",
         "serverless-dotenv-plugin": "^3.1.0",
