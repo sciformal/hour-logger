@@ -89,6 +89,17 @@ functions:
             # authorizer: aws_iam
             cors: true
 
+  reduction-approval:
+    handler: src/handlers/hours.reductionApproval
+    memorySize: 128
+    description: "Reduces total hours required for a user"
+    events:
+      - http:
+            path: hours/reduce
+            method: post
+            # authorizer: aws_iam
+            cors: true
+
 resources:
   Resources:
     UserDynamoDbTable:

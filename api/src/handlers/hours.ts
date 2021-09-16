@@ -177,3 +177,54 @@ const handleCheckInProcess = async (user): Promise<void> => {
     });
   }
 };
+
+/**
+ * Edits user's total hours required. 
+ *
+ * @param event The APIGatewayProxyEvent for the API.
+ * @returns The updated user object.
+ */
+ export const reductionApproval: Handler = async (
+  event: APIGatewayProxyEvent
+): Promise<APIGatewayProxyResult> => {
+  const data = JSON.parse(event.body);
+
+  const params = {
+    TableName: process.env.userTable,
+    IndexName: "StudentNumberIndex",
+    KeyConditionExpression: "studentNumber = :v_title",
+    ExpressionAttributeValues: {
+      ":v_title": data.studentNumber,
+    },
+    ScanIndexForward: false,
+  };
+
+  try {
+    const userList = await DynamoUtilities.queryDynamo(params, dynamoDb);
+
+    if (userList.length != 1) {
+      throw new Error(
+        "DynamoDB query should have only 1 user per studentNumber"
+      );
+    }
+    const user = userList[0];
+    const newUser = user;
+    newUser.hoursNeeded = parseFloat(newUser.hoursNeeded) - data.hourReduction;
+
+    const params2 = {
+      TableName: process.env.userTable,
+      Item: newUser,
+    };
+
+    dynamoDb.put(params2, (error, data) => {
+      if (error) {
+        throw new Error(error.message);
+      }
+    });
+
+    return ResponseUtilities.apiResponse(userList[0], 200);
+  } catch (err) {
+    console.log(err);
+    return ResponseUtilities.apiResponse(err.message, 500);
+  }
+};
