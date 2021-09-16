@@ -71,14 +71,14 @@ export const editHours: Handler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
   const data = JSON.parse(event.body);
-  const { studentNumber } = data;
+  //const { studentNumber } = data;
 
   const params = {
     TableName: process.env.userTable,
     IndexName: "StudentNumberIndex",
     KeyConditionExpression: "studentNumber = :v_title",
     ExpressionAttributeValues: {
-      ":v_title": studentNumber,
+      ":v_title": data.studentNumber,
     },
     ScanIndexForward: false,
   };
@@ -91,6 +91,21 @@ export const editHours: Handler = async (
         "DynamoDB query should have only 1 user per studentNumber"
       );
     }
+    const user = userList[0];
+    const newUser = user;
+    newUser.hours = parseFloat(user.hours) + data.updateHours;
+
+    const params2 = {
+      TableName: process.env.userTable,
+      Item: newUser,
+    };
+
+    dynamoDb.put(params2, (error, data) => {
+      if (error) {
+        throw new Error(error.message);
+      }
+    });
+
     return ResponseUtilities.apiResponse(userList[0], 200);
   } catch (err) {
     console.log(err);
