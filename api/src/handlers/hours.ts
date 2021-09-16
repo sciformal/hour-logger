@@ -58,6 +58,11 @@ export const checkIn: Handler = async (
 export const getAllHours: Handler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
+
+  // const params = {
+  //   TableName: process.env.userTable,
+  //   ProjectionExpression: "studentNumber, firstName, lastName, hours, hoursNeeded"
+  // }
   return ResponseUtilities.apiResponse("Fetched all user hours!", 200);
 };
 
@@ -66,6 +71,8 @@ export const getAllHours: Handler = async (
  *
  * @param event The APIGatewayProxyEvent for the API.
  * @returns The updated user object.
+ * 
+ * Something is broken. Only updates hours after 2 calls to API
  */
 export const editHours: Handler = async (
   event: APIGatewayProxyEvent
@@ -91,21 +98,16 @@ export const editHours: Handler = async (
         "DynamoDB query should have only 1 user per studentNumber"
       );
     }
-    const user = userList[0];
-    const newUser = user;
-    newUser.hours = parseFloat(user.hours) + data.updateHours;
+    //const user = userList[0];
+    //const newUser = user;
+    userList[0].hours = parseFloat(userList[0].hours) + data.updateHours;
 
     const params2 = {
       TableName: process.env.userTable,
-      Item: newUser,
+      Item: userList[0],
     };
 
-    dynamoDb.put(params2, (error, data) => {
-      if (error) {
-        throw new Error(error.message);
-      }
-    });
-
+    await dynamoDb.put(params2).promise().then(data => console.log(data.Attributes)).catch(console.error);
     return ResponseUtilities.apiResponse(userList[0], 200);
   } catch (err) {
     console.log(err);
@@ -142,11 +144,13 @@ const handleCheckInProcess = async (user): Promise<void> => {
       Item: newUser,
     };
 
-    dynamoDb.put(params, (error, data) => {
-      if (error) {
-        throw new Error(error.message);
-      }
-    });
+    // dynamoDb.put(params, (error, data) => {
+    //   if (error) {
+    //     throw new Error(error.message);
+    //   }
+    // });
+    await dynamoDb.put(params).promise().then(data => console.log(data.Attributes)).catch(console.error);
+
   } else {
     const checkInTime = new Date().toString();
     const newUser = user;
@@ -170,11 +174,12 @@ const handleCheckInProcess = async (user): Promise<void> => {
       Item: newUser,
     };
 
-    dynamoDb.put(params, (error, data) => {
-      if (error) {
-        throw new Error(error.message);
-      }
-    });
+    // dynamoDb.put(params, (error, data) => {
+    //   if (error) {
+    //     throw new Error(error.message);
+    //   }
+    // });
+    await dynamoDb.put(params).promise().then(data => console.log(data.Attributes)).catch(console.error);
   }
 };
 
@@ -216,11 +221,12 @@ const handleCheckInProcess = async (user): Promise<void> => {
       Item: newUser,
     };
 
-    dynamoDb.put(params2, (error, data) => {
-      if (error) {
-        throw new Error(error.message);
-      }
-    });
+    // dynamoDb.put(params2, (error, data) => {
+    //   if (error) {
+    //     throw new Error(error.message);
+    //   }
+    // });
+    await dynamoDb.put(params2).promise().then(data => console.log(data.Attributes)).catch(console.error);
 
     return ResponseUtilities.apiResponse(userList[0], 200);
   } catch (err) {
