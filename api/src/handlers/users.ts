@@ -3,7 +3,7 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import { DynamoUtilities } from "../../src/util/dynamo";
 import { GlobalConstants } from "../../src/constants/global";
-import { User, UserType } from "../types/User";
+import { User, UserType } from "../../src/types/User";
 import { ResponseUtilities } from "../../src/util/response";
 
 const dynamoDb = new DocumentClient();
