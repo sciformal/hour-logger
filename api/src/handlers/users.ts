@@ -2,9 +2,11 @@
  * Main entry point for all users endpoints.
  */
 
-import AWS from "aws-sdk";
+import { ErrorConstants } from "../constants/errors";
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
+const dynamoDb = new DocumentClient();
 
 // TODO: Block users from creating users with same student number.
 // Add student number as primary key in db table.
@@ -13,59 +15,64 @@ const headers = {
   "Access-Control-Allow-Credentials": true,
 };
 
-export function createUser(event, context, callback) {
+export const createUser = (
+  event: APIGatewayProxyEvent
+): APIGatewayProxyResult => {
   // Request body is passed in as a JSON encoded string in 'event.body'
-  const data = JSON.parse(event.body);
-
-  if (!data) {
-    const response = {
+  if (!event.body) {
+    return {
       statusCode: 400,
       headers: headers,
       body: JSON.stringify({
-        message: "Body was not passed in the request!",
+        message: ErrorConstants.VALIDATION_BODY_MISSING
       }),
     };
-    callback(null, response);
   }
+
+  const data = JSON.parse(event.body);
+
   if (!data.firstName) {
     const response = {
       statusCode: 400,
       headers: headers,
       body: JSON.stringify({
-        message: "firstName was not passed in the request!",
+        message: ErrorConstants.VALIDATION_BODY_FIRSTNAME
       }),
     };
-    callback(null, response);
+    return response;
   }
+
   if (!data.lastName) {
     const response = {
       statusCode: 400,
       headers: headers,
       body: JSON.stringify({
-        message: "lastName was not passed in the request!",
+        message: ErrorConstants.VALIDATION_BODY_LASTNAME
       }),
     };
-    callback(null, response);
+    return response;
   }
+
   if (!data.email) {
     const response = {
       statusCode: 400,
       headers: headers,
       body: JSON.stringify({
-        message: "email was not passed in the request!",
+        message: ErrorConstants.VALIDATION_BODY_EMAIL
       }),
     };
-    callback(null, response);
+    return response;
   }
+
   if (!data.studentNumber) {
     const response = {
       statusCode: 400,
       headers: headers,
       body: JSON.stringify({
-        message: "school was not passed in the request!",
+        message: ErrorConstants.VALIDATION_BODY_STUDENTNUMBER
       }),
     };
-    callback(null, response);
+    return response;
   }
 
   if (!data.userId) {
@@ -73,10 +80,10 @@ export function createUser(event, context, callback) {
       statusCode: 400,
       headers: headers,
       body: JSON.stringify({
-        message: "User ID was not passed in the request!",
+        message: ErrorConstants.VALIDATION_BODY_USERID
       }),
     };
-    callback(null, response);
+    return response;
   }
 
   const params = {
@@ -100,8 +107,7 @@ export function createUser(event, context, callback) {
         headers: headers,
         body: JSON.stringify({ error }),
       };
-      callback(null, response);
-      return;
+      return response;
     }
 
     const response = {
@@ -109,21 +115,19 @@ export function createUser(event, context, callback) {
       headers: headers,
       body: JSON.stringify(params.Item),
     };
-    callback(null, response);
+    return response;
   });
-}
+};
 
 export function getUser(event, context, callback) {
-
-  const userId = event.requestContext.identity.cognitoIdentityId || 'abcdefg';
-
+  const userId = event.requestContext.identity.cognitoIdentityId || "abcdefg";
 
   const params = {
     TableName: process.env.userTable,
     Key: {
-      userId
-    }
-  }
+      userId,
+    },
+  };
 
   // TODO: Return error if nothing exists.
   dynamoDb.get(params, (error, data) => {

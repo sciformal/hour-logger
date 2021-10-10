@@ -4,8 +4,8 @@ import {
   Handler,
   APIGatewayProxyResult,
 } from "aws-lambda";
-import { DynamoUtilities } from "@util/dynamo";
-import { ResponseUtilities } from "@util/response";
+import { DynamoUtilities } from "../util/dynamo";
+import { ResponseUtilities } from "../util/response";
 
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
