@@ -1,152 +1,105 @@
-/**
- * Main entry point for all users endpoints.
- */
-
 import { ErrorConstants } from "../constants/errors";
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { DynamoUtilities } from "../../src/util/dynamo";
+import { GlobalConstants } from "../../src/constants/global";
+import { User, UserType } from "../types/User";
+import { ResponseUtilities } from "../../src/util/response";
 
 const dynamoDb = new DocumentClient();
 
-// TODO: Block users from creating users with same student number.
-// Add student number as primary key in db table.
-const headers = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Credentials": true,
-};
-
-export const createUser = (
+/**
+ * Create a user in the DynamoDB table and initialize their hours to 0.
+ *
+ * @param event The APIGatewayProxyEvent for the API.
+ * @returns The created user object.
+ */
+export const createUser = async (
   event: APIGatewayProxyEvent
-): APIGatewayProxyResult => {
-  // Request body is passed in as a JSON encoded string in 'event.body'
+): Promise<APIGatewayProxyResult> => {
+
   if (!event.body) {
-    return {
-      statusCode: 400,
-      headers: headers,
-      body: JSON.stringify({
-        message: ErrorConstants.VALIDATION_BODY_MISSING
-      }),
-    };
+    return ResponseUtilities.createErrorResponse(ErrorConstants.VALIDATION_BODY_MISSING);
   }
 
   const data = JSON.parse(event.body);
 
   if (!data.firstName) {
-    const response = {
-      statusCode: 400,
-      headers: headers,
-      body: JSON.stringify({
-        message: ErrorConstants.VALIDATION_BODY_FIRSTNAME
-      }),
-    };
-    return response;
+    return ResponseUtilities.createErrorResponse(ErrorConstants.VALIDATION_BODY_FIRSTNAME);
   }
 
   if (!data.lastName) {
-    const response = {
-      statusCode: 400,
-      headers: headers,
-      body: JSON.stringify({
-        message: ErrorConstants.VALIDATION_BODY_LASTNAME
-      }),
-    };
-    return response;
+    return ResponseUtilities.createErrorResponse(ErrorConstants.VALIDATION_BODY_LASTNAME);
   }
 
   if (!data.email) {
-    const response = {
-      statusCode: 400,
-      headers: headers,
-      body: JSON.stringify({
-        message: ErrorConstants.VALIDATION_BODY_EMAIL
-      }),
-    };
-    return response;
+    return ResponseUtilities.createErrorResponse(ErrorConstants.VALIDATION_BODY_EMAIL);
   }
 
   if (!data.studentNumber) {
-    const response = {
-      statusCode: 400,
-      headers: headers,
-      body: JSON.stringify({
-        message: ErrorConstants.VALIDATION_BODY_STUDENTNUMBER
-      }),
-    };
-    return response;
+    return ResponseUtilities.createErrorResponse(ErrorConstants.VALIDATION_BODY_STUDENTNUMBER);
   }
 
   if (!data.userId) {
-    const response = {
-      statusCode: 400,
-      headers: headers,
-      body: JSON.stringify({
-        message: ErrorConstants.VALIDATION_BODY_USERID
-      }),
-    };
-    return response;
+    return ResponseUtilities.createErrorResponse(ErrorConstants.VALIDATION_BODY_USERID);
   }
 
+  const userPayload: User = {
+    ...data,
+    hours: 0,
+    hoursNeeded: GlobalConstants.HOURS_NEEDED,
+    type: data.type || UserType.USER,
+    isCheckedIn: false,
+    transactions: [],
+  }
+  
   const params = {
     TableName: process.env.userTable,
-    Item: {
-      userId: data.userId,
-      firstName: data.firstName,
-      lastName: data.lastName,
-      email: data.email,
-      studentNumber: data.studentNumber,
-      hours: 0,
-      hoursNeeded: process.env.defaultHoursRequired,
-      type: data.type || "USER",
-    },
+    Item: userPayload
   };
 
-  dynamoDb.put(params, (error, data) => {
-    if (error) {
-      const response = {
-        statusCode: 500,
-        headers: headers,
-        body: JSON.stringify({ error }),
-      };
-      return response;
-    }
-
-    const response = {
-      statusCode: 200,
-      headers: headers,
-      body: JSON.stringify(params.Item),
-    };
-    return response;
-  });
+  try {
+    const user = await DynamoUtilities.put(params, dynamoDb);
+    return ResponseUtilities.createAPIResponse(user);
+  } catch (err) {
+    console.log(err);
+    return ResponseUtilities.createErrorResponse(err.message, 500);
+  }
 };
 
-export function getUser(event, context, callback) {
-  const userId = event.requestContext.identity.cognitoIdentityId || "abcdefg";
+
+/**
+ * Get a user from the DynamoDB Table.
+ *
+ * @param event The APIGatewayProxyEvent for the API.
+ * @returns The user object.
+ */
+export const getUser = async (
+  event: APIGatewayProxyEvent
+): Promise<APIGatewayProxyResult> => {
+
+  if (!event.body) {
+    return ResponseUtilities.createErrorResponse(ErrorConstants.VALIDATION_BODY_MISSING);
+  }
+
+  const data = JSON.parse(event.body);
+  
+  if (!data.userId) {
+    return ResponseUtilities.createErrorResponse(ErrorConstants.VALIDATION_BODY_USERID);
+  }
 
   const params = {
     TableName: process.env.userTable,
     Key: {
-      userId,
+      userId: data.userId,
     },
   };
 
-  // TODO: Return error if nothing exists.
-  dynamoDb.get(params, (error, data) => {
-    if (error) {
-      const response = {
-        statusCode: 500,
-        headers: headers,
-        body: JSON.stringify({ error }),
-      };
-      callback(null, response);
-      return;
-    }
-
-    // Return status code 200 and the newly created item
-    const response = {
-      statusCode: 200,
-      headers: headers,
-      body: JSON.stringify(data.Item),
-    };
-    callback(null, response);
-  });
+  try {
+    const user = await DynamoUtilities.get(params, dynamoDb);
+    return ResponseUtilities.createAPIResponse(user);
+  } catch (err) {
+    console.log(err);
+    return ResponseUtilities.createErrorResponse(err.message, 500);
+  }
 }

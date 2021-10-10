@@ -6,6 +6,7 @@ import {
 } from "aws-lambda";
 import { DynamoUtilities } from "../util/dynamo";
 import { ResponseUtilities } from "../util/response";
+import { ErrorConstants } from "../../src/constants/errors";
 
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
@@ -18,6 +19,12 @@ const dynamoDb = new AWS.DynamoDB.DocumentClient();
 export const checkIn: Handler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
+  if (!event.body) {
+    return ResponseUtilities.createErrorResponse(
+      ErrorConstants.VALIDATION_BODY_MISSING
+    );
+  }
+
   const data = JSON.parse(event.body);
   const { studentNumber } = data;
 
@@ -32,7 +39,7 @@ export const checkIn: Handler = async (
   };
 
   try {
-    const userList = await DynamoUtilities.queryDynamo(params, dynamoDb);
+    const userList = await DynamoUtilities.query(params, dynamoDb);
 
     if (userList.length != 1) {
       throw new Error(
@@ -42,10 +49,10 @@ export const checkIn: Handler = async (
 
     const user = userList[0];
     await handleCheckInProcess(user);
-    return ResponseUtilities.apiResponse(user, 200);
+    return ResponseUtilities.createAPIResponse(user);
   } catch (err) {
     console.log(err);
-    return ResponseUtilities.apiResponse(err.message, 500);
+    return ResponseUtilities.createErrorResponse(err.message, 500);
   }
 };
 
@@ -58,12 +65,11 @@ export const checkIn: Handler = async (
 export const getAllHours: Handler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
-
   // const params = {
   //   TableName: process.env.userTable,
   //   ProjectionExpression: "studentNumber, firstName, lastName, hours, hoursNeeded"
   // }
-  return ResponseUtilities.apiResponse("Fetched all user hours!", 200);
+  return ResponseUtilities.createAPIResponse("Fetched all user hours!");
 };
 
 /**
@@ -71,12 +77,18 @@ export const getAllHours: Handler = async (
  *
  * @param event The APIGatewayProxyEvent for the API.
  * @returns The updated user object.
- * 
+ *
  * Something is broken. Only updates hours after 2 calls to API
  */
 export const editHours: Handler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
+  if (!event.body) {
+    return ResponseUtilities.createErrorResponse(
+      ErrorConstants.VALIDATION_BODY_MISSING
+    );
+  }
+
   const data = JSON.parse(event.body);
   //const { studentNumber } = data;
 
@@ -91,7 +103,7 @@ export const editHours: Handler = async (
   };
 
   try {
-    const userList = await DynamoUtilities.queryDynamo(params, dynamoDb);
+    const userList = await DynamoUtilities.query(params, dynamoDb);
 
     if (userList.length != 1) {
       throw new Error(
@@ -107,11 +119,15 @@ export const editHours: Handler = async (
       Item: userList[0],
     };
 
-    await dynamoDb.put(params2).promise().then(data => console.log(data.Attributes)).catch(console.error);
-    return ResponseUtilities.apiResponse(userList[0], 200);
+    await dynamoDb
+      .put(params2)
+      .promise()
+      .then((data) => console.log(data.Attributes))
+      .catch(console.error);
+    return ResponseUtilities.createAPIResponse(userList[0]);
   } catch (err) {
     console.log(err);
-    return ResponseUtilities.apiResponse(err.message, 500);
+    return ResponseUtilities.createAPIResponse(err.message, 500);
   }
 };
 
@@ -149,8 +165,11 @@ const handleCheckInProcess = async (user): Promise<void> => {
     //     throw new Error(error.message);
     //   }
     // });
-    await dynamoDb.put(params).promise().then(data => console.log(data.Attributes)).catch(console.error);
-
+    await dynamoDb
+      .put(params)
+      .promise()
+      .then((data) => console.log(data.Attributes))
+      .catch(console.error);
   } else {
     const checkInTime = new Date().toString();
     const newUser = user;
@@ -179,19 +198,29 @@ const handleCheckInProcess = async (user): Promise<void> => {
     //     throw new Error(error.message);
     //   }
     // });
-    await dynamoDb.put(params).promise().then(data => console.log(data.Attributes)).catch(console.error);
+    await dynamoDb
+      .put(params)
+      .promise()
+      .then((data) => console.log(data.Attributes))
+      .catch(console.error);
   }
 };
 
 /**
- * Edits user's total hours required. 
+ * Edits user's total hours required.
  *
  * @param event The APIGatewayProxyEvent for the API.
  * @returns The updated user object.
  */
- export const reductionApproval: Handler = async (
+export const reductionApproval: Handler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
+  if (!event.body) {
+    return ResponseUtilities.createErrorResponse(
+      ErrorConstants.VALIDATION_BODY_MISSING
+    );
+  }
+
   const data = JSON.parse(event.body);
 
   const params = {
@@ -205,7 +234,7 @@ const handleCheckInProcess = async (user): Promise<void> => {
   };
 
   try {
-    const userList = await DynamoUtilities.queryDynamo(params, dynamoDb);
+    const userList = await DynamoUtilities.query(params, dynamoDb);
 
     if (userList.length != 1) {
       throw new Error(
@@ -226,11 +255,15 @@ const handleCheckInProcess = async (user): Promise<void> => {
     //     throw new Error(error.message);
     //   }
     // });
-    await dynamoDb.put(params2).promise().then(data => console.log(data.Attributes)).catch(console.error);
+    await dynamoDb
+      .put(params2)
+      .promise()
+      .then((data) => console.log(data.Attributes))
+      .catch(console.error);
 
-    return ResponseUtilities.apiResponse(userList[0], 200);
+    return ResponseUtilities.createAPIResponse(userList[0]);
   } catch (err) {
     console.log(err);
-    return ResponseUtilities.apiResponse(err.message, 500);
+    return ResponseUtilities.createErrorResponse(err.message, 500);
   }
 };

@@ -1,7 +1,7 @@
 import { APIGatewayProxyEvent } from "aws-lambda";
 
 /**
- * Sample APIGatewayProxyEvent.
+ * Sample APIGatewayProxyEvent to mock request data.
  */
  export const sampleApiGatewayEvent: APIGatewayProxyEvent = {
     body: null,

@@ -1,4 +1,4 @@
-import { HourTransaction } from './hour-transaction';
+import { HourTransaction } from './HourTransaction';
 
 export interface User {
     userId: string,
