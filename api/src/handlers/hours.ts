@@ -4,8 +4,9 @@ import {
   Handler,
   APIGatewayProxyResult,
 } from "aws-lambda";
-import { DynamoUtilities } from "@util/dynamo";
-import { ResponseUtilities } from "@util/response";
+import { DynamoUtilities } from "../util/dynamo";
+import { ResponseUtilities } from "../util/response";
+import { ErrorConstants } from "../../src/constants/errors";
 
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
@@ -18,6 +19,12 @@ const dynamoDb = new AWS.DynamoDB.DocumentClient();
 export const checkIn: Handler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
+  if (!event.body) {
+    return ResponseUtilities.createErrorResponse(
+      ErrorConstants.VALIDATION_BODY_MISSING
+    );
+  }
+
   const data = JSON.parse(event.body);
   const { studentNumber } = data;
 
@@ -32,7 +39,7 @@ export const checkIn: Handler = async (
   };
 
   try {
-    const userList = await DynamoUtilities.queryDynamo(params, dynamoDb);
+    const userList = await DynamoUtilities.query(params, dynamoDb);
 
     if (userList.length != 1) {
       throw new Error(
@@ -42,59 +49,10 @@ export const checkIn: Handler = async (
 
     const user = userList[0];
     await handleCheckInProcess(user);
-    return ResponseUtilities.apiResponse(user, 200);
+    return ResponseUtilities.createAPIResponse(user);
   } catch (err) {
     console.log(err);
-    return ResponseUtilities.apiResponse(err.message, 500);
-  }
-};
-
-/**
- * Fetch all hours for all users.
- *
- * @param event The APIGatewayProxyEvent for the API.
- * @returns All users
- */
-export const getAllHours: Handler = async (
-  event: APIGatewayProxyEvent
-): Promise<APIGatewayProxyResult> => {
-  return ResponseUtilities.apiResponse("Fetched all user hours!", 200);
-};
-
-/**
- * Edit a given users hours.
- *
- * @param event The APIGatewayProxyEvent for the API.
- * @returns The updated user object.
- */
-export const editHours: Handler = async (
-  event: APIGatewayProxyEvent
-): Promise<APIGatewayProxyResult> => {
-  const data = JSON.parse(event.body);
-  const { studentNumber } = data;
-
-  const params = {
-    TableName: process.env.userTable,
-    IndexName: "StudentNumberIndex",
-    KeyConditionExpression: "studentNumber = :v_title",
-    ExpressionAttributeValues: {
-      ":v_title": studentNumber,
-    },
-    ScanIndexForward: false,
-  };
-
-  try {
-    const userList = await DynamoUtilities.queryDynamo(params, dynamoDb);
-
-    if (userList.length != 1) {
-      throw new Error(
-        "DynamoDB query should have only 1 user per studentNumber"
-      );
-    }
-    return ResponseUtilities.apiResponse(userList[0], 200);
-  } catch (err) {
-    console.log(err);
-    return ResponseUtilities.apiResponse(err.message, 500);
+    return ResponseUtilities.createErrorResponse(err.message, 500);
   }
 };
 
@@ -127,11 +85,16 @@ const handleCheckInProcess = async (user): Promise<void> => {
       Item: newUser,
     };
 
-    dynamoDb.put(params, (error, data) => {
-      if (error) {
-        throw new Error(error.message);
-      }
-    });
+    // dynamoDb.put(params, (error, data) => {
+    //   if (error) {
+    //     throw new Error(error.message);
+    //   }
+    // });
+    await dynamoDb
+      .put(params)
+      .promise()
+      .then((data) => console.log(data.Attributes))
+      .catch(console.error);
   } else {
     const checkInTime = new Date().toString();
     const newUser = user;
@@ -155,10 +118,15 @@ const handleCheckInProcess = async (user): Promise<void> => {
       Item: newUser,
     };
 
-    dynamoDb.put(params, (error, data) => {
-      if (error) {
-        throw new Error(error.message);
-      }
-    });
+    // dynamoDb.put(params, (error, data) => {
+    //   if (error) {
+    //     throw new Error(error.message);
+    //   }
+    // });
+    await dynamoDb
+      .put(params)
+      .promise()
+      .then((data) => console.log(data.Attributes))
+      .catch(console.error);
   }
 };

@@ -1,19 +1,27 @@
 {
-    "name": "hour_logger",
-    "version": "1.0.0",
-    "description": "",
-    "main": "handler.js",
-    "scripts": {
-        "test": "jest"
-    },
-    "author": "",
-    "license": "ISC",
-    "dependencies": {
-        "@types/aws-lambda": "^8.10.83",
-        "aws-sdk": "^2.987.0",
-        "jest": "^27.0.6",
-        "serverless-bundle": "^4.2.0",
-        "serverless-dotenv-plugin": "^3.1.0",
-        "serverless-offline": "^6.8.0"
-    }
+  "name": "hour_logger",
+  "version": "1.0.0",
+  "description": "",
+  "main": "handler.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/aws-lambda": "^8.10.17",
+    "@types/jest": "^27.0.2",
+    "@types/uuid": "^8.3.1",
+    "aws-sdk": "^2.987.0",
+    "jest": "^26.4.2",
+    "serverless-bundle": "^4.2.0",
+    "serverless-dotenv-plugin": "^3.1.0",
+    "serverless-offline": "^6.8.0",
+    "serverless-webpack": "^5.2.0",
+    "ts-jest": "^26.3.0",
+    "ts-loader": "^9.2.6",
+    "ts-node": "^10.2.1",
+    "uuid": "^8.3.2",
+    "webpack": "^5.58.1"
+  }
 }

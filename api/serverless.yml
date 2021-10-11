@@ -35,26 +35,29 @@ custom:
 
 functions:
   create-user:
-    handler: src/handlers/users.createUser
+    handler: src/handlers/users.create
     memorySize: 128
     description: "Creates user"
     events:
       - http:
-            path: users/create
+            path: /users/create
             method: post
             # authorizer: aws_iam
             cors: true
   
   get-user:
-    handler: src/handlers/users.getUser
+    handler: src/handlers/users.get
     memorySize: 128
     description: "Gets current user informations"
     events:
       - http:
-            path: users/me
+            path: /users/{userId}
             method: get
-            # authorizer: aws_iam
             cors: true
+            request: 
+              parameters: 
+                paths: 
+                  userId: true
 
   check-in:
     handler: src/handlers/hours.checkIn
@@ -63,28 +66,6 @@ functions:
     events:
       - http:
             path: hours/check-in
-            method: post
-            # authorizer: aws_iam
-            cors: true
-  
-  get-hours:
-    handler: src/handlers/hours.getAllHours
-    memorySize: 128
-    description: "Gets user's hours"
-    events:
-      - http:
-            path: hours/all
-            method: get
-            # authorizer: aws_iam
-            cors: true
-  
-  edit-hours:
-    handler: src/handlers/hours.editHours
-    memorySize: 128
-    description: "Edit user's hours"
-    events:
-      - http:
-            path: hours/edit
             method: post
             # authorizer: aws_iam
             cors: true

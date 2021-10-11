@@ -4,11 +4,19 @@ export class ResponseUtilities {
             "Access-Control-Allow-Credentials": true,
     }
     
-    public static apiResponse(body: any, statusCode: number) {
+    public static createAPIResponse(body: any, statusCode: number = 200) {
         return {
             statusCode,
             headers: this.headers,
             body: JSON.stringify(body)
+        }
+    }
+
+    public static createErrorResponse(message: string, statusCode: number = 400) {
+        return {
+            statusCode,
+            headers: this.headers,
+            body: JSON.stringify({ message })
         }
     }
 }
