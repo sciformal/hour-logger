@@ -4,7 +4,8 @@
   "description": "",
   "main": "handler.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest --coverage",
+    "badges": "jest-coverage-badges"
   },
   "author": "",
   "license": "ISC",
@@ -14,6 +15,7 @@
     "@types/uuid": "^8.3.1",
     "aws-sdk": "^2.987.0",
     "jest": "^26.4.2",
+    "jest-coverage-badges": "^1.1.2",
     "serverless-bundle": "^4.2.0",
     "serverless-dotenv-plugin": "^3.1.0",
     "serverless-offline": "^6.8.0",

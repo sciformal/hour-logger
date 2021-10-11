@@ -31,7 +31,7 @@ describe("User Endpoint Tests", () => {
       };
     });
 
-    it("should create a user successfully", async () => {
+    it("should return a 200 when creating a user successfully", async () => {
       const mockEvent: APIGatewayProxyEvent = {
         ...sampleApiGatewayEvent,
         body: JSON.stringify(validUser),
@@ -44,6 +44,22 @@ describe("User Endpoint Tests", () => {
       expect(response.body).toEqual(JSON.stringify(sampleUser));
     });
 
+
+    it("should throw a 500 when DynamoDB fails", async () => {
+      const mockEvent: APIGatewayProxyEvent = {
+        ...sampleApiGatewayEvent,
+        body: JSON.stringify(validUser),
+      };
+
+      const errMessage = "failed to put in dynamo";
+
+      jest.spyOn(DynamoUtilities, "put").mockRejectedValue(new Error(errMessage));
+
+      const response = await create(mockEvent);
+      expect(response.statusCode).toEqual(500);
+      expect(response.body).toEqual(JSON.stringify({ message: errMessage }));
+    });
+
     describe("Validation Tests", () => {
       it("should return 400 when the request doesnt contain a body", async () => {
         const mockEvent: APIGatewayProxyEvent = {
@@ -54,6 +70,19 @@ describe("User Endpoint Tests", () => {
         expect(response.statusCode).toEqual(400);
         expect(response.body).toEqual(
           JSON.stringify({ message: ErrorConstants.VALIDATION_BODY_MISSING })
+        );
+      });
+
+      it("should return 400 when the request doesnt contain a body", async () => {
+        const mockEvent: APIGatewayProxyEvent = {
+          ...sampleApiGatewayEvent,
+          body: "this cannot be parsed!"
+        };
+
+        const response = await create(mockEvent);
+        expect(response.statusCode).toEqual(400);
+        expect(response.body).toEqual(
+          JSON.stringify({ message: ErrorConstants.VALIDATION_BODY_INVALID })
         );
       });
 
@@ -138,7 +167,7 @@ describe("User Endpoint Tests", () => {
 
   describe("Get User Tests", () => {
 
-    it("should get a user successfully", async () => {
+    it("should return a 200 when getting a user successfully", async () => {
       const mockEvent: APIGatewayProxyEvent = {
         ...sampleApiGatewayEvent,
         pathParameters: {
@@ -152,5 +181,34 @@ describe("User Endpoint Tests", () => {
       expect(response.statusCode).toEqual(200);
       expect(response.body).toEqual(JSON.stringify(sampleUser));
     });
+  });
+
+  it("should return a 400 when no path parameters", async () => {
+    const mockEvent: APIGatewayProxyEvent = {
+      ...sampleApiGatewayEvent,
+      pathParameters: {
+      }
+    }
+    
+    const response = await get(mockEvent);
+    expect(response.statusCode).toEqual(400);
+    expect(response.body).toEqual(JSON.stringify({ message: ErrorConstants.VALIDATION_PATH_MISSING }));
+  });
+
+  it("should throw a 500 when DynamoDB fails", async () => {
+    const mockEvent: APIGatewayProxyEvent = {
+      ...sampleApiGatewayEvent,
+      pathParameters: {
+        userId: sampleUserId
+      }
+    };
+
+    const errMessage = "failed to put in dynamo";
+
+    jest.spyOn(DynamoUtilities, "get").mockRejectedValue(new Error(errMessage));
+
+    const response = await get(mockEvent);
+    expect(response.statusCode).toEqual(500);
+    expect(response.body).toEqual(JSON.stringify({ message: errMessage }));
   });
 });

@@ -1,7 +1,9 @@
 name: Pull Request 🛠️
 
 on:
-  pull_request
+  pull_request:
+    paths:
+      - 'api/**'
 
 jobs:
   testAndDeployLambda:
@@ -29,8 +31,12 @@ jobs:
         working-directory: ${{ env.working-directory }}
 
       - name: Run Unit Tests
-        run: yarn test
-        working-directory: ${{ env.working-directory }}
+        uses: artiomtr/jest-coverage-report-action@v2.0-rc.1
+        with:
+            github-token: ${{ secrets.GITHUB_TOKEN }}
+            package-manager: yarn
+            threshold: 75
+            working-directory: ${{ env.working-directory }}
         
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1

@@ -98,7 +98,6 @@ export const create = async (
 export const get = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
-  // Get a specific user
   let { userId } = event.pathParameters;
 
   if (!userId) {

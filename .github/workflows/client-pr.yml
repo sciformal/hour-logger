@@ -1,7 +1,9 @@
 name: Pull Request 🛠️
 
 on:
-  pull_request
+  pull_request:
+    paths:
+      - 'client/**'
 
 jobs:
   testAndDeployClient:
