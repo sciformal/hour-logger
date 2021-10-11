@@ -14,34 +14,53 @@ const dynamoDb = new DocumentClient();
  * @param event The APIGatewayProxyEvent for the API.
  * @returns The created user object.
  */
-export const createUser = async (
+export const create = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
-
   if (!event.body) {
-    return ResponseUtilities.createErrorResponse(ErrorConstants.VALIDATION_BODY_MISSING);
+    return ResponseUtilities.createErrorResponse(
+      ErrorConstants.VALIDATION_BODY_MISSING
+    );
   }
 
-  const data = JSON.parse(event.body);
+  let data;
+  try {
+    data = JSON.parse(event.body);
+  } catch (err) {
+    console.log(err);
+    return ResponseUtilities.createErrorResponse(
+      ErrorConstants.VALIDATION_BODY_INVALID
+    );
+  }
 
   if (!data.firstName) {
-    return ResponseUtilities.createErrorResponse(ErrorConstants.VALIDATION_BODY_FIRSTNAME);
+    return ResponseUtilities.createErrorResponse(
+      ErrorConstants.VALIDATION_BODY_FIRSTNAME
+    );
   }
 
   if (!data.lastName) {
-    return ResponseUtilities.createErrorResponse(ErrorConstants.VALIDATION_BODY_LASTNAME);
+    return ResponseUtilities.createErrorResponse(
+      ErrorConstants.VALIDATION_BODY_LASTNAME
+    );
   }
 
   if (!data.email) {
-    return ResponseUtilities.createErrorResponse(ErrorConstants.VALIDATION_BODY_EMAIL);
+    return ResponseUtilities.createErrorResponse(
+      ErrorConstants.VALIDATION_BODY_EMAIL
+    );
   }
 
   if (!data.studentNumber) {
-    return ResponseUtilities.createErrorResponse(ErrorConstants.VALIDATION_BODY_STUDENTNUMBER);
+    return ResponseUtilities.createErrorResponse(
+      ErrorConstants.VALIDATION_BODY_STUDENTNUMBER
+    );
   }
 
   if (!data.userId) {
-    return ResponseUtilities.createErrorResponse(ErrorConstants.VALIDATION_BODY_USERID);
+    return ResponseUtilities.createErrorResponse(
+      ErrorConstants.VALIDATION_BODY_USERID
+    );
   }
 
   const userPayload: User = {
@@ -51,15 +70,18 @@ export const createUser = async (
     type: data.type || UserType.USER,
     isCheckedIn: false,
     transactions: [],
-  }
-  
+  };
+
   const params = {
     TableName: process.env.userTable,
-    Item: userPayload
+    Item: userPayload,
   };
+
+  console.log("Creating a user");
 
   try {
     const user = await DynamoUtilities.put(params, dynamoDb);
+    console.log("User created");
     return ResponseUtilities.createAPIResponse(user);
   } catch (err) {
     console.log(err);
@@ -67,31 +89,26 @@ export const createUser = async (
   }
 };
 
-
 /**
  * Get a user from the DynamoDB Table.
  *
  * @param event The APIGatewayProxyEvent for the API.
  * @returns The user object.
  */
-export const getUser = async (
+export const get = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
+  // Get a specific user
+  let { userId } = event.pathParameters;
 
-  if (!event.body) {
-    return ResponseUtilities.createErrorResponse(ErrorConstants.VALIDATION_BODY_MISSING);
+  if (!userId) {
+    return ResponseUtilities.createErrorResponse(ErrorConstants.VALIDATION_PATH_MISSING);
   }
-
-  const data = JSON.parse(event.body);
   
-  if (!data.userId) {
-    return ResponseUtilities.createErrorResponse(ErrorConstants.VALIDATION_BODY_USERID);
-  }
-
   const params = {
     TableName: process.env.userTable,
     Key: {
-      userId: data.userId,
+      userId,
     },
   };
 
@@ -102,4 +119,4 @@ export const getUser = async (
     console.log(err);
     return ResponseUtilities.createErrorResponse(err.message, 500);
   }
-}
+};

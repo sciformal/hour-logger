@@ -1,3 +1,6 @@
+/**
+ * DynamoDB Hour Transaction Model.
+ */
 export interface HourTransaction {
     date: string,
     checkIn: string,

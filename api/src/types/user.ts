@@ -1,5 +1,8 @@
 import { HourTransaction } from './HourTransaction';
 
+/**
+ * DynamoDB user model.
+ */
 export interface User {
     userId: string,
     email: string,
@@ -13,6 +16,9 @@ export interface User {
     transactions: Array<HourTransaction>,
 }
 
+/** 
+ * Allowed user types.
+ */
 export enum UserType {
     USER = "USER",
     MANAGER = "MANAGER",

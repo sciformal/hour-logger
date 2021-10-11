@@ -19,6 +19,7 @@ export class DynamoUtilities {
   public static put(params: any, db: DocumentClient): Promise<any> {
     return new Promise((resolve, reject) => {
       db.put(params, (err: AWSError) => {
+        console.log("Inside Put")
         if (err) {
           reject(new Error(err.message));
         } else {
@@ -31,6 +32,7 @@ export class DynamoUtilities {
   public static get(params: any, db: DocumentClient): Promise<any> {
     return new Promise((resolve, reject) => {
       db.get(params, (err: AWSError, data: GetItemOutput) => {
+        console.log(data);
         if (err) {
           reject(new Error(err.message));
         } else {
