@@ -1,7 +1,9 @@
 name: Pull Request 🛠️
 
 on:
-  pull_request
+  pull_request:
+    paths:
+      - 'api/**'
 
 jobs:
   testAndDeployLambda:
@@ -33,7 +35,7 @@ jobs:
         with:
             github-token: ${{ secrets.GITHUB_TOKEN }}
             package-manager: yarn
-            threshold: 90
+            threshold: 70
             working-directory: ${{ env.working-directory }}
         
       - name: Configure AWS Credentials

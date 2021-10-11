@@ -3,6 +3,8 @@ name: Production 🚀
 on:
   push:
     branches: [main]
+    paths:
+      - 'client/**'
 
 jobs:
   testAndDeployClient:
