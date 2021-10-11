@@ -1,45 +1,45 @@
-export class HoursUtilities {
-  public static handleCheckInProcess = (user) => {
-    const newUser = user;
-    if (user.isCheckedIn) {
-      // check them out
-      newUser.isCheckedIn = false;
-      let timeElapsed;
+import { User } from "../types/User";
 
+export class HoursUtilities {
+  public static handleCheckInProcess = (user: User): User => {
+    const newUser = { ...user };
+
+    if (user.isCheckedIn) {
       const updatedTransactions = [];
 
       newUser.transactions.forEach((el) => {
-        if (el.checkOutTime == null) {
-          el.checkOutTime = new Date().toString();
-          // result of date arithmetic is in milliseconds and then converted to hours
-          timeElapsed =
-            (Date.parse(el.checkOutTime) - Date.parse(el.checkInTime)) /
+        if (!el.checkOutTime) {
+          const checkOut = new Date();
+          el.checkOutTime = checkOut.getTime().toString();
+          el.checkOut = checkOut.toString();
+          let timeElapsed =
+            (Date.parse(checkOut.toString()) - Date.parse(el.checkIn)) /
             (60 * 60 * 1000);
-          // TODO: loop over transactions and recalculate hours
+          el.hours = timeElapsed.toString();
           newUser.hours += timeElapsed;
         }
         updatedTransactions.push(el);
       });
 
+      newUser.isCheckedIn = false;
       newUser.transactions = updatedTransactions;
     } else {
-      const checkInTime = new Date().toString();
+      // Get date informatio
+      const date = new Date();
+      const checkInDate = date.getDate().toString();
+      const checkInTime = date.getTime().toString();
 
+      // Update user
       newUser.isCheckedIn = true;
-      const newTransaction = {
-        checkInTime,
+      newUser.transactions.push({
+        date: checkInDate,
+        checkIn: date.toString(),
+        checkOut: null,
+        checkInTime: checkInTime,
         checkOutTime: null,
-      };
-
-      if (newUser.transactions) {
-        newUser.transactions.push(newTransaction);
-      } else {
-        var transactions = [];
-        transactions.push(newTransaction);
-        newUser.transactions = transactions;
-      }
-
-      return newUser;
+        hours: null,
+      });
     }
+    return newUser;
   };
 }
