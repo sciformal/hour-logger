@@ -1,9 +1,10 @@
 import { ErrorConstants } from "../../src/constants/errors";
-import { createUser, getUser } from "../../src/handlers/users";
+import { create, get } from "../../src/handlers/users";
 import { sampleApiGatewayEvent } from "../mocks/event";
 import { UserRequest } from "../../src/types/requests/UserRequest";
 import { DynamoUtilities } from "../../src/util/dynamo";
 import { sampleUser, sampleUserId, sampleUserRequest } from "../mocks/user";
+import { APIGatewayProxyEvent } from "aws-lambda";
 
 jest.mock("aws-sdk", () => {
   return {
@@ -31,25 +32,25 @@ describe("User Endpoint Tests", () => {
     });
 
     it("should create a user successfully", async () => {
-      const mockEvent = {
+      const mockEvent: APIGatewayProxyEvent = {
         ...sampleApiGatewayEvent,
         body: JSON.stringify(validUser),
       };
 
       jest.spyOn(DynamoUtilities, "put").mockResolvedValue(sampleUser);
 
-      const response = await createUser(mockEvent);
+      const response = await create(mockEvent);
       expect(response.statusCode).toEqual(200);
       expect(response.body).toEqual(JSON.stringify(sampleUser));
     });
 
     describe("Validation Tests", () => {
       it("should return 400 when the request doesnt contain a body", async () => {
-        const mockEvent = {
+        const mockEvent: APIGatewayProxyEvent = {
           ...sampleApiGatewayEvent,
         };
 
-        const response = await createUser(mockEvent);
+        const response = await create(mockEvent);
         expect(response.statusCode).toEqual(400);
         expect(response.body).toEqual(
           JSON.stringify({ message: ErrorConstants.VALIDATION_BODY_MISSING })
@@ -59,12 +60,12 @@ describe("User Endpoint Tests", () => {
       it("should return 400 when the request body doesnt contain firstName", async () => {
         delete validUser.firstName;
 
-        const mockEvent = {
+        const mockEvent: APIGatewayProxyEvent = {
           ...sampleApiGatewayEvent,
           body: JSON.stringify(validUser),
         };
 
-        const response = await createUser(mockEvent);
+        const response = await create(mockEvent);
         expect(response.statusCode).toEqual(400);
         expect(response.body).toEqual(
           JSON.stringify({ message: ErrorConstants.VALIDATION_BODY_FIRSTNAME })
@@ -74,12 +75,12 @@ describe("User Endpoint Tests", () => {
       it("should return 400 when the request body doesnt contain lastName", async () => {
         delete validUser.lastName;
 
-        const mockEvent = {
+        const mockEvent: APIGatewayProxyEvent = {
           ...sampleApiGatewayEvent,
           body: JSON.stringify(validUser),
         };
 
-        const response = await createUser(mockEvent);
+        const response = await create(mockEvent);
         expect(response.statusCode).toEqual(400);
         expect(response.body).toEqual(
           JSON.stringify({ message: ErrorConstants.VALIDATION_BODY_LASTNAME })
@@ -89,12 +90,12 @@ describe("User Endpoint Tests", () => {
       it("should return 400 when the request body doesnt contain email", async () => {
         delete validUser.email;
 
-        const mockEvent = {
+        const mockEvent: APIGatewayProxyEvent = {
           ...sampleApiGatewayEvent,
           body: JSON.stringify(validUser),
         };
 
-        const response = await createUser(mockEvent);
+        const response = await create(mockEvent);
         expect(response.statusCode).toEqual(400);
         expect(response.body).toEqual(
           JSON.stringify({ message: ErrorConstants.VALIDATION_BODY_EMAIL })
@@ -104,12 +105,12 @@ describe("User Endpoint Tests", () => {
       it("should return 400 when the request body doesnt contain studentNumber", async () => {
         delete validUser.studentNumber;
 
-        const mockEvent = {
+        const mockEvent: APIGatewayProxyEvent = {
           ...sampleApiGatewayEvent,
           body: JSON.stringify(validUser),
         };
 
-        const response = await createUser(mockEvent);
+        const response = await create(mockEvent);
         expect(response.statusCode).toEqual(400);
         expect(response.body).toEqual(
           JSON.stringify({
@@ -121,12 +122,12 @@ describe("User Endpoint Tests", () => {
       it("should return 400 when the request body doesnt contain userId", async () => {
         delete validUser.userId;
 
-        const mockEvent = {
+        const mockEvent: APIGatewayProxyEvent = {
           ...sampleApiGatewayEvent,
           body: JSON.stringify(validUser),
         };
 
-        const response = await createUser(mockEvent);
+        const response = await create(mockEvent);
         expect(response.statusCode).toEqual(400);
         expect(response.body).toEqual(
           JSON.stringify({ message: ErrorConstants.VALIDATION_BODY_USERID })
@@ -138,14 +139,16 @@ describe("User Endpoint Tests", () => {
   describe("Get User Tests", () => {
 
     it("should get a user successfully", async () => {
-      const mockEvent = {
+      const mockEvent: APIGatewayProxyEvent = {
         ...sampleApiGatewayEvent,
-        body: JSON.stringify({userId: sampleUserId})
+        pathParameters: {
+          userId: sampleUserId
+        }
       }
       
       jest.spyOn(DynamoUtilities, "get").mockResolvedValue(sampleUser);
 
-      const response = await getUser(mockEvent);
+      const response = await get(mockEvent);
       expect(response.statusCode).toEqual(200);
       expect(response.body).toEqual(JSON.stringify(sampleUser));
     });
