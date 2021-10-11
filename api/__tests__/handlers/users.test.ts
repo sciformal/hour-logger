@@ -20,7 +20,7 @@ jest.mock("aws-sdk", () => {
   };
 });
 
-describe("User Endpoint Tests", () => {
+describe("User Endpoint Tests", () => { // organizes tests
   describe("Create User Tests", () => {
 
     let validUser: Partial<UserRequest>;
@@ -30,7 +30,7 @@ describe("User Endpoint Tests", () => {
         ...sampleUserRequest,
       };
     });
-
+    // implements individual test cases
     it("should return a 200 when creating a user successfully", async () => {
       const mockEvent: APIGatewayProxyEvent = {
         ...sampleApiGatewayEvent,
