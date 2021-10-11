@@ -1,8 +1,7 @@
 {
-  "name": "hour_logger",
+  "name": "hour-logger-api",
   "version": "1.0.0",
-  "description": "",
-  "main": "handler.js",
+  "description": "Hour Logger API Implementation",
   "scripts": {
     "test": "jest --coverage",
     "badges": "jest-coverage-badges"

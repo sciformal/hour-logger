@@ -77,11 +77,9 @@ export const create = async (
     Item: userPayload,
   };
 
-  console.log("Creating a user");
 
   try {
     const user = await DynamoUtilities.put(params, dynamoDb);
-    console.log("User created");
     return ResponseUtilities.createAPIResponse(user);
   } catch (err) {
     console.log(err);

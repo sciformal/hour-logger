@@ -5,11 +5,13 @@ import { v4 as uuid } from "uuid";
 
 export const sampleUserId = uuid();
 
+export const sampleStudentNumber = "99999999";
+
 export const sampleUserRequest: UserRequest = {
   firstName: "John",
   lastName: "Doe",
   email: "john.doe@queensu.ca",
-  studentNumber: "000000000000",
+  studentNumber: sampleStudentNumber,
   userId: sampleUserId,
 };
 

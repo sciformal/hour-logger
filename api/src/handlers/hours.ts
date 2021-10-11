@@ -1,3 +1,5 @@
+import { HoursUtilities } from './../util/hoursUtilities';
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
 import AWS from "aws-sdk";
 import {
   APIGatewayProxyEvent,
@@ -8,15 +10,14 @@ import { DynamoUtilities } from "../util/dynamo";
 import { ResponseUtilities } from "../util/response";
 import { ErrorConstants } from "../../src/constants/errors";
 
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
-
+const dynamoDb = new DocumentClient();
 /**
  * Check-in or check-out a student based on their student number, add the transaction and update their hours.
  *
  * @param event The APIGatewayProxyEvent for the API.
  * @returns The updated user object.
  */
-export const checkIn: Handler = async (
+export const checkIn = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
   if (!event.body) {
@@ -26,6 +27,12 @@ export const checkIn: Handler = async (
   }
 
   const data = JSON.parse(event.body);
+
+  if (!data.studentNumber) {
+    return ResponseUtilities.createErrorResponse(
+      ErrorConstants.VALIDATION_BODY_STUDENTNUMBER
+    );
+  }
   const { studentNumber } = data;
 
   const params = {
@@ -38,95 +45,26 @@ export const checkIn: Handler = async (
     ScanIndexForward: false,
   };
 
-  try {
+  try { 
     const userList = await DynamoUtilities.query(params, dynamoDb);
 
     if (userList.length != 1) {
-      throw new Error(
-        "DynamoDB query should have only 1 user per studentNumber"
-      );
+      throw new Error(ErrorConstants.DYNAMO_NONUNIQUE_STUDENTNUMBER);
     }
 
     const user = userList[0];
-    await handleCheckInProcess(user);
-    return ResponseUtilities.createAPIResponse(user);
+    const newUser = HoursUtilities.handleCheckInProcess(user);
+    
+    const putParams = {
+      TableName: process.env.userTable,
+      Item: newUser,
+    };
+    await DynamoUtilities.put(putParams, dynamoDb);
+
+    return ResponseUtilities.createAPIResponse(newUser);
   } catch (err) {
     console.log(err);
     return ResponseUtilities.createErrorResponse(err.message, 500);
   }
 };
 
-const handleCheckInProcess = async (user): Promise<void> => {
-  if (user.isCheckedIn) {
-    // check them out
-    const newUser = user;
-    newUser.isCheckedIn = false;
-    let timeElapsed;
-
-    const updatedTransactions = [];
-
-    newUser.transactions.forEach((el) => {
-      if (el.checkOutTime == null) {
-        el.checkOutTime = new Date().toString();
-        // result of date arithmetic is in milliseconds and then converted to hours
-        timeElapsed =
-          (Date.parse(el.checkOutTime) - Date.parse(el.checkInTime)) /
-          (60 * 60 * 1000);
-        // TODO: loop over transactions and recalculate hours
-        newUser.hours += timeElapsed;
-      }
-      updatedTransactions.push(el);
-    });
-
-    newUser.transactions = updatedTransactions;
-
-    const params = {
-      TableName: process.env.userTable,
-      Item: newUser,
-    };
-
-    // dynamoDb.put(params, (error, data) => {
-    //   if (error) {
-    //     throw new Error(error.message);
-    //   }
-    // });
-    await dynamoDb
-      .put(params)
-      .promise()
-      .then((data) => console.log(data.Attributes))
-      .catch(console.error);
-  } else {
-    const checkInTime = new Date().toString();
-    const newUser = user;
-
-    newUser.isCheckedIn = true;
-    const newTransaction = {
-      checkInTime,
-      checkOutTime: null,
-    };
-
-    if (newUser.transactions) {
-      newUser.transactions.push(newTransaction);
-    } else {
-      var transactions = [];
-      transactions.push(newTransaction);
-      newUser.transactions = transactions;
-    }
-
-    const params = {
-      TableName: process.env.userTable,
-      Item: newUser,
-    };
-
-    // dynamoDb.put(params, (error, data) => {
-    //   if (error) {
-    //     throw new Error(error.message);
-    //   }
-    // });
-    await dynamoDb
-      .put(params)
-      .promise()
-      .then((data) => console.log(data.Attributes))
-      .catch(console.error);
-  }
-};

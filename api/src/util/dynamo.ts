@@ -19,7 +19,6 @@ export class DynamoUtilities {
   public static put(params: any, db: DocumentClient): Promise<any> {
     return new Promise((resolve, reject) => {
       db.put(params, (err: AWSError) => {
-        console.log("Inside Put")
         if (err) {
           reject(new Error(err.message));
         } else {
