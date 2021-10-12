@@ -3,3 +3,4 @@ node_modules
 .env
 .idea/*
 .vscode/launch.json
+api/coverage/coverage-summary.json
