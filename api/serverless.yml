@@ -70,6 +70,17 @@ functions:
             # authorizer: aws_iam
             cors: true
 
+  update-hours:
+    handler: src/handlers/hours.updateHours
+    memorySize: 128
+    description: "Takes in checkIn and checkOut times and recalculates total hours completed"
+    events:
+      - http:
+            path: /hours/update
+            method: post
+            # authorizer: aws_iam
+            cors: true
+
 resources:
   Resources:
     UserDynamoDbTable:

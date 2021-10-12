@@ -120,31 +120,31 @@ export const updateHours = async (
 
     const user = userList[0];
     // create new transaction element. add it to user
-    // loop over all transactions and recalculate hours
-    // update user
+    user.transactions.push({
+      checkIn: data.checkIn,
+      checkOut: data.checkOut,
+    });
 
+    // loop over all transactions and recalculate hours
     let totalHours = 0;
     user.transactions.forEach((el) => {
       totalHours +=
-            (Date.parse(el.checkOut) - Date.parse(el.checkIn)) /
-            (60 * 60 * 1000);
+        (Date.parse(el.checkOut) - Date.parse(el.checkIn)) / (60 * 60 * 1000);
     });
-    
+    user.hours = totalHours;
 
-
+    // update user
     const putParams = {
       TableName: process.env.userTable,
       Item: user,
     };
     await DynamoUtilities.put(putParams, dynamoDb);
 
-    return ResponseUtilities.createAPIResponse(newUser);
+    return ResponseUtilities.createAPIResponse(user);
   } catch (err) {
     console.log(err);
     return ResponseUtilities.createErrorResponse(err.message, 500);
   }
-
-
 
   return;
 };
