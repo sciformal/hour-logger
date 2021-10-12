@@ -5,11 +5,11 @@ export class HoursUtilities {
     const newUser = { ...user };
 
     if (user.isCheckedIn) {
-      const updatedTransactions = [];
+      let updatedTransactions = [];
 
       let totalHours = 0;
       newUser.transactions.forEach((el) => {
-        if (!el.checkOut == null) {
+        if (el.checkOut == null) {
           el.checkOut = new Date().toString();
           let timeElapsed =
             (Date.parse(el.checkOut) - Date.parse(el.checkIn)) /
@@ -32,10 +32,19 @@ export class HoursUtilities {
 
       // Update user
       newUser.isCheckedIn = true;
-      newUser.transactions.push({
-        checkIn: date.toString(),
-        checkOut: null,
-      });
+      if (newUser.transactions) {
+        newUser.transactions.push({
+          checkIn: date.toString(),
+          checkOut: null,
+        });
+      } else {
+        var transactions = [];
+        transactions.push({
+          checkIn: date.toString(),
+          checkOut: null,
+        });
+        newUser.transactions = transactions;
+      }
     }
     return newUser;
   };
