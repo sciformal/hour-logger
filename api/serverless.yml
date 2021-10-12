@@ -65,7 +65,7 @@ functions:
     description: "Creates new hour transaction"
     events:
       - http:
-            path: hours/check-in
+            path: /users/check-in
             method: post
             # authorizer: aws_iam
             cors: true
