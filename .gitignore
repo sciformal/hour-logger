@@ -2,3 +2,4 @@ node_modules
 .netlify/**
 .env
 .idea/*
+.vscode/launch.json
