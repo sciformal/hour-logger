@@ -123,9 +123,18 @@ export const updateHours = async (
     // loop over all transactions and recalculate hours
     // update user
 
+    let totalHours = 0;
+    user.transactions.forEach((el) => {
+      totalHours +=
+            (Date.parse(el.checkOut) - Date.parse(el.checkIn)) /
+            (60 * 60 * 1000);
+    });
+    
+
+
     const putParams = {
       TableName: process.env.userTable,
-      Item: newUser,
+      Item: user,
     };
     await DynamoUtilities.put(putParams, dynamoDb);
 
