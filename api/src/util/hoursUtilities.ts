@@ -7,16 +7,19 @@ export class HoursUtilities {
     if (user.isCheckedIn) {
       const updatedTransactions = [];
 
+      let totalHours = 0;
       newUser.transactions.forEach((el) => {
-        if (!el.checkOutTime) {
-          const checkOut = new Date();
-          el.checkOutTime = checkOut.getTime().toString();
-          el.checkOut = checkOut.toString();
+        if (!el.checkOut == null) {
+          el.checkOut = new Date().toString();
           let timeElapsed =
-            (Date.parse(checkOut.toString()) - Date.parse(el.checkIn)) /
+            (Date.parse(el.checkOut) - Date.parse(el.checkIn)) /
             (60 * 60 * 1000);
-          el.hours = timeElapsed.toString();
-          newUser.hours += timeElapsed;
+          newUser.hours = timeElapsed + totalHours; // add new hours
+        } else {
+          // loop over all hours and recalculate hours completed
+          totalHours +=
+            (Date.parse(el.checkOut) - Date.parse(el.checkIn)) /
+            (60 * 60 * 1000);
         }
         updatedTransactions.push(el);
       });
@@ -26,18 +29,12 @@ export class HoursUtilities {
     } else {
       // Get date informatio
       const date = new Date();
-      const checkInDate = date.getDate().toString();
-      const checkInTime = date.getTime().toString();
 
       // Update user
       newUser.isCheckedIn = true;
       newUser.transactions.push({
-        date: checkInDate,
         checkIn: date.toString(),
         checkOut: null,
-        checkInTime: checkInTime,
-        checkOutTime: null,
-        hours: null,
       });
     }
     return newUser;
