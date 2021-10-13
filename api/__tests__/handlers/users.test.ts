@@ -1,6 +1,11 @@
 import { APIGatewayProxyEvent } from "aws-lambda";
 import { ErrorConstants } from "../../src/constants/errors";
-import { createUser, getAllUsers, getUser } from "../../src/handlers/users";
+import {
+  createUser,
+  deleteUser,
+  getAllUsers,
+  getUser
+} from "../../src/handlers/users";
 import { UserRequest } from "../../src/types/requests/UserRequest";
 import { DynamoUtilities } from "../../src/util/dynamo";
 import { sampleApiGatewayEvent } from "../mocks/event";
@@ -20,9 +25,9 @@ jest.mock("aws-sdk", () => {
   };
 });
 
-describe("User Endpoint Tests", () => { // organizes tests
+describe("User Endpoint Tests", () => {
+  // organizes tests
   describe("Create User Tests", () => {
-
     let validUser: Partial<UserRequest>;
 
     beforeEach(() => {
@@ -30,6 +35,7 @@ describe("User Endpoint Tests", () => { // organizes tests
         ...sampleUserRequest,
       };
     });
+
     // implements individual test cases
     it("should return a 200 when creating a user successfully", async () => {
       const mockEvent: APIGatewayProxyEvent = {
@@ -44,7 +50,6 @@ describe("User Endpoint Tests", () => { // organizes tests
       expect(response.body).toEqual(JSON.stringify(sampleUser));
     });
 
-
     it("should throw a 500 when DynamoDB fails", async () => {
       const mockEvent: APIGatewayProxyEvent = {
         ...sampleApiGatewayEvent,
@@ -53,7 +58,9 @@ describe("User Endpoint Tests", () => { // organizes tests
 
       const errMessage = "failed to put in dynamo";
 
-      jest.spyOn(DynamoUtilities, "put").mockRejectedValue(new Error(errMessage));
+      jest
+        .spyOn(DynamoUtilities, "put")
+        .mockRejectedValue(new Error(errMessage));
 
       const response = await createUser(mockEvent);
       expect(response.statusCode).toEqual(500);
@@ -76,7 +83,7 @@ describe("User Endpoint Tests", () => { // organizes tests
       it("should return 400 when the request doesnt contain a body", async () => {
         const mockEvent: APIGatewayProxyEvent = {
           ...sampleApiGatewayEvent,
-          body: "this cannot be parsed!"
+          body: "this cannot be parsed!",
         };
 
         const response = await createUser(mockEvent);
@@ -166,29 +173,55 @@ describe("User Endpoint Tests", () => { // organizes tests
   });
 
   describe("Get User Tests", () => {
-
     it("should return a 200 when getting a user successfully", async () => {
       const mockEvent: APIGatewayProxyEvent = {
         ...sampleApiGatewayEvent,
         pathParameters: {
-          userId: sampleUserId
-        }
-      }
-      
+          userId: sampleUserId,
+        },
+      };
+
       jest.spyOn(DynamoUtilities, "get").mockResolvedValue(sampleUser);
 
       const response = await getUser(mockEvent);
       expect(response.statusCode).toEqual(200);
       expect(response.body).toEqual(JSON.stringify(sampleUser));
     });
+
+    it("should return a 400 when getting a user invalid path", async () => {
+      let response;
+
+      const mockEventMissingPath: APIGatewayProxyEvent = {
+        ...sampleApiGatewayEvent,
+      };
+
+      const mockEventInvalidPath: APIGatewayProxyEvent = {
+        ...sampleApiGatewayEvent,
+        pathParameters: {
+          userId: null,
+        },
+      };
+
+      response = await getUser(mockEventMissingPath);
+      expect(response.statusCode).toEqual(400);
+      expect(response.body).toEqual(
+        JSON.stringify({ message: ErrorConstants.VALIDATION_PATH_MISSING })
+      );
+
+      response = await getUser(mockEventInvalidPath);
+      expect(response.statusCode).toEqual(400);
+      expect(response.body).toEqual(
+        JSON.stringify({ message: ErrorConstants.VALIDATION_PATH_INVALID })
+      );
+    });
   });
 
   describe("Get All Users Tests", () => {
     it("should return a 200 when getting all users", async () => {
       const mockEvent: APIGatewayProxyEvent = {
-        ...sampleApiGatewayEvent
-      }
-      
+        ...sampleApiGatewayEvent,
+      };
+
       jest.spyOn(DynamoUtilities, "scan").mockResolvedValue([sampleUser]);
 
       const response = await getAllUsers(mockEvent);
@@ -198,11 +231,13 @@ describe("User Endpoint Tests", () => { // organizes tests
 
     it("should return a 500 when getting users fails to dynamo", async () => {
       const mockEvent: APIGatewayProxyEvent = {
-        ...sampleApiGatewayEvent
-      }
-      
+        ...sampleApiGatewayEvent,
+      };
+
       const errorMessage = "Dynamodb error message";
-      jest.spyOn(DynamoUtilities, "scan").mockRejectedValue(new Error(errorMessage));
+      jest
+        .spyOn(DynamoUtilities, "scan")
+        .mockRejectedValue(new Error(errorMessage));
 
       const response = await getAllUsers(mockEvent);
       expect(response.statusCode).toEqual(500);
@@ -210,32 +245,60 @@ describe("User Endpoint Tests", () => { // organizes tests
     });
   });
 
-  it("should return a 400 when no path parameters", async () => {
-    const mockEvent: APIGatewayProxyEvent = {
-      ...sampleApiGatewayEvent,
-      pathParameters: {
-      }
-    }
-    
-    const response = await getUser(mockEvent);
-    expect(response.statusCode).toEqual(400);
-    expect(response.body).toEqual(JSON.stringify({ message: ErrorConstants.VALIDATION_PATH_MISSING }));
-  });
+  describe("Delete User Tests", () => {
+    it("should return a 204 when deleting a user successfully", async () => {
+      const mockEvent: APIGatewayProxyEvent = {
+        ...sampleApiGatewayEvent,
+        pathParameters: {
+          userId: sampleUserId,
+        },
+      };
 
-  it("should throw a 500 when DynamoDB fails", async () => {
-    const mockEvent: APIGatewayProxyEvent = {
-      ...sampleApiGatewayEvent,
-      pathParameters: {
-        userId: sampleUserId
-      }
-    };
+      jest.spyOn(DynamoUtilities, "delete").mockResolvedValue();
 
-    const errMessage = "failed to put in dynamo";
+      const response = await deleteUser(mockEvent);
+      expect(response.statusCode).toEqual(204);
+    });
 
-    jest.spyOn(DynamoUtilities, "get").mockRejectedValue(new Error(errMessage));
+    it("should return a 400 when deleting a user invalid path", async () => {
+      let response;
 
-    const response = await getUser(mockEvent);
-    expect(response.statusCode).toEqual(500);
-    expect(response.body).toEqual(JSON.stringify({ message: errMessage }));
+      const mockEventMissingPath: APIGatewayProxyEvent = {
+        ...sampleApiGatewayEvent,
+      };
+
+      const mockEventInvalidPath: APIGatewayProxyEvent = {
+        ...sampleApiGatewayEvent,
+        pathParameters: {
+          userId: null,
+        },
+      };
+
+      response = await deleteUser(mockEventMissingPath);
+      expect(response.statusCode).toEqual(400);
+      expect(response.body).toEqual(
+        JSON.stringify({ message: ErrorConstants.VALIDATION_PATH_MISSING })
+      );
+
+      response = await deleteUser(mockEventInvalidPath);
+      expect(response.statusCode).toEqual(400);
+      expect(response.body).toEqual(
+        JSON.stringify({ message: ErrorConstants.VALIDATION_PATH_INVALID })
+      );
+    });
+
+    it("should return a 500 when deleting a user fails on dynamo delete", async () => {
+      const mockEvent: APIGatewayProxyEvent = {
+        ...sampleApiGatewayEvent,
+        pathParameters: {
+          userId: sampleUserId,
+        },
+      };
+
+      jest.spyOn(DynamoUtilities, "delete").mockResolvedValue();
+
+      const response = await deleteUser(mockEvent);
+      expect(response.statusCode).toEqual(204);
+    });
   });
 });

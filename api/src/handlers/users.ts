@@ -77,7 +77,6 @@ export const createUser = async (
     Item: userPayload,
   };
 
-
   try {
     const user = await DynamoUtilities.put(params, dynamoDb);
     return ResponseUtilities.createAPIResponse(user);
@@ -96,12 +95,20 @@ export const createUser = async (
 export const getUser = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
+  if (!event.pathParameters) {
+    return ResponseUtilities.createErrorResponse(
+      ErrorConstants.VALIDATION_PATH_MISSING
+    );
+  }
+
   let { userId } = event.pathParameters;
 
   if (!userId) {
-    return ResponseUtilities.createErrorResponse(ErrorConstants.VALIDATION_PATH_MISSING);
+    return ResponseUtilities.createErrorResponse(
+      ErrorConstants.VALIDATION_PATH_INVALID
+    );
   }
-  
+
   const params = {
     TableName: process.env.userTable,
     Key: {
@@ -121,7 +128,6 @@ export const getUser = async (
 export const getAllUsers = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
-  
   const params = {
     TableName: process.env.userTable,
   };
@@ -129,6 +135,45 @@ export const getAllUsers = async (
   try {
     const users = await DynamoUtilities.scan(params, dynamoDb);
     return ResponseUtilities.createAPIResponse(users);
+  } catch (err) {
+    console.log(err);
+    return ResponseUtilities.createErrorResponse(err.message, 500);
+  }
+};
+
+/**
+ * Delete a user from the DynamoDB Table.
+ *
+ * @param event The APIGatewayProxyEvent for the API.
+ * @returns A 200 status code or a 204 if no user was deleted.
+ */
+export const deleteUser = async (
+  event: APIGatewayProxyEvent
+): Promise<APIGatewayProxyResult> => {
+  if (!event.pathParameters) {
+    return ResponseUtilities.createErrorResponse(
+      ErrorConstants.VALIDATION_PATH_MISSING
+    );
+  }
+
+  let { userId } = event.pathParameters;
+
+  if (!userId) {
+    return ResponseUtilities.createErrorResponse(
+      ErrorConstants.VALIDATION_PATH_INVALID
+    );
+  }
+
+  const params = {
+    TableName: process.env.userTable,
+    Key: {
+      userId,
+    },
+  };
+
+  try {
+    const user = await DynamoUtilities.delete(params, dynamoDb);
+    return ResponseUtilities.createAPIResponse(user, 204);
   } catch (err) {
     console.log(err);
     return ResponseUtilities.createErrorResponse(err.message, 500);
