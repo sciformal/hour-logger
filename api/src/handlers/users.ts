@@ -63,6 +63,18 @@ export const createUser = async (
     );
   }
 
+  if(!(/^\d+$/.test(data.studentNumber))){
+    return ResponseUtilities.createErrorResponse(
+      ErrorConstants.VALIDATION_STUDENTNUMBER_NONNUM
+    );
+  }
+
+  if (data.studentNumber.length != 8) {
+    return ResponseUtilities.createErrorResponse(
+      ErrorConstants.VALIDATION_STUDENTNUMBER_LENGTH
+    );
+  }
+
   const userPayload: User = {
     ...data,
     hours: 0,

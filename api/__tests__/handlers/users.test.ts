@@ -169,6 +169,51 @@ describe("User Endpoint Tests", () => {
           JSON.stringify({ message: ErrorConstants.VALIDATION_BODY_USERID })
         );
       });
+
+      it("should return 400 when the student number contains non numeric characters", async () => {
+        validUser.studentNumber = "1234abcd";
+
+        const mockEvent: APIGatewayProxyEvent = {
+          ...sampleApiGatewayEvent,
+          body: JSON.stringify(validUser),
+        };
+
+        const response = await createUser(mockEvent);
+        expect(response.statusCode).toEqual(400);
+        expect(response.body).toEqual(
+          JSON.stringify({ message: ErrorConstants.VALIDATION_STUDENTNUMBER_NONNUM })
+        );
+      });
+
+      it("should return 400 when the student number contains more than 8 digits", async () => {
+        validUser.studentNumber = "123456789";
+
+        const mockEvent: APIGatewayProxyEvent = {
+          ...sampleApiGatewayEvent,
+          body: JSON.stringify(validUser),
+        };
+
+        const response = await createUser(mockEvent);
+        expect(response.statusCode).toEqual(400);
+        expect(response.body).toEqual(
+          JSON.stringify({ message: ErrorConstants.VALIDATION_STUDENTNUMBER_LENGTH })
+        );
+      });
+
+      it("should return 400 when the student number contains less than 8 digits", async () => {
+        validUser.studentNumber = "1234567";
+
+        const mockEvent: APIGatewayProxyEvent = {
+          ...sampleApiGatewayEvent,
+          body: JSON.stringify(validUser),
+        };
+
+        const response = await createUser(mockEvent);
+        expect(response.statusCode).toEqual(400);
+        expect(response.body).toEqual(
+          JSON.stringify({ message: ErrorConstants.VALIDATION_STUDENTNUMBER_LENGTH })
+        );
+      });
     });
   });
 
