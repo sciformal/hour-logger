@@ -6,6 +6,8 @@ export class ErrorConstants {
     public static readonly VALIDATION_BODY_EMAIL = "The request body is missing the email field.";
     public static readonly VALIDATION_BODY_STUDENTNUMBER = "The request body is missing the studentNumber field.";
     public static readonly VALIDATION_BODY_USERID = "The request body is missing the userId field.";
+    public static readonly VALIDATION_BODY_CHECKIN = "The request body is missing the checkIn field";
+    public static readonly VALIDATION_BODY_CHECKOUT = "The request body is missing the checkOut field";
     public static readonly VALIDATION_PATH_MISSING = "The request is missing a required path parameters.";
     public static readonly VALIDATION_PATH_INVALID = "The request path parameter is invalid.";
     public static readonly DYNAMO_NONUNIQUE_STUDENTNUMBER = "DynamoDB query should have only 1 user per studentNumber.";

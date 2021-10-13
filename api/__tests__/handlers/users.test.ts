@@ -224,10 +224,7 @@ describe("User Endpoint Tests", () => {
       );
 
       response = await getUser(mockEventInvalidPath);
-      expect(response.statusCode).toEqual(400);
-      expect(response.body).toEqual(
         JSON.stringify({ message: ErrorConstants.VALIDATION_PATH_INVALID })
-      );
     });
 
     it("should return a 500 when getting a user fails dynamo", async () => {
