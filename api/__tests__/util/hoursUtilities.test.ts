@@ -18,8 +18,7 @@ describe("Hours Utilities Tests", () => {
 
             expect(updatedUser.isCheckedIn).toBeTruthy();
             expect(updatedUser.transactions.length).toBe(1);
-            expect(updatedUser.transactions[0].checkOutTime).toBeNull();
-            expect(updatedUser.transactions[0].hours).toBeNull();
+            expect(updatedUser.transactions[0].checkOut).toBeNull();
         });
 
         it("should check in a user that's not checked in, multiple transactions", () => {
