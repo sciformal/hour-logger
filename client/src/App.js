@@ -15,12 +15,15 @@ export default function App() {
   }, []);
 
   const loadUserInformation = async () => {
-    if (await Auth.currentSession()) {
-      userHasAuthenticated(true);
-      const user = await API.get("hour-logger", "/users/me");
-      setUser(user);
+    try {
+      if (await Auth.currentSession()) {
+        userHasAuthenticated(true);
+        const user = await API.get("hour-logger", "/users/brent");
+        setUser(user);
+      } 
+    } finally {
+      setIsAuthenticating(false);
     }
-    setIsAuthenticating(false);
   };
 
   if (isAuthenticating) {
