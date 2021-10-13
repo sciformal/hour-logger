@@ -14,7 +14,7 @@ const dynamoDb = new DocumentClient();
  * @param event The APIGatewayProxyEvent for the API.
  * @returns The created user object.
  */
-export const create = async (
+export const createUser = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
   if (!event.body) {
@@ -93,7 +93,7 @@ export const create = async (
  * @param event The APIGatewayProxyEvent for the API.
  * @returns The user object.
  */
-export const get = async (
+export const getUser = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
   let { userId } = event.pathParameters;
@@ -112,6 +112,23 @@ export const get = async (
   try {
     const user = await DynamoUtilities.get(params, dynamoDb);
     return ResponseUtilities.createAPIResponse(user);
+  } catch (err) {
+    console.log(err);
+    return ResponseUtilities.createErrorResponse(err.message, 500);
+  }
+};
+
+export const getAllUsers = async (
+  event: APIGatewayProxyEvent
+): Promise<APIGatewayProxyResult> => {
+  
+  const params = {
+    TableName: process.env.userTable,
+  };
+
+  try {
+    const users = await DynamoUtilities.scan(params, dynamoDb);
+    return ResponseUtilities.createAPIResponse(users);
   } catch (err) {
     console.log(err);
     return ResponseUtilities.createErrorResponse(err.message, 500);
