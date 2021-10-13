@@ -19,6 +19,7 @@ provider:
         - dynamobd:Scan
         - dynamodb:GetItem
         - dynamodb:PutItem
+        - dynamodb:DeleteItem
       Resource: "*"
       
 plugins:
@@ -59,6 +60,19 @@ functions:
                 paths: 
                   userId: true
 
+  delete-user: 
+    handler: src/handlers/users.deleteUser
+    memorySize: 128
+    description: "Deletes a user from the DynamoDB table"
+    events:
+      - http:
+            path: /users/{userId}
+            method: delete
+            cors: true
+            request: 
+              parameters: 
+                paths: 
+                  userId: true
   check-in:
     handler: src/handlers/hours.checkIn
     memorySize: 128
