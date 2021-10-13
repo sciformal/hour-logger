@@ -11,15 +11,11 @@ export class HoursUtilities {
       newUser.transactions.forEach((el) => {
         if (el.checkOut == null) {
           el.checkOut = new Date().toString();
-          let timeElapsed =
-            (Date.parse(el.checkOut) - Date.parse(el.checkIn)) /
-            (60 * 60 * 1000);
+          let timeElapsed = HoursUtilities.calculateHours(el.checkIn, el.checkOut);
           newUser.hours = timeElapsed + totalHours; // add new hours
         } else {
           // loop over all hours and recalculate hours completed
-          totalHours +=
-            (Date.parse(el.checkOut) - Date.parse(el.checkIn)) /
-            (60 * 60 * 1000);
+          totalHours += HoursUtilities.calculateHours(el.checkIn, el.checkOut);
         }
         updatedTransactions.push(el);
       });
@@ -48,4 +44,25 @@ export class HoursUtilities {
     }
     return newUser;
   };
+
+  public static handleUpdateHoursProcess = (user: User, checkIn: string, checkOut: string): User => {
+    const newUser = { ...user };
+    // create new transaction element. add it to user
+    newUser.transactions.push({
+      checkIn: checkIn,
+      checkOut: checkOut,
+    });
+
+    let totalHours = 0;
+    newUser.transactions.forEach((el) => {
+      totalHours += HoursUtilities.calculateHours(el.checkIn, el.checkOut);
+    });
+    newUser.hours = totalHours;
+
+    return newUser;
+  };
+
+  public static calculateHours = (checkIn: string, checkOut: string): number => {
+    return (Date.parse(checkOut) - Date.parse(checkIn)) / (60 * 60 * 1000);
+  } 
 }

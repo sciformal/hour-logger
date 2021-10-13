@@ -1,14 +1,11 @@
-import { HoursUtilities } from "./../util/hoursUtilities";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import AWS from "aws-sdk";
 import {
-  APIGatewayProxyEvent,
-  Handler,
-  APIGatewayProxyResult,
+  APIGatewayProxyEvent, APIGatewayProxyResult
 } from "aws-lambda";
+import { DocumentClient } from "aws-sdk/clients/dynamodb";
+import { ErrorConstants } from "../../src/constants/errors";
 import { DynamoUtilities } from "../util/dynamo";
 import { ResponseUtilities } from "../util/response";
-import { ErrorConstants } from "../../src/constants/errors";
+import { HoursUtilities } from "./../util/hoursUtilities";
 
 const dynamoDb = new DocumentClient();
 /**
@@ -75,6 +72,7 @@ export const checkIn = async (
  * @returns The updated user object.
  */
 
+// TODO: decrease hours?
 export const updateHours = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
@@ -119,32 +117,17 @@ export const updateHours = async (
     }
 
     const user = userList[0];
-    // create new transaction element. add it to user
-    user.transactions.push({
-      checkIn: data.checkIn,
-      checkOut: data.checkOut,
-    });
-
-    // loop over all transactions and recalculate hours
-    let totalHours = 0;
-    user.transactions.forEach((el) => {
-      totalHours +=
-        (Date.parse(el.checkOut) - Date.parse(el.checkIn)) / (60 * 60 * 1000);
-    });
-    user.hours = totalHours;
-
-    // update user
+    const newUser = HoursUtilities.handleUpdateHoursProcess(user, data.checkIn, data.checkOut);
+    
     const putParams = {
       TableName: process.env.userTable,
-      Item: user,
+      Item: newUser,
     };
     await DynamoUtilities.put(putParams, dynamoDb);
 
-    return ResponseUtilities.createAPIResponse(user);
+    return ResponseUtilities.createAPIResponse(newUser);
   } catch (err) {
     console.log(err);
     return ResponseUtilities.createErrorResponse(err.message, 500);
   }
-
-  return;
 };
