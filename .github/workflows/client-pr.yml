@@ -34,6 +34,13 @@ jobs:
       - name: Build Website
         run: yarn build
         working-directory: ${{ env.working-directory }}
+        env:
+          REACT_APP_REGION: us-west-1
+          REACT_APP_API_URL: lwbao86kml
+          REACT_APP_API_STAGE: beta
+          REACT_APP_COGNITO_USERPOOL_ID: us-west-1_YqFXItxNG
+          REACT_APP_COGNITO_APPCLIENT_ID: 2jfr5crb2smk47k480unvd1rem
+          REACT_APP_COGNITO_IDENTITYPOOL_ID: us-west-1:ace65909-a8da-405b-83b6-5362c269fba5
 
       - name: Run Unit Tests
         run: yarn test
