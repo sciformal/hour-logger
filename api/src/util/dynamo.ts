@@ -31,11 +31,34 @@ export class DynamoUtilities {
   public static get(params: any, db: DocumentClient): Promise<any> {
     return new Promise((resolve, reject) => {
       db.get(params, (err: AWSError, data: GetItemOutput) => {
-        console.log(data);
         if (err) {
           reject(new Error(err.message));
         } else {
           resolve(data.Item);
+        }
+      });
+    });
+  }
+
+  public static scan(params: any, db: DocumentClient): Promise<any> {
+    return new Promise((resolve, reject) => {
+      db.scan(params, (err: AWSError, data) => {
+        if (err) {
+          reject(new Error(err.message));
+        } else {
+          resolve(data.Items);
+        }
+      })
+    });
+  }
+  
+  public static delete(params: any, db: DocumentClient): Promise<void> {
+    return new Promise((resolve, reject) => {
+      db.delete(params, (err: AWSError) => {
+        if (err) {
+          reject(new Error(err.message));
+        } else {
+          resolve();
         }
       });
     });
