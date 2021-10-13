@@ -1,12 +1,14 @@
+const apiUrl = 'https://' + process.env.REACT_APP_API_URL + '.execute-api.' + process.env.REACT_APP_REGION + '.amazonaws.com/' + process.env.REACT_APP_API_STAGE;
+
 export const AmplifyConfig = {
   apiGateway: {
-    REGION: "us-west-1",
-    URL: "https://ynm2dnizf6.execute-api.us-west-1.amazonaws.com/develop"
+    REGION: process.env.REACT_APP_REGION,
+    URL: apiUrl
   },
   cognito: {
-    REGION: "us-west-1",
-    USER_POOL_ID: "us-west-1_YqFXItxNG",
-    APP_CLIENT_ID: "2jfr5crb2smk47k480unvd1rem",
-    IDENTITY_POOL_ID: "us-west-1:ace65909-a8da-405b-83b6-5362c269fba5"
+    REGION: process.env.REACT_APP_REGION,
+    USER_POOL_ID: process.env.REACT_APP_COGNITO_USERPOOL_ID,
+    APP_CLIENT_ID: process.env.REACT_APP_COGNITO_APPCLIENT_ID,
+    IDENTITY_POOL_ID: process.env.REACT_APP_COGNITO_IDENTITYPOOL_ID
   }
 };
