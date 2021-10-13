@@ -111,6 +111,9 @@ export const get = async (
 
   try {
     const user = await DynamoUtilities.get(params, dynamoDb);
+    if (!user) { // no user exists
+      return ResponseUtilities.createAPIResponse(user, 204);
+    }
     return ResponseUtilities.createAPIResponse(user);
   } catch (err) {
     console.log(err);

@@ -40,7 +40,7 @@ export default function SignUp() {
   const [email, setEmail] = useState("ava.little@queensu.ca");
   const [password, setPassword] = useState("Password123!");
   const [confirmationCode, setConfirmationCode] = useState("");
-  const [signUpStep, setSignUpStep] = useState(2);
+  const [signUpStep, setSignUpStep] = useState(1);
   const [isPasswordInvalid, setIsPasswordInvalid] = useState(false);
   const [passwordError, setPasswordError] = useState("");
 
@@ -106,8 +106,7 @@ export default function SignUp() {
         "lastName" : lastName,
         "email": email,
         "studentNumber" : studentNumber,
-      })
-      console.log("Confirming user");
+      });
     } catch (e) {
       // Expired code?
       console.log(e);

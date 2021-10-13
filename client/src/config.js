@@ -1,7 +1,7 @@
 export const AmplifyConfig = {
   apiGateway: {
     REGION: "us-west-1",
-    URL: "https://ynm2dnizf6.execute-api.us-west-1.amazonaws.com/develop"
+    URL: "https://qmvqr3n8nh.execute-api.us-west-1.amazonaws.com/dev"
   },
   cognito: {
     REGION: "us-west-1",
