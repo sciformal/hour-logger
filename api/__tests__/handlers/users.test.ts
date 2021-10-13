@@ -1,10 +1,15 @@
+import { APIGatewayProxyEvent } from "aws-lambda";
 import { ErrorConstants } from "../../src/constants/errors";
-import { create, deleteUser, get } from "../../src/handlers/users";
-import { sampleApiGatewayEvent } from "../mocks/event";
+import {
+  createUser,
+  deleteUser,
+  getAllUsers,
+  getUser
+} from "../../src/handlers/users";
 import { UserRequest } from "../../src/types/requests/UserRequest";
 import { DynamoUtilities } from "../../src/util/dynamo";
+import { sampleApiGatewayEvent } from "../mocks/event";
 import { sampleUser, sampleUserId, sampleUserRequest } from "../mocks/user";
-import { APIGatewayProxyEvent } from "aws-lambda";
 
 jest.mock("aws-sdk", () => {
   return {
@@ -30,6 +35,7 @@ describe("User Endpoint Tests", () => {
         ...sampleUserRequest,
       };
     });
+
     // implements individual test cases
     it("should return a 200 when creating a user successfully", async () => {
       const mockEvent: APIGatewayProxyEvent = {
@@ -39,7 +45,7 @@ describe("User Endpoint Tests", () => {
 
       jest.spyOn(DynamoUtilities, "put").mockResolvedValue(sampleUser);
 
-      const response = await create(mockEvent);
+      const response = await createUser(mockEvent);
       expect(response.statusCode).toEqual(200);
       expect(response.body).toEqual(JSON.stringify(sampleUser));
     });
@@ -56,7 +62,7 @@ describe("User Endpoint Tests", () => {
         .spyOn(DynamoUtilities, "put")
         .mockRejectedValue(new Error(errMessage));
 
-      const response = await create(mockEvent);
+      const response = await createUser(mockEvent);
       expect(response.statusCode).toEqual(500);
       expect(response.body).toEqual(JSON.stringify({ message: errMessage }));
     });
@@ -67,7 +73,7 @@ describe("User Endpoint Tests", () => {
           ...sampleApiGatewayEvent,
         };
 
-        const response = await create(mockEvent);
+        const response = await createUser(mockEvent);
         expect(response.statusCode).toEqual(400);
         expect(response.body).toEqual(
           JSON.stringify({ message: ErrorConstants.VALIDATION_BODY_MISSING })
@@ -80,7 +86,7 @@ describe("User Endpoint Tests", () => {
           body: "this cannot be parsed!",
         };
 
-        const response = await create(mockEvent);
+        const response = await createUser(mockEvent);
         expect(response.statusCode).toEqual(400);
         expect(response.body).toEqual(
           JSON.stringify({ message: ErrorConstants.VALIDATION_BODY_INVALID })
@@ -95,7 +101,7 @@ describe("User Endpoint Tests", () => {
           body: JSON.stringify(validUser),
         };
 
-        const response = await create(mockEvent);
+        const response = await createUser(mockEvent);
         expect(response.statusCode).toEqual(400);
         expect(response.body).toEqual(
           JSON.stringify({ message: ErrorConstants.VALIDATION_BODY_FIRSTNAME })
@@ -110,7 +116,7 @@ describe("User Endpoint Tests", () => {
           body: JSON.stringify(validUser),
         };
 
-        const response = await create(mockEvent);
+        const response = await createUser(mockEvent);
         expect(response.statusCode).toEqual(400);
         expect(response.body).toEqual(
           JSON.stringify({ message: ErrorConstants.VALIDATION_BODY_LASTNAME })
@@ -125,7 +131,7 @@ describe("User Endpoint Tests", () => {
           body: JSON.stringify(validUser),
         };
 
-        const response = await create(mockEvent);
+        const response = await createUser(mockEvent);
         expect(response.statusCode).toEqual(400);
         expect(response.body).toEqual(
           JSON.stringify({ message: ErrorConstants.VALIDATION_BODY_EMAIL })
@@ -140,7 +146,7 @@ describe("User Endpoint Tests", () => {
           body: JSON.stringify(validUser),
         };
 
-        const response = await create(mockEvent);
+        const response = await createUser(mockEvent);
         expect(response.statusCode).toEqual(400);
         expect(response.body).toEqual(
           JSON.stringify({
@@ -157,7 +163,7 @@ describe("User Endpoint Tests", () => {
           body: JSON.stringify(validUser),
         };
 
-        const response = await create(mockEvent);
+        const response = await createUser(mockEvent);
         expect(response.statusCode).toEqual(400);
         expect(response.body).toEqual(
           JSON.stringify({ message: ErrorConstants.VALIDATION_BODY_USERID })
@@ -177,12 +183,12 @@ describe("User Endpoint Tests", () => {
 
       jest.spyOn(DynamoUtilities, "get").mockResolvedValue(sampleUser);
 
-      const response = await get(mockEvent);
+      const response = await getUser(mockEvent);
       expect(response.statusCode).toEqual(200);
       expect(response.body).toEqual(JSON.stringify(sampleUser));
     });
 
-    it("should return a 400 when creating a user invalid path", async () => {
+    it("should return a 400 when getting a user invalid path", async () => {
       let response;
 
       const mockEventMissingPath: APIGatewayProxyEvent = {
@@ -196,36 +202,46 @@ describe("User Endpoint Tests", () => {
         },
       };
 
-      response = await get(mockEventMissingPath);
+      response = await getUser(mockEventMissingPath);
       expect(response.statusCode).toEqual(400);
       expect(response.body).toEqual(
         JSON.stringify({ message: ErrorConstants.VALIDATION_PATH_MISSING })
       );
 
-      response = await get(mockEventInvalidPath);
+      response = await getUser(mockEventInvalidPath);
       expect(response.statusCode).toEqual(400);
       expect(response.body).toEqual(
         JSON.stringify({ message: ErrorConstants.VALIDATION_PATH_INVALID })
       );
     });
+  });
 
-    it("should throw a 500 when DynamoDB fails", async () => {
+  describe("Get All Users Tests", () => {
+    it("should return a 200 when getting all users", async () => {
       const mockEvent: APIGatewayProxyEvent = {
         ...sampleApiGatewayEvent,
-        pathParameters: {
-          userId: sampleUserId,
-        },
       };
 
-      const errMessage = "failed to put in dynamo";
+      jest.spyOn(DynamoUtilities, "scan").mockResolvedValue([sampleUser]);
 
+      const response = await getAllUsers(mockEvent);
+      expect(response.statusCode).toEqual(200);
+      expect(response.body).toEqual(JSON.stringify([sampleUser]));
+    });
+
+    it("should return a 500 when getting users fails to dynamo", async () => {
+      const mockEvent: APIGatewayProxyEvent = {
+        ...sampleApiGatewayEvent,
+      };
+
+      const errorMessage = "Dynamodb error message";
       jest
-        .spyOn(DynamoUtilities, "get")
-        .mockRejectedValue(new Error(errMessage));
+        .spyOn(DynamoUtilities, "scan")
+        .mockRejectedValue(new Error(errorMessage));
 
-      const response = await get(mockEvent);
+      const response = await getAllUsers(mockEvent);
       expect(response.statusCode).toEqual(500);
-      expect(response.body).toEqual(JSON.stringify({ message: errMessage }));
+      expect(response.body).toEqual(JSON.stringify({ message: errorMessage }));
     });
   });
 

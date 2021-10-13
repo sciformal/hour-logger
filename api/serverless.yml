@@ -15,11 +15,10 @@ provider:
   iamRoleStatements:
     - Effect: Allow
       Action:
-        - dynamodb:Query
-        - dynamobd:Scan
         - dynamodb:GetItem
         - dynamodb:PutItem
-        - dynamodb:DeleteItem
+        - dynamodb:Query
+        - dynamodb:Scan
       Resource: "*"
       
 plugins:
@@ -36,18 +35,18 @@ custom:
 
 functions:
   create-user:
-    handler: src/handlers/users.create
+    handler: src/handlers/users.createUser
     memorySize: 128
     description: "Creates user"
     events:
       - http:
-            path: /users/create
+            path: /users
             method: post
             # authorizer: aws_iam
             cors: true
   
   get-user:
-    handler: src/handlers/users.get
+    handler: src/handlers/users.getUser
     memorySize: 128
     description: "Gets current user informations"
     events:
@@ -60,19 +59,16 @@ functions:
                 paths: 
                   userId: true
 
-  delete-user: 
-    handler: src/handlers/users.deleteUser
+  get-users:
+    handler: src/handlers/users.getAllUsers
     memorySize: 128
-    description: "Deletes a user from the DynamoDB table"
+    description: "Gets all user information"
     events:
       - http:
-            path: /users/{userId}
-            method: delete
+            path: /users
+            method: get
             cors: true
-            request: 
-              parameters: 
-                paths: 
-                  userId: true
+
   check-in:
     handler: src/handlers/hours.checkIn
     memorySize: 128
