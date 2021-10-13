@@ -40,4 +40,16 @@ export class DynamoUtilities {
       });
     });
   }
+
+  public static delete(params: any, db: DocumentClient): Promise<void> {
+    return new Promise((resolve, reject) => {
+      db.delete(params, (err: AWSError) => {
+        if (err) {
+          reject(new Error(err.message));
+        } else {
+          resolve();
+        }
+      });
+    });
+  }
 }
