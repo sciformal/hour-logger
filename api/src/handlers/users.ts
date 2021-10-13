@@ -96,10 +96,14 @@ export const create = async (
 export const get = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
+  if (!event.pathParameters) {
+    return ResponseUtilities.createErrorResponse(ErrorConstants.VALIDATION_PATH_MISSING)
+  }
+
   let { userId } = event.pathParameters;
 
   if (!userId) {
-    return ResponseUtilities.createErrorResponse(ErrorConstants.VALIDATION_PATH_MISSING);
+    return ResponseUtilities.createErrorResponse(ErrorConstants.VALIDATION_PATH_INVALID);
   }
   
   const params = {
@@ -112,6 +116,41 @@ export const get = async (
   try {
     const user = await DynamoUtilities.get(params, dynamoDb);
     return ResponseUtilities.createAPIResponse(user);
+  } catch (err) {
+    console.log(err);
+    return ResponseUtilities.createErrorResponse(err.message, 500);
+  }
+};
+
+/**
+ * Delete a user from the DynamoDB Table.
+ *
+ * @param event The APIGatewayProxyEvent for the API.
+ * @returns A 200 status code or a 204 if no user was deleted.
+ */
+ export const deleteUser = async (
+  event: APIGatewayProxyEvent
+): Promise<APIGatewayProxyResult> => {
+  if (!event.pathParameters) {
+    return ResponseUtilities.createErrorResponse(ErrorConstants.VALIDATION_PATH_MISSING)
+  }
+
+  let { userId } = event.pathParameters;
+
+  if (!userId) {
+    return ResponseUtilities.createErrorResponse(ErrorConstants.VALIDATION_PATH_INVALID);
+  }
+  
+  const params = {
+    TableName: process.env.userTable,
+    Key: {
+      userId,
+    },
+  };
+
+  try {
+    const user = await DynamoUtilities.delete(params, dynamoDb);
+    return ResponseUtilities.createAPIResponse(user, 204);
   } catch (err) {
     console.log(err);
     return ResponseUtilities.createErrorResponse(err.message, 500);

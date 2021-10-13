@@ -1,6 +1,6 @@
 export class ErrorConstants {
     public static readonly VALIDATION_BODY_MISSING = "The request body is missing in the API Event.";
-    public static readonly VALIDATION_BODY_INVALID = "The request body is invalid. Please ensure it is a valid JSON";
+    public static readonly VALIDATION_BODY_INVALID = "The request body is invalid. Please ensure it is a valid JSON.";
     public static readonly VALIDATION_BODY_FIRSTNAME = "The request body is missing the firstName field.";
     public static readonly VALIDATION_BODY_LASTNAME = "The request body is missing the lastName field.";
     public static readonly VALIDATION_BODY_EMAIL = "The request body is missing the email field.";
@@ -9,5 +9,6 @@ export class ErrorConstants {
     public static readonly VALIDATION_BODY_CHECKIN = "The request body is missing the checkIn field";
     public static readonly VALIDATION_BODY_CHECKOUT = "The request body is missing the checkOut field";
     public static readonly VALIDATION_PATH_MISSING = "The request is missing a required path parameters.";
-    public static readonly DYNAMO_NONUNIQUE_STUDENTNUMBER = "DynamoDB query should have only 1 user per studentNumber";
+    public static readonly VALIDATION_PATH_INVALID = "The request path parameter is invalid.";
+    public static readonly DYNAMO_NONUNIQUE_STUDENTNUMBER = "DynamoDB query should have only 1 user per studentNumber.";
 }
