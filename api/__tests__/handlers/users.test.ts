@@ -188,6 +188,21 @@ describe("User Endpoint Tests", () => {
       expect(response.body).toEqual(JSON.stringify(sampleUser));
     });
 
+    it("should return a 204 when getting a user doesnt exist", async () => {
+      const mockEvent: APIGatewayProxyEvent = {
+        ...sampleApiGatewayEvent,
+        pathParameters: {
+          userId: sampleUserId
+        }
+      }
+      
+      jest.spyOn(DynamoUtilities, "get").mockResolvedValue(null);
+
+      const response = await getUser(mockEvent);
+      expect(response.statusCode).toEqual(204);
+      expect(response.body).toEqual(JSON.stringify(null));
+    });
+
     it("should return a 400 when getting a user invalid path", async () => {
       let response;
 
@@ -213,6 +228,23 @@ describe("User Endpoint Tests", () => {
       expect(response.body).toEqual(
         JSON.stringify({ message: ErrorConstants.VALIDATION_PATH_INVALID })
       );
+    });
+
+    it("should return a 500 when getting a user fails dynamo", async () => {
+      const mockEvent: APIGatewayProxyEvent = {
+        ...sampleApiGatewayEvent,
+        pathParameters: {
+          userId: sampleUserId
+        }
+      }
+
+      const errorMessage = "Error message from dynamo";
+      
+      jest.spyOn(DynamoUtilities, "get").mockRejectedValue(new Error(errorMessage));
+
+      const response = await getUser(mockEvent);
+      expect(response.statusCode).toEqual(500);
+      expect(response.body).toEqual(JSON.stringify({ message: errorMessage}));
     });
   });
 

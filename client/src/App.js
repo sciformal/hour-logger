@@ -17,9 +17,29 @@ export default function App() {
   const loadUserInformation = async () => {
     try {
       if (await Auth.currentSession()) {
-        userHasAuthenticated(true);
-        const user = await API.get("hour-logger", "/users/brent");
+        let user;
+
+        let cognitoUserInfo = await Auth.currentUserInfo();
+        const userId = cognitoUserInfo.username;
+        const studentNumber = "000000000000";
+        const { given_name, family_name, email } = cognitoUserInfo.attributes; // desctructure the cognito user info object.
+        const { status, data } = await API.get("hour-logger", `/users/${userId}`, { response: true });
+
+        if (status === 204) { // User doesnt exist in DB, create new user
+          user = await API.post("hour-logger", "/users/create", {
+            body: {
+              userId,
+              email,
+              studentNumber,
+              "firstName" : given_name,
+              "lastName" : family_name,
+            }});
+        } else {
+          user = data;
+        }
+
         setUser(user);
+        userHasAuthenticated(true);
       } 
     } finally {
       setIsAuthenticating(false);

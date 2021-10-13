@@ -1,6 +1,5 @@
 const apiUrl = 'https://' + process.env.REACT_APP_API_URL + '.execute-api.' + process.env.REACT_APP_REGION + '.amazonaws.com/' + process.env.REACT_APP_API_STAGE;
 
-
 export const AmplifyConfig = {
   apiGateway: {
     REGION: process.env.REACT_APP_REGION,

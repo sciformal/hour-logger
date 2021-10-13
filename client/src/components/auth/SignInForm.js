@@ -37,13 +37,13 @@ const useStyles = makeStyles((theme) => ({
 export default function SignInForm() {
   const classes = useStyles();
 
-  const [email, setEmail] = useState("");
+  const [emailInput, setEmailInput] = useState("");
   const [password, setPassword] = useState("");
   const { userHasAuthenticated } = useAuthenticationContext();
   const { setUser } = useUserContext();
 
-  const handleEmailChange = (e) => {
-    setEmail(e.target.value);
+  const handleEmailInputChange = (e) => {
+    setEmailInput(e.target.value);
   };
 
   const handlePasswordChange = (e) => {
@@ -53,8 +53,30 @@ export default function SignInForm() {
   const handleSignIn = async (e) => {
     e.preventDefault();
     try {
-      await Auth.signIn(email, password);
-      const user = await API.get("hour-logger", "/users/me");
+      await Auth.signIn(emailInput, password);
+      let user;
+
+      let cognitoUserInfo = await Auth.currentUserInfo();
+      const userId = cognitoUserInfo.username;
+      
+      const studentNumber = "000000000000";
+      const { given_name, family_name, email } = cognitoUserInfo.attributes; // desctructure the cognito user info object.
+      const { status, data } = await API.get("hour-logger", `/users/${userId}`, { response: true });
+      
+      if (status === 204) { // User doesnt exist in DB, create new user
+        user = await API.post("hour-logger", "/users/create", {
+          body: {
+            userId,
+            email,
+            studentNumber,
+            "firstName" : given_name,
+            "lastName" : family_name,
+          }});
+
+      } else {
+        user = data;
+      }
+
       setUser(user);
       userHasAuthenticated(true);
     } catch (e) {
@@ -78,13 +100,13 @@ export default function SignInForm() {
             margin="normal"
             required
             fullWidth
-            id="email"
+            id="emailInput"
             label="Email Address"
-            name="email"
-            autoComplete="email"
+            name="emailInput"
+            autoComplete="emailInput"
             autoFocus
-            onChange={handleEmailChange}
-            value={email}
+            onChange={handleEmailInputChange}
+            value={emailInput}
           />
           <TextField
             variant="outlined"
