@@ -54,7 +54,8 @@ describe("Hours Utilities Tests", () => {
     describe("Update hours Tests", () => {
         it("should check that new transaction was added", () => {
             const testUser: User = {
-                ...sampleUser
+                ...sampleUser,
+                transactions: []
             }
 
             const updatedUser = HoursUtilities.handleUpdateHoursProcess(testUser, sampleCheckInTime, sampleCheckOutTime);

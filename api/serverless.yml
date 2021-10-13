@@ -17,12 +17,8 @@ provider:
       Action:
         - dynamodb:GetItem
         - dynamodb:PutItem
-<<<<<<< HEAD
-        - dynamodb:DeleteItem
-=======
         - dynamodb:Query
         - dynamodb:Scan
->>>>>>> main
       Resource: "*"
       
 plugins:

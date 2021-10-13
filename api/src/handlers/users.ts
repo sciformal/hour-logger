@@ -96,25 +96,17 @@ export const getUser = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
   if (!event.pathParameters) {
-<<<<<<< HEAD
-    return ResponseUtilities.createErrorResponse(ErrorConstants.VALIDATION_PATH_MISSING)
-=======
     return ResponseUtilities.createErrorResponse(
       ErrorConstants.VALIDATION_PATH_MISSING
     );
->>>>>>> main
   }
 
   let { userId } = event.pathParameters;
 
   if (!userId) {
-<<<<<<< HEAD
-    return ResponseUtilities.createErrorResponse(ErrorConstants.VALIDATION_PATH_INVALID);
-=======
     return ResponseUtilities.createErrorResponse(
       ErrorConstants.VALIDATION_PATH_INVALID
     );
->>>>>>> main
   }
 
   const params = {
@@ -136,8 +128,6 @@ export const getUser = async (
   }
 };
 
-<<<<<<< HEAD
-=======
 export const getAllUsers = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
@@ -154,7 +144,6 @@ export const getAllUsers = async (
   }
 };
 
->>>>>>> main
 /**
  * Delete a user from the DynamoDB Table.
  *
