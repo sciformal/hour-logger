@@ -92,7 +92,7 @@ export const createUser = async (
 
   try {
     const uniqueStudentNumber = await UsersUtilities.uniqueStudentNumber(data.studentNumber);
-    if(!uniqueStudentNumber) {
+    if (!uniqueStudentNumber) {
       return ResponseUtilities.createErrorResponse(
         ErrorConstants.DYNAMO_NONUNIQUE_STUDENTNUMBER
       );
