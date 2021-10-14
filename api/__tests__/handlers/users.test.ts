@@ -1,3 +1,4 @@
+import { UsersUtilities } from './../../src/util/usersUtilities';
 import { APIGatewayProxyEvent } from "aws-lambda";
 import { ErrorConstants } from "../../src/constants/errors";
 import {
@@ -44,6 +45,7 @@ describe("User Endpoint Tests", () => {
       };
 
       jest.spyOn(DynamoUtilities, "put").mockResolvedValue(sampleUser);
+      jest.spyOn(UsersUtilities, "uniqueStudentNumber").mockResolvedValue(true);
 
       const response = await createUser(mockEvent);
       expect(response.statusCode).toEqual(200);
@@ -57,6 +59,8 @@ describe("User Endpoint Tests", () => {
       };
 
       const errMessage = "failed to put in dynamo";
+
+      jest.spyOn(UsersUtilities, "uniqueStudentNumber").mockResolvedValue(true);
 
       jest
         .spyOn(DynamoUtilities, "put")
