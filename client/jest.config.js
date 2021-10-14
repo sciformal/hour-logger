@@ -3,7 +3,7 @@ module.exports = {
       '<rootDir>/src',
     ],
     transform: {
-      "^.+\\.(ts|tsx|js|jsx)$": "ts-jest"
+      "^.+\\.(tsx|js|jsx)$": "ts-jest"
    },
     testRegex: '.*\\.test\\.tsx?$',
     moduleFileExtensions: [
@@ -14,6 +14,8 @@ module.exports = {
       'json',
       'node',
     ],
-    setupFilesAfterEnv: ['jest-enzyme'],
+    setupFilesAfterEnv: [
+      "<rootDir>/src/setupTests.ts"
+    ],
     testEnvironment: 'enzyme',
   };

@@ -7,9 +7,7 @@ import React from "react";
 import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
 
 export default function HourLoggerNav() {
-  // @ts-ignore
   const { isAuthenticated, userHasAuthenticated } = useAuthenticationContext();
-  // @ts-ignore
   const { user } = useUserContext();
 
   const handleLogout = async () => {
