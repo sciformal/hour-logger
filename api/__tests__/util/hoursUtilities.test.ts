@@ -1,3 +1,4 @@
+import { sampleCheckInTime, sampleCheckOutTime, sampleTransaction } from './../mocks/hours';
 import { HoursUtilities } from "../../src/util/hoursUtilities";
 import { sampleUser } from '../mocks/user';
 import { User } from "../../src/types/User";
@@ -22,6 +23,18 @@ describe("Hours Utilities Tests", () => {
         });
 
         it("should check in a user that's not checked in, multiple transactions", () => {
+            const checkedOutUser: User = {
+                ...sampleUser,
+                transactions : [sampleTransaction]
+            }
+
+            expect(checkedOutUser.transactions.length).toBe(1);
+
+            const updatedUser = HoursUtilities.handleCheckInProcess(checkedOutUser);
+
+            expect(updatedUser.isCheckedIn).toBeTruthy();
+            expect(updatedUser.transactions.length).toBe(2);
+            expect(updatedUser.transactions[updatedUser.transactions.length - 1].checkOut).toBeNull();
 
         });
 
@@ -34,6 +47,23 @@ describe("Hours Utilities Tests", () => {
             const updatedUser = HoursUtilities.handleCheckInProcess(checkedInUser);
 
             expect(updatedUser.isCheckedIn).toBeFalsy();
-        })
+        });
+
+    })
+
+    describe("Update hours Tests", () => {
+        it("should check that new transaction was added", () => {
+            const testUser: User = {
+                ...sampleUser,
+                transactions: []
+            }
+
+            const updatedUser = HoursUtilities.handleUpdateHoursProcess(testUser, sampleCheckInTime, sampleCheckOutTime);
+            const expectedHours = HoursUtilities.calculateHours(sampleCheckInTime, sampleCheckOutTime);
+
+            expect(updatedUser.hours).toEqual(expectedHours);
+            expect(updatedUser.transactions.length).toBe(1);
+
+        });
     })
 })
