@@ -1,3 +1,4 @@
+import { UsersUtilities } from './../util/usersUtilities';
 import { ErrorConstants } from "../constants/errors";
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
@@ -90,6 +91,13 @@ export const createUser = async (
   };
 
   try {
+    const uniqueStudentNumber = await UsersUtilities.uniqueStudentNumber(data.studentNumber);
+    if(!uniqueStudentNumber) {
+      return ResponseUtilities.createErrorResponse(
+        ErrorConstants.DYNAMO_NONUNIQUE_STUDENTNUMBER
+      );
+    }
+
     const user = await DynamoUtilities.put(params, dynamoDb);
     return ResponseUtilities.createAPIResponse(user);
   } catch (err) {
