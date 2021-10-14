@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import Loader from "./components/global/Loader";
 import { AuthenticationContext, UserContext } from "./libs/contextLib";
 import Routes from "./Routes";
-import './styles/App.css';
+// import './styles/App.css';
 
 export default function App() {
   const [isAuthenticating, setIsAuthenticating] = useState(true); // has the users session loaded yet?
@@ -20,13 +20,15 @@ export default function App() {
         let user;
 
         let cognitoUserInfo = await Auth.currentUserInfo();
+        console.log(cognitoUserInfo);
+
         const userId = cognitoUserInfo.username;
         const studentNumber = "000000000000";
         const { given_name, family_name, email } = cognitoUserInfo.attributes; // desctructure the cognito user info object.
         const { status, data } = await API.get("hour-logger", `/users/${userId}`, { response: true });
 
         if (status === 204) { // User doesnt exist in DB, create new user
-          user = await API.post("hour-logger", "/users/create", {
+          user = await API.post("hour-logger", "/users", {
             body: {
               userId,
               email,
@@ -37,10 +39,9 @@ export default function App() {
         } else {
           user = data;
         }
-
         setUser(user);
         userHasAuthenticated(true);
-      } 
+      }
     } finally {
       setIsAuthenticating(false);
     }

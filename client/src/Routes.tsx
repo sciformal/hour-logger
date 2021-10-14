@@ -1,4 +1,5 @@
 import { Link, Route, Switch } from "react-router-dom";
+import SignUp from "./components/auth/Register";
 import HourLoggerNav from "./components/global/Nav";
 import CheckIn from "./pages/CheckIn";
 import Home from "./pages/Home";
@@ -10,6 +11,7 @@ export default function Routes() {
       <Switch>
         <Route exact path="/" component={Home} />
         <Route exact path="/check-in" component={CheckIn} />
+        <Route exact path="/register" component={SignUp} />
         <Route component={NoMatch} />
       </Switch>
     </>

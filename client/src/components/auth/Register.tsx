@@ -34,11 +34,11 @@ const useStyles = makeStyles((theme) => ({
 export default function SignUp() {
   const classes = useStyles();
 
-  const [firstName, setFirstName] = useState("Justin");
-  const [lastName, setLastName] = useState("Bieber");
-  const [studentNumber, setStudentNumber] = useState("42069696");
-  const [email, setEmail] = useState("ava.little@queensu.ca");
-  const [password, setPassword] = useState("Password123!");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [studentNumber, setStudentNumber] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [confirmationCode, setConfirmationCode] = useState("");
   const [signUpStep, setSignUpStep] = useState(1);
   const [isPasswordInvalid, setIsPasswordInvalid] = useState(false);
@@ -92,7 +92,7 @@ export default function SignUp() {
       .catch((err) => {
         // TODO: Handle this
         console.log(err);
-        if (err.code === 'InvalidPasswordException') {
+        if (err.code === "InvalidPasswordException") {
           setIsPasswordInvalid(true);
           setPasswordError(err.message);
         }
@@ -105,21 +105,25 @@ export default function SignUp() {
   const handleConfirmRegister = async (e) => {
     e.preventDefault();
     try {
-      // await Auth.confirmSignUp(email, confirmationCode);
-      // // TODO: Call CreateUser in here
-
+      await Auth.confirmSignUp(email, confirmationCode);
       await Auth.signIn(email, password);
-      API.post("hour-logger", "/users/create", {
-        "firstName" : firstName,
-        "lastName" : lastName,
-        "email": email,
-        "studentNumber" : studentNumber,
+      let cognitoUserInfo = await Auth.currentUserInfo();
+      const userId = cognitoUserInfo.username;
+
+      API.post("hour-logger", "/users", {
+        body: {
+          firstName,
+          lastName,
+          email,
+          studentNumber,
+          userId,
+        },
       });
     } catch (e) {
       // Expired code?
       console.log(e);
     }
-  }
+  };
 
   if (signUpStep === 1) {
     return (
@@ -203,10 +207,7 @@ export default function SignUp() {
               </Grid>
             </Grid>
             {/* Show password error if the password is not valid */}
-            {
-              isPasswordInvalid &&
-              <div>{ passwordError }</div>
-            }
+            {isPasswordInvalid && <div>{passwordError}</div>}
             <Button
               type="submit"
               fullWidth
@@ -223,7 +224,11 @@ export default function SignUp() {
                   Already have an account? Sign in
                 </Link>
                 <br />
-                <Link href="#confirm" variant="body2" onClick={() => setSignUpStep(2)}>
+                <Link
+                  href="#confirm"
+                  variant="body2"
+                  onClick={() => setSignUpStep(2)}
+                >
                   Already have a confirmation code?
                 </Link>
               </Grid>
