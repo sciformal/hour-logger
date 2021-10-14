@@ -2,7 +2,7 @@ import React from "react";
 import SignInForm from "../components/auth/SignInForm";
 import { HourLoggerTable } from "../components/global/Table";
 import { useAuthenticationContext, useUserContext } from "../libs/contextLib";
-import "../styles/Home.css";
+// import "../styles/Home.css";
 
 const types = ["USER", "ADMIN", "MANAGER", "BOUNCER"];
 const hoursHeaders = ["Date", "Check In", "Check Out", "Hours"];
