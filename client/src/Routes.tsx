@@ -1,4 +1,5 @@
 import { Link, Route, Switch } from "react-router-dom";
+import { ForgotPassword } from "./components/auth/ForgotPassword";
 import SignUp from "./components/auth/Register";
 import HourLoggerNav from "./components/global/Nav";
 import CheckIn from "./pages/CheckIn";
@@ -12,6 +13,7 @@ export default function Routes() {
         <Route exact path="/" component={Home} />
         <Route exact path="/check-in" component={CheckIn} />
         <Route exact path="/register" component={SignUp} />
+        <Route exact path="/forgot-password" component={ForgotPassword} />
         <Route component={NoMatch} />
       </Switch>
     </>
