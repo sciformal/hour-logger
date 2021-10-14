@@ -1,3 +1,4 @@
+import { UsersUtilities } from './../../src/util/usersUtilities';
 import { APIGatewayProxyEvent } from "aws-lambda";
 import { ErrorConstants } from "../../src/constants/errors";
 import {
@@ -44,6 +45,7 @@ describe("User Endpoint Tests", () => {
       };
 
       jest.spyOn(DynamoUtilities, "put").mockResolvedValue(sampleUser);
+      jest.spyOn(UsersUtilities, "uniqueStudentNumber").mockResolvedValue(true);
 
       const response = await createUser(mockEvent);
       expect(response.statusCode).toEqual(200);
@@ -57,6 +59,8 @@ describe("User Endpoint Tests", () => {
       };
 
       const errMessage = "failed to put in dynamo";
+
+      jest.spyOn(UsersUtilities, "uniqueStudentNumber").mockResolvedValue(true);
 
       jest
         .spyOn(DynamoUtilities, "put")
@@ -167,6 +171,51 @@ describe("User Endpoint Tests", () => {
         expect(response.statusCode).toEqual(400);
         expect(response.body).toEqual(
           JSON.stringify({ message: ErrorConstants.VALIDATION_BODY_USERID })
+        );
+      });
+
+      it("should return 400 when the student number contains non numeric characters", async () => {
+        validUser.studentNumber = "1234abcd";
+
+        const mockEvent: APIGatewayProxyEvent = {
+          ...sampleApiGatewayEvent,
+          body: JSON.stringify(validUser),
+        };
+
+        const response = await createUser(mockEvent);
+        expect(response.statusCode).toEqual(400);
+        expect(response.body).toEqual(
+          JSON.stringify({ message: ErrorConstants.VALIDATION_STUDENTNUMBER_NONNUM })
+        );
+      });
+
+      it("should return 400 when the student number contains more than 8 digits", async () => {
+        validUser.studentNumber = "123456789";
+
+        const mockEvent: APIGatewayProxyEvent = {
+          ...sampleApiGatewayEvent,
+          body: JSON.stringify(validUser),
+        };
+
+        const response = await createUser(mockEvent);
+        expect(response.statusCode).toEqual(400);
+        expect(response.body).toEqual(
+          JSON.stringify({ message: ErrorConstants.VALIDATION_STUDENTNUMBER_LENGTH })
+        );
+      });
+
+      it("should return 400 when the student number contains less than 8 digits", async () => {
+        validUser.studentNumber = "1234567";
+
+        const mockEvent: APIGatewayProxyEvent = {
+          ...sampleApiGatewayEvent,
+          body: JSON.stringify(validUser),
+        };
+
+        const response = await createUser(mockEvent);
+        expect(response.statusCode).toEqual(400);
+        expect(response.body).toEqual(
+          JSON.stringify({ message: ErrorConstants.VALIDATION_STUDENTNUMBER_LENGTH })
         );
       });
     });
