@@ -7,7 +7,7 @@ import { useAuthenticationContext, useUserContext } from "../libs/contextLib";
 const types = ["USER", "ADMIN", "MANAGER", "BOUNCER"];
 const hoursHeaders = ["Date", "Check In", "Check Out", "Hours"];
 
-export default function Home() {
+export const HomePage = () => {
   // @ts-ignore
   const { isAuthenticated } = useAuthenticationContext();
   // @ts-ignore
@@ -42,7 +42,7 @@ export default function Home() {
   // Signed in
   if (isAuthenticated && user && types.includes(user.type)) {
     return (
-      <div className="landing" style={{ textAlign: "center" }}>
+      <div style={{ textAlign: "center", paddingTop: "40px" }}>
         <h2>Welcome back {user.firstName}!</h2>
         <br />
         <br />
