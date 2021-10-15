@@ -13,15 +13,8 @@ export default function Home() {
   // @ts-ignore
   const { user } = useUserContext();
 
-  let totalHoursFormatted = 0.00;
+  let totalHoursFormatted = 0.0;
   let hoursEntries = [];
-
-  if (isAuthenticated) {
-    totalHoursFormatted = user.hours.toFixed(2); // round to 2 decimals
-    hoursEntries = user.transactions.map((transaction) =>
-    formatHourTransaction(transaction)
-  );
-  }
 
   // @ts-ignore
   const formatHourTransaction = (transaction) => {
@@ -38,7 +31,13 @@ export default function Home() {
     return [date, checkInTime, checkOutTime, hours];
   };
 
-
+  if (isAuthenticated) {
+    totalHoursFormatted = user.hours.toFixed(2); // round to 2 decimals
+    hoursEntries = user.transactions.map((transaction) =>
+      formatHourTransaction(transaction)
+    );
+  }
+  
   // Signed in
   if (isAuthenticated && user && types.includes(user.type)) {
     return (
