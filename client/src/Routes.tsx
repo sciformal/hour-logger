@@ -2,16 +2,18 @@ import { Link, Route, Switch } from 'react-router-dom';
 import { ForgotPassword } from './components/auth/ForgotPassword';
 import SignUp from './components/auth/Register';
 import HourLoggerNav from './components/global/Nav';
-import CheckIn from './pages/CheckIn';
-import Home from './pages/Home';
+import { CheckInPage } from './pages/CheckInPage';
+import { HomePage } from './pages/HomePage';
+import { UsersPage } from './pages/UsersPage';
 
 export default function Routes() {
   return (
     <>
       <HourLoggerNav />
       <Switch>
-        <Route exact path="/" component={Home} />
-        <Route exact path="/check-in" component={CheckIn} />
+        <Route exact path="/" component={HomePage} />
+        <Route exact path="/check-in" component={CheckInPage} />
+        <Route exact path="/users" component={UsersPage} />
         <Route exact path="/register" component={SignUp} />
         <Route exact path="/forgot-password" component={ForgotPassword} />
         <Route component={NoMatch} />

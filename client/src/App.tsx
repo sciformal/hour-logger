@@ -20,7 +20,6 @@ export default function App() {
         let user;
 
         let cognitoUserInfo = await Auth.currentUserInfo();
-        console.log(cognitoUserInfo);
 
         const userId = cognitoUserInfo.username;
         const studentNumber = '000000000000';

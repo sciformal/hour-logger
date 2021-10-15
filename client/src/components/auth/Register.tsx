@@ -10,6 +10,10 @@ import Typography from '@material-ui/core/Typography';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { Auth, API } from 'aws-amplify';
 import React, { useState } from 'react';
+import {
+  useAuthenticationContext,
+  useUserContext,
+} from '../../libs/contextLib';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -33,6 +37,9 @@ const useStyles = makeStyles(theme => ({
 
 export default function SignUp() {
   const classes = useStyles();
+
+  const { setUser } = useUserContext();
+  const { userHasAuthenticated } = useAuthenticationContext();
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -78,27 +85,24 @@ export default function SignUp() {
   const handleRegister = async e => {
     e.preventDefault();
     setIsPasswordInvalid(false);
-    await Auth.signUp({
-      username: email,
-      password: password,
-      attributes: {
-        given_name: firstName,
-        family_name: lastName,
-      },
-    })
-      .then(() => {
-        setSignUpStep(2);
-      })
-      .catch(err => {
-        // TODO: Handle this
-        console.log(err);
-        if (err.code === 'InvalidPasswordException') {
-          setIsPasswordInvalid(true);
-          setPasswordError(err.message);
-        }
-        // User already exists?
-        console.log(err);
+    try {
+      await Auth.signUp({
+        username: email,
+        password: password,
+        attributes: {
+          given_name: firstName,
+          family_name: lastName,
+          'custom:studentNumber': studentNumber,
+        },
       });
+      setSignUpStep(2);
+    } catch (err: any) {
+      console.log(err);
+      if (err.code === 'InvalidPasswordException') {
+        setIsPasswordInvalid(true);
+        setPasswordError(err.message);
+      }
+    }
   };
 
   // @ts-ignore
@@ -110,7 +114,7 @@ export default function SignUp() {
       let cognitoUserInfo = await Auth.currentUserInfo();
       const userId = cognitoUserInfo.username;
 
-      API.post('hour-logger', '/users', {
+      const user = await API.post('hour-logger', '/users', {
         body: {
           firstName,
           lastName,
@@ -119,6 +123,10 @@ export default function SignUp() {
           userId,
         },
       });
+
+      setUser(user);
+      userHasAuthenticated(true);
+      window.location.href = '/';
     } catch (e) {
       // Expired code?
       console.log(e);
