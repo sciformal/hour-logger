@@ -50,14 +50,6 @@ jobs:
             package-manager: yarn
             threshold: 75
             working-directory: ${{ env.working-directory }}
-        
-      - uses: netlify/actions/cli@master 
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-        with:
-          args: deploy --dir=client/build
-          secrets: '["NETLIFY_AUTH_TOKEN", "NETLIFY_SITE_ID"]'
 
       - name: Deploy to Netlify
         id: "deploy"
