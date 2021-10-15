@@ -45,12 +45,12 @@ jobs:
       - name: Run Unit Tests
         uses: artiomtr/jest-coverage-report-action@v2.0-rc.1
         with:
-            github-token: ${{ secrets.GITHUB_TOKEN }}
-            package-manager: yarn
-            threshold: 75
-            working-directory: ${{ env.working-directory }}
-        
-      - uses: netlify/actions/cli@master 
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          package-manager: yarn
+          threshold: 75
+          working-directory: ${{ env.working-directory }}
+
+      - uses: netlify/actions/cli@master
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}

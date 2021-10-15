@@ -1,5 +1,5 @@
-import React from "react";
-import { Table } from "react-bootstrap";
+import React from 'react';
+import { Table } from 'react-bootstrap';
 
 // @ts-ignore
 export function HourLoggerTable({ headers, rows }) {
@@ -9,7 +9,7 @@ export function HourLoggerTable({ headers, rows }) {
         <tr>
           {
             // @ts-ignore
-            headers.map((name) => (
+            headers.map(name => (
               // @ts-ignore
 
               <th key={name}>{name}</th>
@@ -24,7 +24,7 @@ export function HourLoggerTable({ headers, rows }) {
             <tr key={index}>
               {
                 // @ts-ignore
-                row.map((el) => (
+                row.map(el => (
                   <td key={`${el}-${index}`}>{el}</td>
                 ))
               }

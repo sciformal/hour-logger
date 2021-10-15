@@ -1,9 +1,9 @@
-import { Link, Route, Switch } from "react-router-dom";
-import { ForgotPassword } from "./components/auth/ForgotPassword";
-import SignUp from "./components/auth/Register";
-import HourLoggerNav from "./components/global/Nav";
-import CheckIn from "./pages/CheckIn";
-import Home from "./pages/Home";
+import { Link, Route, Switch } from 'react-router-dom';
+import { ForgotPassword } from './components/auth/ForgotPassword';
+import SignUp from './components/auth/Register';
+import HourLoggerNav from './components/global/Nav';
+import CheckIn from './pages/CheckIn';
+import Home from './pages/Home';
 
 export default function Routes() {
   return (

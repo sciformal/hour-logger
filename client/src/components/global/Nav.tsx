@@ -1,10 +1,10 @@
-import { Auth } from "aws-amplify";
+import { Auth } from 'aws-amplify';
 import {
   useAuthenticationContext,
   useUserContext,
-} from "../../libs/contextLib";
-import React from "react";
-import { Container, Nav, Navbar, NavDropdown } from "react-bootstrap";
+} from '../../libs/contextLib';
+import React from 'react';
+import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap';
 
 export default function HourLoggerNav() {
   const { isAuthenticated, userHasAuthenticated } = useAuthenticationContext();
@@ -32,15 +32,15 @@ export default function HourLoggerNav() {
                     Hour Reduction
                   </NavDropdown.Item>
 
-                  {(type === "ADMIN" ||
-                    type === "MANAGER" ||
-                    type === "COMMS") && (
+                  {(type === 'ADMIN' ||
+                    type === 'MANAGER' ||
+                    type === 'COMMS') && (
                     <NavDropdown.Item href="/check-in">
                       Volunteer Check-In
                     </NavDropdown.Item>
                   )}
 
-                  {type === "ADMIN" && (
+                  {type === 'ADMIN' && (
                     <NavDropdown.Item href="/edit-hours">
                       Edit Hours
                     </NavDropdown.Item>
@@ -49,7 +49,7 @@ export default function HourLoggerNav() {
 
                 <Nav.Link href="/payment">Ticket Purchase</Nav.Link>
 
-                {(type === "ADMIN" || type === "COMMS") && (
+                {(type === 'ADMIN' || type === 'COMMS') && (
                   <Nav.Link href="/reduction-request">
                     Reduction Requests
                   </Nav.Link>

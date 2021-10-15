@@ -6,7 +6,9 @@ module.exports = {
   context: __dirname,
   mode: slsw.lib.webpack.isLocal ? 'development' : 'production',
   entry: slsw.lib.entries,
-  devtool: slsw.lib.webpack.isLocal ? 'cheap-module-eval-source-map' : 'source-map',
+  devtool: slsw.lib.webpack.isLocal
+    ? 'cheap-module-eval-source-map'
+    : 'source-map',
   resolve: {
     extensions: ['.mjs', '.json', '.ts'],
     symlinks: false,
@@ -21,7 +23,8 @@ module.exports = {
   externals: [nodeExternals()],
   module: {
     rules: [
-      // all files with a `.ts` or `.tsx` extension will be handled by `ts-loader`
+      // all files with a `.ts` or `.tsx` extension
+      // will be handled by `ts-loader`
       {
         test: /\.(tsx?)$/,
         loader: 'ts-loader',
@@ -38,5 +41,5 @@ module.exports = {
         },
       },
     ],
-  }
+  },
 };

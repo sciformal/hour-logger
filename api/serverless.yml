@@ -19,8 +19,8 @@ provider:
         - dynamodb:PutItem
         - dynamodb:Query
         - dynamodb:Scan
-      Resource: "*"
-      
+      Resource: '*'
+
 plugins:
   - serverless-webpack
   - serverless-offline
@@ -37,73 +37,73 @@ functions:
   create-user:
     handler: src/handlers/users.createUser
     memorySize: 128
-    description: "Creates user"
+    description: 'Creates user'
     events:
       - http:
-            path: /users
-            method: post
-            # authorizer: aws_iam
-            cors: true
-  
+          path: /users
+          method: post
+          # authorizer: aws_iam
+          cors: true
+
   get-user:
     handler: src/handlers/users.getUser
     memorySize: 128
-    description: "Gets current user informations"
+    description: 'Gets current user informations'
     events:
       - http:
-            path: /users/{userId}
-            method: get
-            cors: true
-            request: 
-              parameters: 
-                paths: 
-                  userId: true
+          path: /users/{userId}
+          method: get
+          cors: true
+          request:
+            parameters:
+              paths:
+                userId: true
 
-  delete-user: 
+  delete-user:
     handler: src/handlers/users.deleteUser
     memorySize: 128
-    description: "Deletes a user from the DynamoDB table"
+    description: 'Deletes a user from the DynamoDB table'
     events:
       - http:
-            path: /users/{userId}
-            method: delete
-            cors: true
-            request: 
-              parameters: 
-                paths: 
-                  userId: true
-                  
+          path: /users/{userId}
+          method: delete
+          cors: true
+          request:
+            parameters:
+              paths:
+                userId: true
+
   get-users:
     handler: src/handlers/users.getAllUsers
     memorySize: 128
-    description: "Gets all user information"
+    description: 'Gets all user information'
     events:
       - http:
-            path: /users
-            method: get
-            cors: true
+          path: /users
+          method: get
+          cors: true
 
   check-in:
     handler: src/handlers/hours.checkIn
     memorySize: 128
-    description: "Creates new hour transaction"
+    description: 'Creates new hour transaction'
     events:
       - http:
-            path: /users/check-in
-            method: post
-            # authorizer: aws_iam
-            cors: true
+          path: /users/check-in
+          method: post
+          # authorizer: aws_iam
+          cors: true
 
   update-hours:
     handler: src/handlers/hours.updateHours
     memorySize: 128
-    description: "Takes in checkIn and checkOut times and recalculates total hours completed"
+    description: 'Takes in checkIn and checkOut times and recalculates total hours completed'
     events:
       - http:
-            path: /hours/update
-            method: post
-            # authorizer: aws_iam
-            cors: true
+          path: /hours/update
+          method: post
+          # authorizer: aws_iam
+          cors: true
 
 resources:
   Resources:
@@ -112,16 +112,13 @@ resources:
       DeletionPolicy: Retain
       Properties:
         AttributeDefinitions:
-          -
-            AttributeName: "userId"
-            AttributeType: "S"
-          -
-            AttributeName: "studentNumber"
-            AttributeType: "S"
+          - AttributeName: 'userId'
+            AttributeType: 'S'
+          - AttributeName: 'studentNumber'
+            AttributeType: 'S'
         KeySchema:
-          -
-            AttributeName: "userId"
-            KeyType: "HASH"
+          - AttributeName: 'userId'
+            KeyType: 'HASH'
         GlobalSecondaryIndexes:
           - IndexName: StudentNumberIndex
             KeySchema:

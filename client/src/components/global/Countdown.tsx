@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 
 export default function Countdown() {
   const calculateTimeLeft = () => {
@@ -29,7 +29,7 @@ export default function Countdown() {
   // @ts-ignore
   const timerComponents = [];
 
-  Object.keys(timeLeft).forEach((interval) => {
+  Object.keys(timeLeft).forEach(interval => {
     // @ts-ignore
     if (!timeLeft[interval]) {
       return;
@@ -40,9 +40,9 @@ export default function Countdown() {
         {
           // @ts-ignore
           timeLeft[interval]
-        }{" "}
-        {interval}{" "}
-      </span>
+        }{' '}
+        {interval}{' '}
+      </span>,
     );
   });
   return (

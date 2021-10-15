@@ -1,8 +1,6 @@
 {
   "compilerOptions": {
-    "lib": [
-      "es2017"
-    ],
+    "lib": ["es2017"],
     "removeComments": true,
     "moduleResolution": "node",
     "noUnusedLocals": false,
@@ -12,9 +10,7 @@
     "outDir": "lib",
     "allowSyntheticDefaultImports": true
   },
-  "include": [
-    "./**/*.ts"
-  ],
+  "include": ["./**/*.ts"],
   "exclude": [
     "node_modules/**/*",
     ".serverless/**/*",

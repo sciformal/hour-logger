@@ -1,29 +1,29 @@
-import Avatar from "@material-ui/core/Avatar";
-import Button from "@material-ui/core/Button";
-import Container from "@material-ui/core/Container";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Grid from "@material-ui/core/Grid";
-import Link from "@material-ui/core/Link";
-import { makeStyles } from "@material-ui/core/styles";
-import TextField from "@material-ui/core/TextField";
-import Typography from "@material-ui/core/Typography";
-import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
-import { Auth, API } from "aws-amplify";
-import React, { useState } from "react";
+import Avatar from '@material-ui/core/Avatar';
+import Button from '@material-ui/core/Button';
+import Container from '@material-ui/core/Container';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import Grid from '@material-ui/core/Grid';
+import Link from '@material-ui/core/Link';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import { Auth, API } from 'aws-amplify';
+import React, { useState } from 'react';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   paper: {
     marginTop: theme.spacing(8),
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
   },
   avatar: {
     margin: theme.spacing(1),
     backgroundColor: theme.palette.secondary.main,
   },
   form: {
-    width: "100%", // Fix IE 11 issue.
+    width: '100%', // Fix IE 11 issue.
     marginTop: theme.spacing(3),
   },
   submit: {
@@ -34,48 +34,48 @@ const useStyles = makeStyles((theme) => ({
 export default function SignUp() {
   const classes = useStyles();
 
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [studentNumber, setStudentNumber] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmationCode, setConfirmationCode] = useState("");
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [studentNumber, setStudentNumber] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmationCode, setConfirmationCode] = useState('');
   const [signUpStep, setSignUpStep] = useState(1);
   const [isPasswordInvalid, setIsPasswordInvalid] = useState(false);
-  const [passwordError, setPasswordError] = useState("");
+  const [passwordError, setPasswordError] = useState('');
 
   // @ts-ignore
-  const handleFirstNameChange = (e) => {
+  const handleFirstNameChange = e => {
     setFirstName(e.target.value);
   };
 
   // @ts-ignore
-  const handleLastNameChange = (e) => {
+  const handleLastNameChange = e => {
     setLastName(e.target.value);
   };
 
   // @ts-ignore
-  const handleStudentNumberChange = (e) => {
+  const handleStudentNumberChange = e => {
     setStudentNumber(e.target.value);
   };
 
   // @ts-ignore
-  const handleEmailChange = (e) => {
+  const handleEmailChange = e => {
     setEmail(e.target.value);
   };
 
   // @ts-ignore
-  const handlePasswordChange = (e) => {
+  const handlePasswordChange = e => {
     setPassword(e.target.value);
   };
 
   // @ts-ignore
-  const handleConfirmationCodeChange = (e) => {
+  const handleConfirmationCodeChange = e => {
     setConfirmationCode(e.target.value);
   };
 
   // @ts-ignore
-  const handleRegister = async (e) => {
+  const handleRegister = async e => {
     e.preventDefault();
     setIsPasswordInvalid(false);
     await Auth.signUp({
@@ -89,10 +89,10 @@ export default function SignUp() {
       .then(() => {
         setSignUpStep(2);
       })
-      .catch((err) => {
+      .catch(err => {
         // TODO: Handle this
         console.log(err);
-        if (err.code === "InvalidPasswordException") {
+        if (err.code === 'InvalidPasswordException') {
           setIsPasswordInvalid(true);
           setPasswordError(err.message);
         }
@@ -102,7 +102,7 @@ export default function SignUp() {
   };
 
   // @ts-ignore
-  const handleConfirmRegister = async (e) => {
+  const handleConfirmRegister = async e => {
     e.preventDefault();
     try {
       await Auth.confirmSignUp(email, confirmationCode);
@@ -110,7 +110,7 @@ export default function SignUp() {
       let cognitoUserInfo = await Auth.currentUserInfo();
       const userId = cognitoUserInfo.username;
 
-      API.post("hour-logger", "/users", {
+      API.post('hour-logger', '/users', {
         body: {
           firstName,
           lastName,

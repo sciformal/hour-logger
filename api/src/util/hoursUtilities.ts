@@ -1,17 +1,20 @@
-import { User } from "../types/User";
+import { User } from '../types/User';
 
 export class HoursUtilities {
   public static handleCheckInProcess = (user: User): User => {
     const newUser = { ...user };
 
     if (user.isCheckedIn) {
-      let updatedTransactions = [];
+      const updatedTransactions = [];
 
       let totalHours = 0;
-      newUser.transactions.forEach((el) => {
+      newUser.transactions.forEach(el => {
         if (el.checkOut == null) {
           el.checkOut = new Date().toString();
-          let timeElapsed = HoursUtilities.calculateHours(el.checkIn, el.checkOut);
+          const timeElapsed = HoursUtilities.calculateHours(
+            el.checkIn,
+            el.checkOut,
+          );
           newUser.hours = timeElapsed + totalHours; // add new hours
         } else {
           // loop over all hours and recalculate hours completed
@@ -34,7 +37,7 @@ export class HoursUtilities {
           checkOut: null,
         });
       } else {
-        var transactions = [];
+        const transactions = [];
         transactions.push({
           checkIn: date.toString(),
           checkOut: null,
@@ -45,16 +48,20 @@ export class HoursUtilities {
     return newUser;
   };
 
-  public static handleUpdateHoursProcess = (user: User, checkIn: string, checkOut: string): User => {
+  public static handleUpdateHoursProcess = (
+    user: User,
+    checkIn: string,
+    checkOut: string,
+  ): User => {
     const newUser = { ...user };
     // create new transaction element. add it to user
     newUser.transactions.push({
-      checkIn: checkIn,
-      checkOut: checkOut,
+      checkIn,
+      checkOut,
     });
 
     let totalHours = 0;
-    newUser.transactions.forEach((el) => {
+    newUser.transactions.forEach(el => {
       totalHours += HoursUtilities.calculateHours(el.checkIn, el.checkOut);
     });
     newUser.hours = totalHours;
@@ -62,7 +69,6 @@ export class HoursUtilities {
     return newUser;
   };
 
-  public static calculateHours = (checkIn: string, checkOut: string): number => {
-    return (Date.parse(checkOut) - Date.parse(checkIn)) / (60 * 60 * 1000);
-  } 
+  public static calculateHours = (checkIn: string, checkOut: string): number =>
+    (Date.parse(checkOut) - Date.parse(checkIn)) / (60 * 60 * 1000);
 }

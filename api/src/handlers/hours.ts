@@ -1,25 +1,24 @@
-import {
-  APIGatewayProxyEvent, APIGatewayProxyResult
-} from "aws-lambda";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { ErrorConstants } from "../../src/constants/errors";
-import { DynamoUtilities } from "../util/dynamo";
-import { ResponseUtilities } from "../util/response";
-import { HoursUtilities } from "./../util/hoursUtilities";
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import { ErrorConstants } from '../../src/constants/errors';
+import { DynamoUtilities } from '../util/dynamo';
+import { ResponseUtilities } from '../util/response';
+import { HoursUtilities } from '../util/hoursUtilities';
 
 const dynamoDb = new DocumentClient();
 /**
- * Check-in or check-out a student based on their student number, add the transaction and update their hours.
+ * Check-in or check-out a student based on their student number,
+ * add the transaction and update their hours.
  *
  * @param event The APIGatewayProxyEvent for the API.
  * @returns The updated user object.
  */
 export const checkIn = async (
-  event: APIGatewayProxyEvent
+  event: APIGatewayProxyEvent,
 ): Promise<APIGatewayProxyResult> => {
   if (!event.body) {
     return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_BODY_MISSING
+      ErrorConstants.VALIDATION_BODY_MISSING,
     );
   }
 
@@ -27,17 +26,17 @@ export const checkIn = async (
 
   if (!data.studentNumber) {
     return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_BODY_STUDENTNUMBER
+      ErrorConstants.VALIDATION_BODY_STUDENTNUMBER,
     );
   }
   const { studentNumber } = data;
 
   const params = {
     TableName: process.env.userTable,
-    IndexName: "StudentNumberIndex",
-    KeyConditionExpression: "studentNumber = :v_title",
+    IndexName: 'StudentNumberIndex',
+    KeyConditionExpression: 'studentNumber = :v_title',
     ExpressionAttributeValues: {
-      ":v_title": studentNumber,
+      ':v_title': studentNumber,
     },
     ScanIndexForward: false,
   };
@@ -45,7 +44,7 @@ export const checkIn = async (
   try {
     const userList = await DynamoUtilities.query(params, dynamoDb);
 
-    if (userList.length != 1) {
+    if (userList.length !== 1) {
       throw new Error(ErrorConstants.DYNAMO_NONUNIQUE_STUDENTNUMBER);
     }
 
@@ -66,7 +65,8 @@ export const checkIn = async (
 };
 
 /**
- * Update a student's hours based on their student number, add the transaction and update their hours.
+ * Update a student's hours based on their student number,
+ * add the transaction and update their hours.
  *
  * @param event The APIGatewayProxyEvent for the API.
  * @returns The updated user object.
@@ -74,11 +74,11 @@ export const checkIn = async (
 
 // TODO: decrease hours?
 export const updateHours = async (
-  event: APIGatewayProxyEvent
+  event: APIGatewayProxyEvent,
 ): Promise<APIGatewayProxyResult> => {
   if (!event.body) {
     return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_BODY_MISSING
+      ErrorConstants.VALIDATION_BODY_MISSING,
     );
   }
 
@@ -86,39 +86,43 @@ export const updateHours = async (
 
   if (!data.studentNumber) {
     return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_BODY_STUDENTNUMBER
+      ErrorConstants.VALIDATION_BODY_STUDENTNUMBER,
     );
   }
   if (!data.checkIn) {
     return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_BODY_CHECKIN
+      ErrorConstants.VALIDATION_BODY_CHECKIN,
     );
   }
   if (!data.checkOut) {
     return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_BODY_CHECKOUT
+      ErrorConstants.VALIDATION_BODY_CHECKOUT,
     );
   }
 
   const params = {
     TableName: process.env.userTable,
-    IndexName: "StudentNumberIndex",
-    KeyConditionExpression: "studentNumber = :v_title",
+    IndexName: 'StudentNumberIndex',
+    KeyConditionExpression: 'studentNumber = :v_title',
     ExpressionAttributeValues: {
-      ":v_title": data.studentNumber,
+      ':v_title': data.studentNumber,
     },
     ScanIndexForward: false,
   };
   try {
     const userList = await DynamoUtilities.query(params, dynamoDb);
 
-    if (userList.length != 1) {
+    if (userList.length !== 1) {
       throw new Error(ErrorConstants.DYNAMO_NONUNIQUE_STUDENTNUMBER);
     }
 
     const user = userList[0];
-    const newUser = HoursUtilities.handleUpdateHoursProcess(user, data.checkIn, data.checkOut);
-    
+    const newUser = HoursUtilities.handleUpdateHoursProcess(
+      user,
+      data.checkIn,
+      data.checkOut,
+    );
+
     const putParams = {
       TableName: process.env.userTable,
       Item: newUser,
