@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'client/**'
+      - '.github/**'
 
 jobs:
   testAndDeployClient:
@@ -57,3 +58,23 @@ jobs:
         with:
           args: deploy --dir=client/build
           secrets: '["NETLIFY_AUTH_TOKEN", "NETLIFY_SITE_ID"]'
+
+      - name: Deploy to Netlify
+        id: "deploy"
+        uses: nwtgck/actions-netlify@v1.2
+        with:
+          publish-dir: 'client/build'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          deploy-message: ${{ github.event.pull_request.title }}
+          alias: ${{ github.head_ref }}
+          enable-pull-request-comment: false
+          enable-commit-comment: true
+          overwrites-pull-request-comment: true
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        timeout-minutes: 1
+
+      - name: "Run Integration Tests"
+        run: |
+          echo "The deployment output is: ${{ steps.deploy.outputs }}"
