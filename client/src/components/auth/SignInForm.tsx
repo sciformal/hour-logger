@@ -1,32 +1,35 @@
-import Avatar from "@material-ui/core/Avatar";
-import Button from "@material-ui/core/Button";
-import Checkbox from "@material-ui/core/Checkbox";
-import Container from "@material-ui/core/Container";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Grid from "@material-ui/core/Grid";
-import Link from "@material-ui/core/Link";
-import { makeStyles } from "@material-ui/core/styles";
-import TextField from "@material-ui/core/TextField";
-import Typography from "@material-ui/core/Typography";
-import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
-import { API, Auth } from "aws-amplify";
-import React, { useState } from "react";
-import { useAuthenticationContext, useUserContext } from "../../libs/contextLib";
+import Avatar from '@material-ui/core/Avatar';
+import Button from '@material-ui/core/Button';
+import Checkbox from '@material-ui/core/Checkbox';
+import Container from '@material-ui/core/Container';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Grid from '@material-ui/core/Grid';
+import Link from '@material-ui/core/Link';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import { API, Auth } from 'aws-amplify';
+import React, { useState } from 'react';
+import {
+  useAuthenticationContext,
+  useUserContext,
+} from '../../libs/contextLib';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   paper: {
     marginTop: theme.spacing(8),
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
   },
   avatar: {
     margin: theme.spacing(1),
     backgroundColor: theme.palette.secondary.main,
   },
   form: {
-    width: "100%", // Fix IE 11 issue.
+    width: '100%', // Fix IE 11 issue.
     marginTop: theme.spacing(1),
   },
   submit: {
@@ -37,8 +40,8 @@ const useStyles = makeStyles((theme) => ({
 export default function SignInForm() {
   const classes = useStyles();
 
-  const [emailInput, setEmailInput] = useState("");
-  const [password, setPassword] = useState("");
+  const [emailInput, setEmailInput] = useState('');
+  const [password, setPassword] = useState('');
 
   // @ts-ignore
   const { userHasAuthenticated } = useAuthenticationContext();
@@ -47,40 +50,43 @@ export default function SignInForm() {
   const { setUser } = useUserContext();
 
   // @ts-ignore
-  const handleEmailInputChange = (e) => {
+  const handleEmailInputChange = e => {
     setEmailInput(e.target.value);
   };
 
   // @ts-ignore
-  const handlePasswordChange = (e) => {
+  const handlePasswordChange = e => {
     setPassword(e.target.value);
   };
 
   // @ts-ignore
-  const handleSignIn = async (e) => {
+  const handleSignIn = async e => {
     e.preventDefault();
     try {
       await Auth.signIn(emailInput, password);
       let user;
 
       let cognitoUserInfo = await Auth.currentUserInfo();
-      console.log(cognitoUserInfo);
       const userId = cognitoUserInfo.username;
-      
-      const studentNumber = cognitoUserInfo.attributes["custom:studentNumber"];
+      const studentNumber = cognitoUserInfo.attributes['custom:studentNumber'];
       const { given_name, family_name, email } = cognitoUserInfo.attributes; // desctructure the cognito user info object.
-      const { status, data } = await API.get("hour-logger", `/users/${userId}`, { response: true });
-      
-      if (status === 204) { // User doesnt exist in DB, create new user
-        user = await API.post("hour-logger", "/users", {
+      const { status, data } = await API.get(
+        'hour-logger',
+        `/users/${userId}`,
+        { response: true },
+      );
+
+      if (status === 204) {
+        // User doesnt exist in DB, create new user
+        user = await API.post('hour-logger', '/users', {
           body: {
             userId,
             email,
             studentNumber,
-            "firstName" : given_name,
-            "lastName" : family_name,
-          }});
-
+            firstName: given_name,
+            lastName: family_name,
+          },
+        });
       } else {
         user = data;
       }
@@ -90,7 +96,7 @@ export default function SignInForm() {
     } catch (e) {
       console.log(e);
     }
-  }
+  };
 
   return (
     <Container component="main" maxWidth="xs">

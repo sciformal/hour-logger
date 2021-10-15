@@ -46,27 +46,15 @@ jobs:
       - name: Run Unit Tests
         uses: artiomtr/jest-coverage-report-action@v2.0-rc.1
         with:
-            github-token: ${{ secrets.GITHUB_TOKEN }}
-            package-manager: yarn
-            threshold: 75
-            working-directory: ${{ env.working-directory }}
-
-      - name: Deploy to Netlify
-        id: "deploy"
-        uses: nwtgck/actions-netlify@v1.2
-        with:
-          publish-dir: 'client/build'
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          deploy-message: ${{ github.event.pull_request.title }}
-          alias: ${{ github.head_ref }}
-          enable-pull-request-comment: true
-          enable-commit-comment: true
-          overwrites-pull-request-comment: true
+          package-manager: yarn
+          threshold: 75
+          working-directory: ${{ env.working-directory }}
+
+      - uses: netlify/actions/cli@master
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-        timeout-minutes: 1
-
-      - name: "Run Integration Tests"
-        run: |
-          echo "The deployment output is: ${{ steps.deploy.outputs }}"
+        with:
+          args: deploy --dir=client/build
+          secrets: '["NETLIFY_AUTH_TOKEN", "NETLIFY_SITE_ID"]'

@@ -1,5 +1,5 @@
-import { DocumentClient, GetItemOutput } from "aws-sdk/clients/dynamodb";
-import { AWSError } from "aws-sdk";
+import { DocumentClient, GetItemOutput } from 'aws-sdk/clients/dynamodb';
+import { AWSError } from 'aws-sdk';
 
 export class DynamoUtilities {
   public static query(params: any, db: DocumentClient): Promise<Array<any>> {
@@ -8,7 +8,7 @@ export class DynamoUtilities {
         if (err) {
           reject(new Error(err.message));
         } else if (data.Items == null) {
-          reject(new Error("No item exists"));
+          reject(new Error('No item exists'));
         } else {
           resolve(data.Items);
         }
@@ -48,10 +48,10 @@ export class DynamoUtilities {
         } else {
           resolve(data.Items);
         }
-      })
+      });
     });
   }
-  
+
   public static delete(params: any, db: DocumentClient): Promise<void> {
     return new Promise((resolve, reject) => {
       db.delete(params, (err: AWSError) => {

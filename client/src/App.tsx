@@ -1,8 +1,8 @@
-import { API, Auth } from "aws-amplify";
-import React, { useEffect, useState } from "react";
-import Loader from "./components/global/Loader";
-import { AuthenticationContext, UserContext } from "./libs/contextLib";
-import Routes from "./Routes";
+import { API, Auth } from 'aws-amplify';
+import React, { useEffect, useState } from 'react';
+import Loader from './components/global/Loader';
+import { AuthenticationContext, UserContext } from './libs/contextLib';
+import Routes from './Routes';
 // import './styles/App.css';
 
 export default function App() {
@@ -22,19 +22,25 @@ export default function App() {
         let cognitoUserInfo = await Auth.currentUserInfo();
 
         const userId = cognitoUserInfo.username;
-        const studentNumber = "000000000000";
+        const studentNumber = '000000000000';
         const { given_name, family_name, email } = cognitoUserInfo.attributes; // desctructure the cognito user info object.
-        const { status, data } = await API.get("hour-logger", `/users/${userId}`, { response: true });
+        const { status, data } = await API.get(
+          'hour-logger',
+          `/users/${userId}`,
+          { response: true },
+        );
 
-        if (status === 204) { // User doesnt exist in DB, create new user
-          user = await API.post("hour-logger", "/users", {
+        if (status === 204) {
+          // User doesnt exist in DB, create new user
+          user = await API.post('hour-logger', '/users', {
             body: {
               userId,
               email,
               studentNumber,
-              "firstName" : given_name,
-              "lastName" : family_name,
-            }});
+              firstName: given_name,
+              lastName: family_name,
+            },
+          });
         } else {
           user = data;
         }
@@ -56,12 +62,13 @@ export default function App() {
     return (
       <div className="App">
         <AuthenticationContext.Provider
-        // @ts-ignore
+          // @ts-ignore
           value={{ isAuthenticated, userHasAuthenticated }}
         >
-          <UserContext.Provider 
-        // @ts-ignore
-        value={{ user, setUser }}>
+          <UserContext.Provider
+            // @ts-ignore
+            value={{ user, setUser }}
+          >
             <Routes />
           </UserContext.Provider>
         </AuthenticationContext.Provider>

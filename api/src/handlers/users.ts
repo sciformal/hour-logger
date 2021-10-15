@@ -1,11 +1,11 @@
-import { UsersUtilities } from './../util/usersUtilities';
-import { ErrorConstants } from "../constants/errors";
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
-import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { DynamoUtilities } from "../../src/util/dynamo";
-import { GlobalConstants } from "../../src/constants/global";
-import { User, UserType } from "../../src/types/User";
-import { ResponseUtilities } from "../../src/util/response";
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { DocumentClient } from 'aws-sdk/clients/dynamodb';
+import { UsersUtilities } from '../util/usersUtilities';
+import { ErrorConstants } from '../constants/errors';
+import { DynamoUtilities } from '../../src/util/dynamo';
+import { GlobalConstants } from '../../src/constants/global';
+import { User, UserType } from '../../src/types/User';
+import { ResponseUtilities } from '../../src/util/response';
 
 const dynamoDb = new DocumentClient();
 
@@ -16,11 +16,11 @@ const dynamoDb = new DocumentClient();
  * @returns The created user object.
  */
 export const createUser = async (
-  event: APIGatewayProxyEvent
+  event: APIGatewayProxyEvent,
 ): Promise<APIGatewayProxyResult> => {
   if (!event.body) {
     return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_BODY_MISSING
+      ErrorConstants.VALIDATION_BODY_MISSING,
     );
   }
 
@@ -30,49 +30,49 @@ export const createUser = async (
   } catch (err) {
     console.log(err);
     return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_BODY_INVALID
+      ErrorConstants.VALIDATION_BODY_INVALID,
     );
   }
 
   if (!data.firstName) {
     return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_BODY_FIRSTNAME
+      ErrorConstants.VALIDATION_BODY_FIRSTNAME,
     );
   }
 
   if (!data.lastName) {
     return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_BODY_LASTNAME
+      ErrorConstants.VALIDATION_BODY_LASTNAME,
     );
   }
 
   if (!data.email) {
     return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_BODY_EMAIL
+      ErrorConstants.VALIDATION_BODY_EMAIL,
     );
   }
 
   if (!data.studentNumber) {
     return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_BODY_STUDENTNUMBER
+      ErrorConstants.VALIDATION_BODY_STUDENTNUMBER,
     );
   }
 
   if (!data.userId) {
     return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_BODY_USERID
+      ErrorConstants.VALIDATION_BODY_USERID,
     );
   }
 
-  if(!(/^\d+$/.test(data.studentNumber))){
+  if (!/^\d+$/.test(data.studentNumber)) {
     return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_STUDENTNUMBER_NONNUM
+      ErrorConstants.VALIDATION_STUDENTNUMBER_NONNUM,
     );
   }
 
-  if (data.studentNumber.length != 8) {
+  if (data.studentNumber.length !== 8) {
     return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_STUDENTNUMBER_LENGTH
+      ErrorConstants.VALIDATION_STUDENTNUMBER_LENGTH,
     );
   }
 
@@ -91,10 +91,12 @@ export const createUser = async (
   };
 
   try {
-    const uniqueStudentNumber = await UsersUtilities.uniqueStudentNumber(data.studentNumber);
+    const uniqueStudentNumber = await UsersUtilities.uniqueStudentNumber(
+      data.studentNumber,
+    );
     if (!uniqueStudentNumber) {
       return ResponseUtilities.createErrorResponse(
-        ErrorConstants.DYNAMO_NONUNIQUE_STUDENTNUMBER
+        ErrorConstants.DYNAMO_NONUNIQUE_STUDENTNUMBER,
       );
     }
 
@@ -113,19 +115,19 @@ export const createUser = async (
  * @returns The user object.
  */
 export const getUser = async (
-  event: APIGatewayProxyEvent
+  event: APIGatewayProxyEvent,
 ): Promise<APIGatewayProxyResult> => {
   if (!event.pathParameters) {
     return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_PATH_MISSING
+      ErrorConstants.VALIDATION_PATH_MISSING,
     );
   }
 
-  let { userId } = event.pathParameters;
+  const { userId } = event.pathParameters;
 
   if (!userId) {
     return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_PATH_INVALID
+      ErrorConstants.VALIDATION_PATH_INVALID,
     );
   }
 
@@ -138,7 +140,8 @@ export const getUser = async (
 
   try {
     const user = await DynamoUtilities.get(params, dynamoDb);
-    if (!user) { // no user exists
+    if (!user) {
+      // no user exists
       return ResponseUtilities.createAPIResponse(user, 204);
     }
     return ResponseUtilities.createAPIResponse(user);
@@ -149,8 +152,9 @@ export const getUser = async (
 };
 
 export const getAllUsers = async (
-  event: APIGatewayProxyEvent
+  event: APIGatewayProxyEvent,
 ): Promise<APIGatewayProxyResult> => {
+  console.log(event);
   const params = {
     TableName: process.env.userTable,
   };
@@ -171,19 +175,19 @@ export const getAllUsers = async (
  * @returns A 200 status code or a 204 if no user was deleted.
  */
 export const deleteUser = async (
-  event: APIGatewayProxyEvent
+  event: APIGatewayProxyEvent,
 ): Promise<APIGatewayProxyResult> => {
   if (!event.pathParameters) {
     return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_PATH_MISSING
+      ErrorConstants.VALIDATION_PATH_MISSING,
     );
   }
 
-  let { userId } = event.pathParameters;
+  const { userId } = event.pathParameters;
 
   if (!userId) {
     return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_PATH_INVALID
+      ErrorConstants.VALIDATION_PATH_INVALID,
     );
   }
 

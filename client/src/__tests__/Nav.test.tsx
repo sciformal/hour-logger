@@ -1,30 +1,30 @@
-import { render, screen } from "@testing-library/react";
-import { AuthenticationContext, UserContext } from "../libs/contextLib";
-import HourLoggerNav from "../components/global/Nav";
+import { render, screen } from '@testing-library/react';
+import { AuthenticationContext, UserContext } from '../libs/contextLib';
+import HourLoggerNav from '../components/global/Nav';
 
 export const sampleUser = {
-  firstName: "John",
-  lastName: "Doe",
-  email: "john.doe@queensu.ca",
+  firstName: 'John',
+  lastName: 'Doe',
+  email: 'john.doe@queensu.ca',
   hours: 0,
   hoursNeeded: 20,
-  type: "USER",
+  type: 'USER',
   isCheckedIn: false,
   transactions: [],
 };
 
 export const sampleManager = {
   ...sampleUser,
-  type: "MANAGER"
-}
+  type: 'MANAGER',
+};
 
-describe("Navigation Bar Tests", () => {
+describe('Navigation Bar Tests', () => {
   const mockAuthContext = {
     isAuthenticated: true,
     userHasAuthenticated: () => {},
   };
 
-  test("User navigation bar tests", () => {
+  test('User navigation bar tests', () => {
     const userContext = {
       user: sampleUser,
     };
@@ -35,22 +35,22 @@ describe("Navigation Bar Tests", () => {
         <UserContext.Provider value={userContext}>
           <HourLoggerNav />
         </UserContext.Provider>
-      </AuthenticationContext.Provider>
+      </AuthenticationContext.Provider>,
     );
 
     const navigationItems = [
-      "Sci Formal Hour Logger",
-      "Ticket Purchase",
-      "Logout",
+      'Sci Formal Hour Logger',
+      'Ticket Purchase',
+      'Logout',
     ];
 
-    navigationItems.forEach((item) => {
+    navigationItems.forEach(item => {
       const htmlNode = screen.getByText(item);
       expect(htmlNode).toBeInTheDocument();
     });
   });
 
-  test("Manager navigation bar tests", () => {
+  test('Manager navigation bar tests', () => {
     const userContext = {
       user: sampleUser,
     };
@@ -60,22 +60,22 @@ describe("Navigation Bar Tests", () => {
         <UserContext.Provider value={userContext}>
           <HourLoggerNav />
         </UserContext.Provider>
-      </AuthenticationContext.Provider>
+      </AuthenticationContext.Provider>,
     );
 
     const navigationItems = [
-      "Sci Formal Hour Logger",
-      "Ticket Purchase",
-      "Logout",
+      'Sci Formal Hour Logger',
+      'Ticket Purchase',
+      'Logout',
     ];
 
-    navigationItems.forEach((item) => {
+    navigationItems.forEach(item => {
       const htmlNode = screen.getByText(item);
       expect(htmlNode).toBeInTheDocument();
     });
   });
 
-  test("Admin navigation bar tests", () => {
+  test('Admin navigation bar tests', () => {
     const userContext = {
       user: sampleUser,
     };
@@ -85,19 +85,19 @@ describe("Navigation Bar Tests", () => {
         <UserContext.Provider value={userContext}>
           <HourLoggerNav />
         </UserContext.Provider>
-      </AuthenticationContext.Provider>
+      </AuthenticationContext.Provider>,
     );
 
-    const header = screen.getByText("Sci Formal Hour Logger");
-    const ticketPurchase = screen.getByText("Ticket Purchase");
-    const logout = screen.getByText("Logout");
+    const header = screen.getByText('Sci Formal Hour Logger');
+    const ticketPurchase = screen.getByText('Ticket Purchase');
+    const logout = screen.getByText('Logout');
 
     expect(header).toBeInTheDocument();
     expect(ticketPurchase).toBeInTheDocument();
     expect(logout).toBeInTheDocument();
   });
 
-  test("Logout tests", () => {
+  test('Logout tests', () => {
     // test interaction with logout button
   });
 });

@@ -3,7 +3,7 @@ name: Production 🚀
 on:
   push:
     branches: [main]
-    paths: 
+    paths:
       - 'api/**'
 
 jobs:
@@ -34,11 +34,11 @@ jobs:
       - name: Run Unit Tests
         run: yarn test
         working-directory: ${{ env.working-directory }}
-        
+
       - name: Update Badges
         run: yarn badges
         working-directory: ${{ env.working-directory}}
-        
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
