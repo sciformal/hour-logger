@@ -111,7 +111,7 @@ export default function SignUp() {
       let cognitoUserInfo = await Auth.currentUserInfo();
       const userId = cognitoUserInfo.username;
 
-      const user = API.post("hour-logger", "/users", {
+      const user = await API.post("hour-logger", "/users", {
         body: {
           firstName,
           lastName,
