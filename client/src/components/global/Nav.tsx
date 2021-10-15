@@ -47,6 +47,8 @@ export default function HourLoggerNav() {
                   )}
                 </NavDropdown>
 
+                <Nav.Link href="/users">Users</Nav.Link>
+
                 <Nav.Link href="/payment">Ticket Purchase</Nav.Link>
 
                 {(type === "ADMIN" || type === "COMMS") && (

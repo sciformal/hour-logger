@@ -82,27 +82,24 @@ export default function SignUp() {
   const handleRegister = async (e) => {
     e.preventDefault();
     setIsPasswordInvalid(false);
-    await Auth.signUp({
-      username: email,
-      password: password,
-      attributes: {
-        given_name: firstName,
-        family_name: lastName,
-      },
-    })
-      .then(() => {
-        setSignUpStep(2);
-      })
-      .catch((err) => {
-        // TODO: Handle this
-        console.log(err);
-        if (err.code === "InvalidPasswordException") {
-          setIsPasswordInvalid(true);
-          setPasswordError(err.message);
-        }
-        // User already exists?
-        console.log(err);
+    try {
+      await Auth.signUp({
+        username: email,
+        password: password,
+        attributes: {
+          given_name: firstName,
+          family_name: lastName,
+          "custom:studentNumber": studentNumber,
+        },
       });
+      setSignUpStep(2);
+    } catch (err: any) {
+      console.log(err);
+      if (err.code === "InvalidPasswordException") {
+        setIsPasswordInvalid(true);
+        setPasswordError(err.message);
+      }
+    }
   };
 
   // @ts-ignore
