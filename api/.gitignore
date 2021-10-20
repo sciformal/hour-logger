@@ -5,5 +5,7 @@ jspm_packages
 # Serverless directories
 .serverless
 
+.webpack/**
+
 # Code Coverage
 coverage/**
