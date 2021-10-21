@@ -4,8 +4,9 @@ import { UsersUtilities } from '../util/usersUtilities';
 import { ErrorConstants } from '../constants/errors';
 import { DynamoUtilities } from '../../src/util/dynamo';
 import { GlobalConstants } from '../../src/constants/global';
-import { User, UserType } from '../../src/types/User';
+import { User } from '../types/models/User';
 import { ResponseUtilities } from '../../src/util/response';
+import { UserType } from '../types/models/UserType';
 
 const dynamoDb = new DocumentClient();
 
