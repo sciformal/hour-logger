@@ -1,4 +1,4 @@
-import { HourTransaction } from '../HourTransaction';
+import { HourTransaction } from '../models/HourTransaction';
 
 /**
  * Hours Request Object for updating hours

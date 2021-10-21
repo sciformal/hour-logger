@@ -117,13 +117,13 @@ functions:
           method: post
           cors: true
 
-  reduction-request-create:
-    handler: src/handlers/reductionRequests.newRequest
+  create-reduction-request:
+    handler: src/handlers/requests.create
     memorySize: 128
     description: 'Creates new hour reduction request'
     events:
       - http:
-          path: /hourReduction
+          path: /requests
           method: post
           # authorizer: aws_iam
           cors: true

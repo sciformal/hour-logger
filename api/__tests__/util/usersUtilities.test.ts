@@ -1,4 +1,4 @@
-import { User } from '../../src/types/User';
+import { User } from '../../src/types/models/User';
 import { sampleStudentNumber, sampleUser } from '../mocks/user';
 import { UsersUtilities } from '../../src/util/usersUtilities';
 import { DynamoUtilities } from '../../src/util/dynamo';

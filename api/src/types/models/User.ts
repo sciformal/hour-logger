@@ -1,14 +1,5 @@
 import { HourTransaction } from './HourTransaction';
-
-/**
- * Allowed user types.
- */
-export enum UserType {
-  USER = 'USER',
-  MANAGER = 'MANAGER',
-  BOUNCER = 'BOUNCER',
-  ADMIN = 'ADMIN',
-}
+import { UserType } from './UserType';
 
 /**
  * DynamoDB user model.
