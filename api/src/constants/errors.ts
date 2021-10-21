@@ -38,6 +38,9 @@ export class ErrorConstants {
   public static readonly VALIDATION_STUDENTNUMBER_LENGTH =
     'The student number must be 8 digits.';
 
+  public static readonly VALIDATION_BODY_REDUCTION_REQUEST_MESSAGE =
+    'The request body is missing the hour reduction reasoning';
+
   public static readonly DYNAMO_NONUNIQUE_STUDENTNUMBER =
     'DynamoDB query should have only 1 user per studentNumber.';
 }

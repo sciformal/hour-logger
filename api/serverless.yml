@@ -12,6 +12,7 @@ provider:
   region: us-west-1
   environment:
     userTable: ${env:userTable}-${self:provider.stage}
+    requestsTable: ${env:reductionRequestsTable}-${self:provider.stage}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -116,6 +117,17 @@ functions:
           method: post
           cors: true
 
+  reduction-request-create:
+    handler: src/handlers/reductionRequests.newRequest
+    memorySize: 128
+    description: 'Creates new hour reduction request'
+    events:
+      - http:
+          path: /hourReduction
+          method: post
+          # authorizer: aws_iam
+          cors: true
+
 resources:
   Resources:
     UserDynamoDbTable:
@@ -144,3 +156,17 @@ resources:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
         TableName: ${self:provider.environment.userTable}
+    RequestsDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: 'requestId'
+            AttributeType: 'S'
+        KeySchema:
+          - AttributeName: 'requestId'
+            KeyType: 'HASH'
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.reductionRequestsTable}
