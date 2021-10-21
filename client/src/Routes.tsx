@@ -4,6 +4,7 @@ import SignUp from './components/auth/Register';
 import HourLoggerNav from './components/global/Nav';
 import { CheckInPage } from './pages/CheckInPage';
 import { HomePage } from './pages/HomePage';
+import { UserPage } from './pages/UserPage';
 import { UsersPage } from './pages/UsersPage';
 
 export default function Routes() {
@@ -14,6 +15,7 @@ export default function Routes() {
         <Route exact path="/" component={HomePage} />
         <Route exact path="/check-in" component={CheckInPage} />
         <Route exact path="/users" component={UsersPage} />
+        <Route exact path="/users/:id" component={UserPage} />
         <Route exact path="/register" component={SignUp} />
         <Route exact path="/forgot-password" component={ForgotPassword} />
         <Route component={NoMatch} />

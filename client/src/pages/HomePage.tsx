@@ -2,6 +2,7 @@ import React from 'react';
 import SignInForm from '../components/auth/SignInForm';
 import { HourLoggerTable } from '../components/global/Table';
 import { useAuthenticationContext, useUserContext } from '../libs/contextLib';
+import { formatHourTransaction } from '../util/hours';
 // import "../styles/Home.css";
 
 const types = ['USER', 'ADMIN', 'MANAGER', 'BOUNCER'];
@@ -16,20 +17,6 @@ export const HomePage = () => {
   let totalHoursFormatted = 0.0;
   let hoursEntries = [];
 
-  // @ts-ignore
-  const formatHourTransaction = transaction => {
-    const checkIn = new Date(transaction.checkIn);
-    const checkOut = new Date(transaction.checkOut);
-    const date = checkIn.toDateString();
-    const checkInTime = checkIn.toLocaleTimeString();
-    const checkOutTime = checkOut.toLocaleTimeString();
-    const hours = (
-      (Date.parse(transaction.checkOut) - Date.parse(transaction.checkIn)) /
-      (60 * 60 * 1000)
-    ).toFixed(2);
-
-    return [date, checkInTime, checkOutTime, hours];
-  };
 
   if (isAuthenticated) {
     totalHoursFormatted = user.hours.toFixed(2); // round to 2 decimals
