@@ -80,7 +80,7 @@ describe('User Endpoint Tests', () => {
         );
       });
 
-      it('should return 400 when the request doesnt contain a body', async () => {
+      it('should return 400 when the request contains an invalid body', async () => {
         const mockEvent: APIGatewayProxyEvent = {
           ...sampleApiGatewayEvent,
           body: 'this cannot be parsed!',

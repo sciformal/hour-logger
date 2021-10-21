@@ -55,6 +55,19 @@ describe('Requests API Tests', () => {
       );
     });
 
+    it('should return 400 when the request contains an invalid body', async () => {
+      const mockEvent: APIGatewayProxyEvent = {
+        ...sampleApiGatewayEvent,
+        body: 'this cannot be parsed!',
+      };
+
+      const response = await create(mockEvent);
+      expect(response.statusCode).toEqual(400);
+      expect(response.body).toEqual(
+        JSON.stringify({ message: ErrorConstants.VALIDATION_BODY_INVALID }),
+      );
+    });
+
     it('should return 400 when the request body doesnt contain a userId', async () => {
       delete validRequest.userId;
 

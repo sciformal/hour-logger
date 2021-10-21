@@ -2,9 +2,9 @@
  * DynamoDB user model.
  */
 export enum ReductionStatus {
-  PENDING,
-  APPROVED,
-  DENIED,
+  PENDING = 'PENDING',
+  APPROVED = 'APPROVED',
+  DENIED = 'DENIED',
 }
 
 export interface ReductionRequest {

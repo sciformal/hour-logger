@@ -19,17 +19,29 @@ export const create = async (
       ErrorConstants.VALIDATION_BODY_MISSING,
     );
   }
-  const data = JSON.parse(event.body);
+
+  let data;
+  try {
+    data = JSON.parse(event.body);
+  } catch (err) {
+    console.log(err);
+    return ResponseUtilities.createErrorResponse(
+      ErrorConstants.VALIDATION_BODY_INVALID,
+    );
+  }
+
   if (!data.userId) {
     return ResponseUtilities.createErrorResponse(
       ErrorConstants.VALIDATION_BODY_USERID,
     );
   }
+
   if (!data.message) {
     return ResponseUtilities.createErrorResponse(
       ErrorConstants.VALIDATION_BODY_REDUCTION_REQUEST_MESSAGE,
     );
   }
+
   const reductionRequestPayload: ReductionRequest = {
     ...data,
     requestId: uuid(),
