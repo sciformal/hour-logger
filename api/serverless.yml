@@ -128,6 +128,29 @@ functions:
           # authorizer: aws_iam
           cors: true
 
+  get-reduction-requests:
+    handler: src/handlers/requests.get
+    memorySize: 128
+    description: 'Gets all reduction requests'
+    events:
+      - http:
+          path: /requests
+          method: get
+          cors: true
+          
+  update-reduction-request:
+    handler: src/handlers/requests.update
+    memorySize: 128
+    description: 'Update a reduction request'
+    events:
+      - http:
+          path: /requests/{requestId}
+          method: put
+          cors: true
+          request:
+            parameters:
+              paths:
+                requestId: true
 resources:
   Resources:
     UserDynamoDbTable:

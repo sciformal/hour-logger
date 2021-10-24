@@ -14,11 +14,15 @@ export const ReductionRequestPage = () => {
 
     const handleReductionRequest = async () => {
         const userId = user.userId;
+        const firstName = user.firstName;
+        const lastName = user.lastName;
 
         await API.post('hour-logger', '/requests', {
             body: {
-            message: reductionMessage,
-            userId: userId
+              message: reductionMessage,
+              userId,
+              firstName,
+              lastName
             }
         });
     }
