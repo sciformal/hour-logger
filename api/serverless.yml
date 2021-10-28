@@ -107,7 +107,7 @@ functions:
           # authorizer: aws_iam
           cors: true
 
-  pre-register:
+  pretty-emails:
     handler: src/handlers/auth.register
     memorySize: 128
     description: 'Sends a registration email'

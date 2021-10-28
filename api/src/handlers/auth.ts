@@ -10,11 +10,15 @@ import { CustomEmails } from '../constants/emails';
 export const register = (event, _context, callback) => {
   const name = event.request.userAttributes.given_name;
   const code = event.request.codeParameter;
-
   if (event.triggerSource === 'CustomMessage_SignUp') {
     event.response = {
       emailSubject: CustomEmails.CONFIRMATION_CODE_SUBJECT,
       emailMessage: CustomEmails.createConfirmationCodeEmail(name, code),
+    };
+  } else if (event.triggerSource === 'CustomMessage_ForgotPassword'){
+    event.response = {
+      emailSubject: CustomEmails.PASSWORD_RESET_SUBJECT,
+      emailMessage: CustomEmails.createResetPasswordEmail(name, code),
     };
   }
 

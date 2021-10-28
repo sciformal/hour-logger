@@ -22,7 +22,8 @@ export default function App() {
         let cognitoUserInfo = await Auth.currentUserInfo();
 
         const userId = cognitoUserInfo.username;
-        const studentNumber = '000000000000';
+        //@ts-ignore
+        const studentNumber = cognitoUserInfo.attributes['custom:studentNumber'];
         const { given_name, family_name, email } = cognitoUserInfo.attributes; // desctructure the cognito user info object.
         const { status, data } = await API.get(
           'hour-logger',
@@ -47,6 +48,8 @@ export default function App() {
         setUser(user);
         userHasAuthenticated(true);
       }
+    } catch (e) {
+      console.log(e);
     } finally {
       setIsAuthenticating(false);
     }
