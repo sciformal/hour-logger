@@ -53,6 +53,6 @@ jobs:
         run: |
           touch .env
           echo userTable=users-prod >> .env
-          echo reductionRequestsTable=requests-prod
+          echo reductionRequestsTable=requests-prod >> .env
           serverless deploy --stage=prod
         working-directory: ${{ env.working-directory }}
