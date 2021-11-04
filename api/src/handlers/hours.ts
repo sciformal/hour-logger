@@ -3,7 +3,7 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { ErrorConstants } from '../../src/constants/errors';
 import { DynamoUtilities } from '../util/dynamo';
 import { ResponseUtilities } from '../util/response';
-import { HoursUtilities } from '../util/hoursUtilities';
+import { HoursUtilities } from '../util/hours-utilities';
 
 const dynamoDb = new DocumentClient();
 /**

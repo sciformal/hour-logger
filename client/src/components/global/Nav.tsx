@@ -52,7 +52,7 @@ export default function HourLoggerNav() {
                 <Nav.Link href="/payment">Ticket Purchase</Nav.Link>
 
                 {(type === 'ADMIN' || type === 'COMMS') && (
-                  <Nav.Link href="/reduction-request">
+                  <Nav.Link href="/reduction-requests">
                     Reduction Requests
                   </Nav.Link>
                 )}

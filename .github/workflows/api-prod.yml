@@ -52,7 +52,7 @@ jobs:
       - name: Lambda Deployment
         run: |
           touch .env
-          echo userTable=hour-logger-prod >> .env
-          echo defaultHoursRequired=20 >> .env
+          echo userTable=users-prod >> .env
+          echo reductionRequestsTable=requests-prod
           serverless deploy --stage=prod
         working-directory: ${{ env.working-directory }}
