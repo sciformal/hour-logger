@@ -12,4 +12,5 @@ export interface ReductionRequest {
   userId: string;
   message: string;
   status: ReductionStatus;
+  numHoursReduced?: number;
 }
