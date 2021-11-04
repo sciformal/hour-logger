@@ -20,7 +20,6 @@ export default function App() {
         let user;
 
         let cognitoUserInfo = await Auth.currentUserInfo();
-        console.log(cognitoUserInfo);
         const userId = cognitoUserInfo.username;
         const { given_name, family_name, email } = cognitoUserInfo.attributes; // desctructure the cognito user info object.
         //@ts-ignore
@@ -48,6 +47,8 @@ export default function App() {
         setUser(user);
         userHasAuthenticated(true);
       }
+    } catch (e) {
+      console.log(e);
     } finally {
       setIsAuthenticating(false);
     }
