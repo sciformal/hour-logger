@@ -52,6 +52,6 @@ jobs:
         run: |
           touch .env
           echo userTable=users-beta >> .env
-          echo reductionRequestsTable=requests-beta
+          echo reductionRequestsTable=requests-beta >> .env
           serverless deploy --stage=beta
         working-directory: ${{ env.working-directory }}
