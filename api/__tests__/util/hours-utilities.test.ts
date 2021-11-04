@@ -3,7 +3,7 @@ import {
   sampleCheckOutTime,
   sampleTransaction,
 } from '../mocks/hours';
-import { HoursUtilities } from '../../src/util/hoursUtilities';
+import { HoursUtilities } from '../../src/util/hours-utilities';
 import { sampleUser } from '../mocks/user';
 import { User } from '../../src/types/models/User';
 

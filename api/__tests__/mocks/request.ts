@@ -8,6 +8,8 @@ import { sampleUserId } from './user';
 export const sampleReductionRequestDTO = {
   userId: sampleUserId,
   message: 'Please reduce my hours!',
+  firstName: "John",
+  lastName: "Doe"
 };
 
 export const sampleReductionRequest: ReductionRequest = {

@@ -114,6 +114,20 @@ export const get = async (
 export const update = async (
   event: APIGatewayProxyEvent
   ): Promise<APIGatewayProxyResult> => {
+    if (!event.pathParameters) {
+      return ResponseUtilities.createErrorResponse(
+        ErrorConstants.VALIDATION_PATH_MISSING,
+      );
+    }
+
+    const { requestId } = event.pathParameters;
+
+    if (!requestId) {
+      return ResponseUtilities.createErrorResponse(
+        ErrorConstants.VALIDATION_BODY_REQUESTID,
+      );
+    } 
+  
   if (!event.body) {
     return ResponseUtilities.createErrorResponse(
       ErrorConstants.VALIDATION_BODY_MISSING,
@@ -128,14 +142,6 @@ export const update = async (
       ErrorConstants.VALIDATION_BODY_INVALID,
     );
   }
-
-  const { requestId } = event.pathParameters;
-
-  if (!requestId) {
-    return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_BODY_REQUESTID,
-    );
-  } 
 
   if (!data.status) {
     return ResponseUtilities.createErrorResponse(

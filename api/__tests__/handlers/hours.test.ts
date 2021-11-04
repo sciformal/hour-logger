@@ -1,7 +1,7 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
 import { updateHours, checkIn } from '../../src/handlers/hours';
 import { UpdateHoursRequest } from '../../src/types/requests/UpdateHoursRequest';
-import { HoursUtilities } from '../../src/util/hoursUtilities';
+import { HoursUtilities } from '../../src/util/hours-utilities';
 import { sampleTransaction } from '../mocks/hours';
 import { DynamoUtilities } from '../../src/util/dynamo';
 import { ErrorConstants } from '../../src/constants/errors';
