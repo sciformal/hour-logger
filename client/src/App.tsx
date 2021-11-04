@@ -21,7 +21,6 @@ export default function App() {
 
         let cognitoUserInfo = await Auth.currentUserInfo();
         const userId = cognitoUserInfo.username;
-        const studentNumber = cognitoUserInfo.attributes['custom:studentNumber'];
         const { given_name, family_name, email } = cognitoUserInfo.attributes; // desctructure the cognito user info object.
         //@ts-ignore
         const studentNumber = cognitoUserInfo.attributes['custom:studentNumber'];
