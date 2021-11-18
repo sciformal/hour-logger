@@ -12,7 +12,6 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { Auth, API } from 'aws-amplify';
 import React, { useState } from 'react';
 import { Dropdown } from 'react-bootstrap';
-import { FormControl } from 'react-bootstrap';
 import { UserSituation } from '../../types/situationType'; 
 import {
   useAuthenticationContext,
