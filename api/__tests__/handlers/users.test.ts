@@ -1,3 +1,4 @@
+import { UserSituation } from './../../src/types/requests/UserRequest';
 import { APIGatewayProxyEvent } from 'aws-lambda';
 import { UsersUtilities } from '../../src/util/usersUtilities';
 import { ErrorConstants } from '../../src/constants/errors';
@@ -167,6 +168,20 @@ describe('User Endpoint Tests', () => {
         expect(response.statusCode).toEqual(400);
         expect(response.body).toEqual(
           JSON.stringify({ message: ErrorConstants.VALIDATION_BODY_USERID }),
+        );
+      });
+      it('should return 400 when the request body doesnt contain userSituation', async () => {
+        delete validUser.userSituation;
+
+        const mockEvent: APIGatewayProxyEvent = {
+          ...sampleApiGatewayEvent,
+          body: JSON.stringify(validUser),
+        };
+
+        const response = await createUser(mockEvent);
+        expect(response.statusCode).toEqual(400);
+        expect(response.body).toEqual(
+          JSON.stringify({ message: ErrorConstants.VALIDATION_USER_SITUATION }),
         );
       });
 

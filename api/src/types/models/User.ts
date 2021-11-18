@@ -11,7 +11,8 @@ export interface User {
   firstName: string;
   lastName: string;
   hours: number;
-  hoursNeeded: number;
+  finalHoursNeeded: number;
+  regularHoursNeeded: number,
   isCheckedIn: boolean;
   type: UserType;
   transactions: Array<HourTransaction>;

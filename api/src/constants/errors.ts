@@ -40,6 +40,9 @@ export class ErrorConstants {
 
   public static readonly VALIDATION_BODY_STATUS = 
   'The status is missing in the request.';
+
+  public static readonly VALIDATION_USER_SITUATION = 
+  'The user situation is missing in the request.';
   
   public static readonly VALIDATION_BODY_NUM_HOURS_REDUCED = 'The field numHoursReduced is missing in the request';
 
