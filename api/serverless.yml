@@ -186,9 +186,21 @@ resources:
         AttributeDefinitions:
           - AttributeName: 'requestId'
             AttributeType: 'S'
+          - AttributeName: 'userId'
+            AttributeType: 'S'
         KeySchema:
           - AttributeName: 'requestId'
             KeyType: 'HASH'
+        GlobalSecondaryIndexes:
+          - IndexName: UserIdIndex
+            KeySchema:
+              - AttributeName: userId
+                KeyType: HASH
+            Projection:
+              ProjectionType: 'ALL'
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1

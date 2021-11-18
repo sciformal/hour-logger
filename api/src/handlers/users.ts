@@ -145,7 +145,24 @@ export const getUser = async (
       // no user exists
       return ResponseUtilities.createAPIResponse(user, 204);
     }
-    return ResponseUtilities.createAPIResponse(user);
+
+    const requestParams = {
+      TableName: process.env.reductionRequestsTable,
+      IndexName: 'UserIdIndex',
+      KeyConditionExpression: 'userId = :v_title',
+      ExpressionAttributeValues: {
+        ':v_title': user.userId,
+      },
+      ScanIndexForward: false,
+    };
+
+    const requests = await DynamoUtilities.query(requestParams, dynamoDb);
+    const compoundUser = {
+      ...user,
+      requests,
+    };
+
+    return ResponseUtilities.createAPIResponse(compoundUser);
   } catch (err) {
     console.log(err);
     return ResponseUtilities.createErrorResponse(err.message, 500);
