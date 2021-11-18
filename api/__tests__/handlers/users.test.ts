@@ -306,7 +306,7 @@ describe('User Endpoint Tests', () => {
       expect(response.body).toEqual(JSON.stringify({ message: errorMessage }));
     });
 
-    it('should return a 500 when getting a user fails dynamo', async () => {
+    it('should return a 500 when getting users requests fails dynamo', async () => {
       const mockEvent: APIGatewayProxyEvent = {
         ...sampleApiGatewayEvent,
         pathParameters: {
