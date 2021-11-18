@@ -12,6 +12,7 @@ import { UserRequest } from '../../src/types/requests/UserRequest';
 import { DynamoUtilities } from '../../src/util/dynamo';
 import { sampleApiGatewayEvent } from '../mocks/event';
 import { sampleUser, sampleUserId, sampleUserRequest } from '../mocks/user';
+import { sampleReductionRequest } from '../mocks/request';
 
 jest.mock('aws-sdk', () => ({
   DynamoDB: {
@@ -247,11 +248,19 @@ describe('User Endpoint Tests', () => {
         },
       };
 
+      const sampleRequests = [sampleReductionRequest];
+
+      const expectedUser = {
+        ...sampleUser,
+        requests: sampleRequests,
+      };
+
       jest.spyOn(DynamoUtilities, 'get').mockResolvedValue(sampleUser);
+      jest.spyOn(DynamoUtilities, 'query').mockResolvedValue(sampleRequests);
 
       const response = await getUser(mockEvent);
       expect(response.statusCode).toEqual(200);
-      expect(response.body).toEqual(JSON.stringify(sampleUser));
+      expect(response.body).toEqual(JSON.stringify(expectedUser));
     });
 
     it('should return a 204 when getting a user doesnt exist', async () => {
@@ -305,6 +314,26 @@ describe('User Endpoint Tests', () => {
 
       jest
         .spyOn(DynamoUtilities, 'get')
+        .mockRejectedValue(new Error(errorMessage));
+
+      const response = await getUser(mockEvent);
+      expect(response.statusCode).toEqual(500);
+      expect(response.body).toEqual(JSON.stringify({ message: errorMessage }));
+    });
+
+    it('should return a 500 when getting users requests fails dynamo', async () => {
+      const mockEvent: APIGatewayProxyEvent = {
+        ...sampleApiGatewayEvent,
+        pathParameters: {
+          userId: sampleUserId,
+        },
+      };
+
+      const errorMessage = 'Error message from dynamo';
+
+      jest.spyOn(DynamoUtilities, 'get').mockResolvedValue(sampleUser);
+      jest
+        .spyOn(DynamoUtilities, 'query')
         .mockRejectedValue(new Error(errorMessage));
 
       const response = await getUser(mockEvent);
