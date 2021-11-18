@@ -1,3 +1,4 @@
+import { InputLabel, Select } from '@material-ui/core';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
@@ -10,6 +11,8 @@ import Typography from '@material-ui/core/Typography';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { Auth, API } from 'aws-amplify';
 import React, { useState } from 'react';
+import { Dropdown } from 'react-bootstrap';
+import { UserSituation } from '../../types/situationType'; 
 import {
   useAuthenticationContext,
   useUserContext,
@@ -46,6 +49,7 @@ export default function SignUp() {
   const [studentNumber, setStudentNumber] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [userSituation, setUserSituation] = useState('');
   const [confirmationCode, setConfirmationCode] = useState('');
   const [signUpStep, setSignUpStep] = useState(1);
   const [isPasswordInvalid, setIsPasswordInvalid] = useState(false);
@@ -69,6 +73,11 @@ export default function SignUp() {
   // @ts-ignore
   const handleEmailChange = e => {
     setEmail(e.target.value);
+  };
+
+  // @ts-ignore
+  const handleUserSituationChange = e => {
+    setUserSituation(e.target.value);
   };
 
   // @ts-ignore
@@ -121,6 +130,7 @@ export default function SignUp() {
           email,
           studentNumber,
           userId,
+          userSituation,
         },
       });
 
@@ -160,6 +170,7 @@ export default function SignUp() {
                   autoFocus
                 />
               </Grid>
+              
               <Grid item xs={12} sm={6}>
                 <TextField
                   variant="outlined"
@@ -186,6 +197,7 @@ export default function SignUp() {
                   value={studentNumber}
                 />
               </Grid>
+              
               <Grid item xs={12}>
                 <TextField
                   variant="outlined"
@@ -199,6 +211,7 @@ export default function SignUp() {
                   value={email}
                 />
               </Grid>
+              
               <Grid item xs={12}>
                 <TextField
                   variant="outlined"
@@ -213,6 +226,24 @@ export default function SignUp() {
                   value={password}
                 />
               </Grid>
+              
+              {/* @ts-ignore */}
+
+                <InputLabel id="demo-simple-select-label">User Type</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  value={userSituation}
+                  label="User Type"
+                  onChange={handleUserSituationChange}
+                >
+                  <Dropdown.Item value={UserSituation.ENGINEER_ENROLLED}>Sci'21 or Sci'22 Student Enrolled in Classes</Dropdown.Item>
+                  <Dropdown.Item value={UserSituation.INTERNSHIP_KTOWN}>Sci'21 or Sci'22 Student on Internship Residing in Kingston</Dropdown.Item>
+                  <Dropdown.Item value={UserSituation.INTERNSHIP}>Sci'21 or Sci'22 Student on Internship Outside of Kingston</Dropdown.Item>
+                  <Dropdown.Item value={UserSituation.GUEST_QUEENS}>Guest Enrolled at Queen's</Dropdown.Item>
+                  <Dropdown.Item value={UserSituation.GUEST}>External Guest</Dropdown.Item>
+                  <Dropdown.Item value={UserSituation.SCIFORMAL}>Sci Formal Committee</Dropdown.Item>
+                </Select>
             </Grid>
             {/* Show password error if the password is not valid */}
             {isPasswordInvalid && <div>{passwordError}</div>}

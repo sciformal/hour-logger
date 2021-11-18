@@ -3,7 +3,6 @@ import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { UsersUtilities } from '../util/usersUtilities';
 import { ErrorConstants } from '../constants/errors';
 import { DynamoUtilities } from '../../src/util/dynamo';
-import { GlobalConstants } from '../../src/constants/global';
 import { User } from '../types/models/User';
 import { ResponseUtilities } from '../../src/util/response';
 import { UserType } from '../types/models/UserType';
@@ -77,10 +76,19 @@ export const createUser = async (
     );
   }
 
+  if (!data.userSituation) {
+    return ResponseUtilities.createErrorResponse(
+      ErrorConstants.VALIDATION_USER_SITUATION,
+    );
+  }
+
+  const requiredHours = UsersUtilities.totalHours(data.userSituation);
+
   const userPayload: User = {
     ...data,
     hours: 0,
-    hoursNeeded: GlobalConstants.HOURS_NEEDED,
+    finalHoursNeeded: requiredHours.finalHoursNeeded,
+    regularHoursNeeded: requiredHours.regularHoursNeeded,
     type: data.type || UserType.USER,
     isCheckedIn: false,
     transactions: [],

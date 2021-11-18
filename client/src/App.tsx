@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Loader from './components/global/Loader';
 import { AuthenticationContext, UserContext } from './libs/contextLib';
 import Routes from './Routes';
+import { UserSituation } from './types/situationType';
 // import './styles/App.css';
 
 export default function App() {
@@ -40,7 +41,7 @@ export default function App() {
               studentNumber,
               firstName: given_name,
               lastName: family_name,
-              userSituation: 'ENGINEER_ENROLLED',
+              userSituation: UserSituation.ENGINEER_ENROLLED,
             },
           });
         } else {

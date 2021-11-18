@@ -1,3 +1,4 @@
+import { UserSituation } from '../../src/types/requests/UserRequest';
 import { v4 as uuid } from 'uuid';
 import { GlobalConstants } from '../../src/constants/global';
 import { UserRequest } from '../../src/types/requests/UserRequest';
@@ -14,12 +15,14 @@ export const sampleUserRequest: UserRequest = {
   email: 'john.doe@queensu.ca',
   studentNumber: sampleStudentNumber,
   userId: sampleUserId,
+  userSituation: UserSituation.ENGINEER_ENROLLED,
 };
 
 export const sampleUser: User = {
   ...sampleUserRequest,
   hours: 0,
-  hoursNeeded: GlobalConstants.HOURS_NEEDED,
+  regularHoursNeeded: 8,
+  finalHoursNeeded: 10,
   type: UserType.USER,
   isCheckedIn: false,
   transactions: [],
