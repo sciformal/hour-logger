@@ -8,10 +8,11 @@ import { ReductionRequestPage } from './pages/ReductionRequestPage';
 import { ReductionRequestsPage } from './pages/ReductionRequestsPage';
 import { UserPage } from './pages/UserPage';
 import { UsersPage } from './pages/UsersPage';
+import './styles/App.css';
 
 export default function Routes() {
   return (
-    <>
+    <div className='page-container'>
       <HourLoggerNav />
       <Switch>
         <Route exact path="/" component={HomePage} />
@@ -24,7 +25,7 @@ export default function Routes() {
         <Route exact path="/reduction-requests" component={ReductionRequestsPage} />
         <Route component={NoMatch} />
       </Switch>
-    </>
+    </div>
   );
 }
 
