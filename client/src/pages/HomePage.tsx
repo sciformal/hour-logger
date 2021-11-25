@@ -25,10 +25,10 @@ export const HomePage = () => {
     );
   }
 
-  const totalHours = user.regularHoursNeeded + user.finalHoursNeeded;
-
   // Signed in
   if (isAuthenticated && user && types.includes(user.type)) {
+  const totalHours = user.regularHoursNeeded + user.finalHoursNeeded;
+
     return (
       <div style={{ textAlign: 'center', paddingTop: '40px' }}>
         <h2>Welcome back {user.firstName}!</h2>
@@ -73,6 +73,18 @@ export const HomePage = () => {
         <div style={{ width: '60%', margin: 'auto' }}>
           <HourLoggerTable rows={hoursEntries} headers={hoursHeaders} />
         </div>
+
+        <br />
+        <br />
+        <br />
+        {user.requests.length > 0 && (
+          <>
+            <h4>My Requests</h4>
+            {user.requests.length > 0 && user.requests.map(request => (
+              <div key={request.requestId}>{request.status}</div>
+            ))}
+          </>
+        )}
       </div>
     );
   } else {

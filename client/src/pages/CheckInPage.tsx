@@ -13,8 +13,10 @@ export const CheckInPage = () => {
   };
 
   const handleCheckIn = async () => {
-    await API.post('hour-logger', '/check-in', {
-      studentNumber,
+    await API.post('hour-logger', '/users/check-in', {
+      body: {
+        studentNumber,
+      }
     });
   };
 
