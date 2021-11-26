@@ -12,6 +12,8 @@ import Typography from '@material-ui/core/Typography';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import { API, Auth } from 'aws-amplify';
 import React, { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+
 import {
   useAuthenticationContext,
   useUserContext,
@@ -39,6 +41,8 @@ const useStyles = makeStyles(theme => ({
 
 export default function SignInForm() {
   const classes = useStyles();
+  const navigate = useNavigate();
+  const { state } = useLocation();
 
   const [emailInput, setEmailInput] = useState('');
   const [password, setPassword] = useState('');
@@ -91,6 +95,7 @@ export default function SignInForm() {
         user = data;
       }
 
+      navigate(state.path || '/');
       setUser(user);
       userHasAuthenticated(true);
     } catch (e) {

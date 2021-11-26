@@ -3,7 +3,7 @@ import React from 'react';
 import { Container, Nav, Navbar } from 'react-bootstrap';
 import {
   useAuthenticationContext,
-  useUserContext
+  useUserContext,
 } from '../../libs/contextLib';
 
 export default function HourLoggerNav() {
@@ -19,13 +19,17 @@ export default function HourLoggerNav() {
     const type = user.type;
 
     return (
-      <Navbar bg="light" expand="lg" style={{alignItems: 'flex-start', width: '15%', paddingLeft: '20px'}}>
-        <Container style={{display: 'block', paddingTop: '50px'}}>
+      <Navbar
+        bg="light"
+        expand="lg"
+        style={{ alignItems: 'flex-start', width: '15%', paddingLeft: '20px' }}
+      >
+        <Container style={{ display: 'block', paddingTop: '50px' }}>
           <Navbar.Brand href="/">Hour Logger</Navbar.Brand>
-          <div style={{paddingTop: '100px'}} className="justify-content-end">
+          <div style={{ paddingTop: '100px' }} className="justify-content-end">
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
-              <Nav className='flex-column'>
+              <Nav className="flex-column">
                 <Nav.Link href="/">My Hours</Nav.Link>
 
                 <Nav.Link href="/users">Users</Nav.Link>
@@ -33,9 +37,7 @@ export default function HourLoggerNav() {
                 <Nav.Link href="/payment">Tickets</Nav.Link>
 
                 {(type === 'ADMIN' || type === 'COMMS') && (
-                  <Nav.Link href="/reduction-requests">
-                    Requests
-                  </Nav.Link>
+                  <Nav.Link href="/requests">Requests</Nav.Link>
                 )}
                 <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
               </Nav>
