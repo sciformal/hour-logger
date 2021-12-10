@@ -32,13 +32,16 @@ export default function HourLoggerNav() {
               <Nav className="flex-column">
                 <Nav.Link href="/">My Hours</Nav.Link>
 
-                <Nav.Link href="/users">Users</Nav.Link>
+                {(type === 'ADMIN' || type === 'MANAGER') && (
+                  <Nav.Link href="/users">Users</Nav.Link>
+                )}
 
                 <Nav.Link href="/payment">Tickets</Nav.Link>
 
-                {(type === 'ADMIN' || type === 'COMMS') && (
+                {type === 'ADMIN' && (
                   <Nav.Link href="/requests">Requests</Nav.Link>
                 )}
+
                 <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
               </Nav>
             </Navbar.Collapse>

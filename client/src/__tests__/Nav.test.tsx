@@ -18,6 +18,11 @@ export const sampleManager = {
   type: 'MANAGER',
 };
 
+export const sampleAdmin = {
+  ...sampleUser,
+  type: 'ADMIN',
+};
+
 describe('Navigation Bar Tests', () => {
   const mockAuthContext = {
     isAuthenticated: true,
@@ -38,11 +43,7 @@ describe('Navigation Bar Tests', () => {
       </AuthenticationContext.Provider>,
     );
 
-    const navigationItems = [
-      'Sci Formal Hour Logger',
-      'Ticket Purchase',
-      'Logout',
-    ];
+    const navigationItems = ['Hour Logger', 'Tickets', 'Logout'];
 
     navigationItems.forEach(item => {
       const htmlNode = screen.getByText(item);
@@ -52,7 +53,7 @@ describe('Navigation Bar Tests', () => {
 
   test('Manager navigation bar tests', () => {
     const userContext = {
-      user: sampleUser,
+      user: sampleManager,
     };
 
     render(
@@ -64,8 +65,10 @@ describe('Navigation Bar Tests', () => {
     );
 
     const navigationItems = [
-      'Sci Formal Hour Logger',
-      'Ticket Purchase',
+      'Hour Logger',
+      'My Hours',
+      'Users',
+      'Tickets',
       'Logout',
     ];
 
@@ -77,7 +80,7 @@ describe('Navigation Bar Tests', () => {
 
   test('Admin navigation bar tests', () => {
     const userContext = {
-      user: sampleUser,
+      user: sampleAdmin,
     };
 
     render(
@@ -88,13 +91,19 @@ describe('Navigation Bar Tests', () => {
       </AuthenticationContext.Provider>,
     );
 
-    const header = screen.getByText('Sci Formal Hour Logger');
-    const ticketPurchase = screen.getByText('Ticket Purchase');
-    const logout = screen.getByText('Logout');
+    const navigationItems = [
+      'Hour Logger',
+      'My Hours',
+      'Users',
+      'Tickets',
+      'Requests',
+      'Logout',
+    ];
 
-    expect(header).toBeInTheDocument();
-    expect(ticketPurchase).toBeInTheDocument();
-    expect(logout).toBeInTheDocument();
+    navigationItems.forEach(item => {
+      const htmlNode = screen.getByText(item);
+      expect(htmlNode).toBeInTheDocument();
+    });
   });
 
   test('Logout tests', () => {

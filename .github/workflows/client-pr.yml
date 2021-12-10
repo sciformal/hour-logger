@@ -19,7 +19,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: '12'
+          node-version: '14'
 
       - name: Cache Dependencies
         uses: actions/cache@v2
@@ -44,12 +44,8 @@ jobs:
           REACT_APP_COGNITO_IDENTITYPOOL_ID: us-west-1:ace65909-a8da-405b-83b6-5362c269fba5
 
       - name: Run Unit Tests
-        uses: artiomtr/jest-coverage-report-action@v2.0-rc.1
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          package-manager: yarn
-          threshold: 75
-          working-directory: ${{ env.working-directory }}
+        run: yarn test
+        working-directory: ${{ env.working-directory }}
 
       - uses: netlify/actions/cli@master
         env:
