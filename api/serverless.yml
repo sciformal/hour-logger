@@ -36,6 +36,15 @@ custom:
     excludeFiles: src/**/*.test.js
 
 functions:
+  pre-signup:
+    handler: src/handlers/auth.preSignUpValidation
+    memorySize: 128
+    description: 'Sends a registration email'
+    events:
+      - http:
+          path: /auth/validate-user
+          method: post
+
   create-user:
     handler: src/handlers/users.createUser
     memorySize: 128
@@ -108,7 +117,7 @@ functions:
           cors: true
 
   pretty-emails:
-    handler: src/handlers/auth.register
+    handler: src/handlers/auth.customEmails
     memorySize: 128
     description: 'Sends a registration email'
     events:
@@ -137,7 +146,7 @@ functions:
           path: /requests
           method: get
           cors: true
-          
+
   update-reduction-request:
     handler: src/handlers/requests.update
     memorySize: 128
@@ -151,6 +160,7 @@ functions:
             parameters:
               paths:
                 requestId: true
+
 resources:
   Resources:
     UserDynamoDbTable:

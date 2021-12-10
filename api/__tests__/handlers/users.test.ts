@@ -1,6 +1,6 @@
-import { UserSituation } from './../../src/types/requests/UserRequest';
 import { APIGatewayProxyEvent } from 'aws-lambda';
-import { UsersUtilities } from '../../src/util/usersUtilities';
+import { UserSituation } from '../../src/types/models/UserType';
+import { UsersUtilities } from '../../src/util/user-utilities';
 import { ErrorConstants } from '../../src/constants/errors';
 import {
   createUser,
@@ -9,7 +9,7 @@ import {
   getUser,
 } from '../../src/handlers/users';
 import { UserRequest } from '../../src/types/requests/UserRequest';
-import { DynamoUtilities } from '../../src/util/dynamo';
+import { DynamoUtilities } from '../../src/util/dynamo-utilities';
 import { sampleApiGatewayEvent } from '../mocks/event';
 import { sampleUser, sampleUserId, sampleUserRequest } from '../mocks/user';
 import { sampleReductionRequest } from '../mocks/request';

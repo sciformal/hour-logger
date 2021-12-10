@@ -1,13 +1,13 @@
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { v4 as uuid } from 'uuid';
-import { DynamoUtilities } from '../util/dynamo';
+import { DynamoUtilities } from '../util/dynamo-utilities';
 import {
   ReductionRequest,
   ReductionStatus,
 } from '../types/models/ReductionRequest';
 import { ErrorConstants } from '../constants/errors';
-import { ResponseUtilities } from '../util/response';
+import { ResponseUtilities } from '../util/response-utilities';
 
 const dynamoDb = new DocumentClient();
 
@@ -36,7 +36,7 @@ export const create = async (
     );
   }
 
-  const userId = data.userId;
+  const { userId } = data;
   try {
     const params = {
       TableName: process.env.userTable,
@@ -44,12 +44,12 @@ export const create = async (
         userId,
       },
     };
-  
+
     const user = await DynamoUtilities.get(params, dynamoDb);
     if (!user) {
       // no user exists
       return ResponseUtilities.createErrorResponse(
-        ErrorConstants.DYNAMO_USERID_NOT_FOUND
+        ErrorConstants.DYNAMO_USERID_NOT_FOUND,
       );
     }
   } catch (err) {
@@ -88,7 +88,7 @@ export const create = async (
 
   try {
     const reductionRequest = await DynamoUtilities.put(params, dynamoDb);
-    return ResponseUtilities.createAPIResponse(reductionRequest);
+    return ResponseUtilities.createSuccessResponse(reductionRequest);
   } catch (err) {
     console.log(err);
     return ResponseUtilities.createErrorResponse(err.message, 500);
@@ -104,7 +104,7 @@ export const get = async (
 
   try {
     const requests = await DynamoUtilities.scan(params, dynamoDb);
-    return ResponseUtilities.createAPIResponse(requests);
+    return ResponseUtilities.createSuccessResponse(requests);
   } catch (err) {
     console.log(err);
     return ResponseUtilities.createErrorResponse(err.message, 500);
@@ -112,22 +112,22 @@ export const get = async (
 };
 
 export const update = async (
-  event: APIGatewayProxyEvent
-  ): Promise<APIGatewayProxyResult> => {
-    if (!event.pathParameters) {
-      return ResponseUtilities.createErrorResponse(
-        ErrorConstants.VALIDATION_PATH_MISSING,
-      );
-    }
+  event: APIGatewayProxyEvent,
+): Promise<APIGatewayProxyResult> => {
+  if (!event.pathParameters) {
+    return ResponseUtilities.createErrorResponse(
+      ErrorConstants.VALIDATION_PATH_MISSING,
+    );
+  }
 
-    const { requestId } = event.pathParameters;
+  const { requestId } = event.pathParameters;
 
-    if (!requestId) {
-      return ResponseUtilities.createErrorResponse(
-        ErrorConstants.VALIDATION_BODY_REQUESTID,
-      );
-    } 
-  
+  if (!requestId) {
+    return ResponseUtilities.createErrorResponse(
+      ErrorConstants.VALIDATION_BODY_REQUESTID,
+    );
+  }
+
   if (!event.body) {
     return ResponseUtilities.createErrorResponse(
       ErrorConstants.VALIDATION_BODY_MISSING,
@@ -137,7 +137,7 @@ export const update = async (
   let data;
   try {
     data = JSON.parse(event.body);
-  } catch (err) {     
+  } catch (err) {
     return ResponseUtilities.createErrorResponse(
       ErrorConstants.VALIDATION_BODY_INVALID,
     );
@@ -149,15 +149,14 @@ export const update = async (
     );
   }
 
-  if (data.status == ReductionStatus.APPROVED) {
+  if (data.status === ReductionStatus.APPROVED) {
     if (!data.numHoursReduced) {
       return ResponseUtilities.createErrorResponse(
         ErrorConstants.VALIDATION_BODY_NUM_HOURS_REDUCED,
       );
     }
-  } else if (data.status == ReductionStatus.DENIED) {
+  } else if (data.status === ReductionStatus.DENIED) {
     // update the request to denied
-    
   } else {
     return ResponseUtilities.createErrorResponse(
       ErrorConstants.VALIDATION_BODY_STATUS_INVALID,
@@ -165,7 +164,7 @@ export const update = async (
   }
 
   // check if requestId exists
-  const params = {    
+  const params = {
     TableName: process.env.reductionRequestsTable,
     Key: {
       requestId,
@@ -184,12 +183,12 @@ export const update = async (
   } catch (err) {
     console.log(err);
     return ResponseUtilities.createErrorResponse(err.message, 500);
-  }   
+  }
 
-  const userId = request.userId;
+  const { userId } = request;
 
   // pull in the user
-  const userParams = {    
+  const userParams = {
     TableName: process.env.userTable,
     Key: {
       userId,
@@ -211,19 +210,19 @@ export const update = async (
   }
 
   const updatedUser = {
-    ...user
-  }
+    ...user,
+  };
 
   const currHours = Number(updatedUser.hoursNeeded);
   const removal = Number(data.numHoursReduced);
   const newHours = currHours - removal;
-  updatedUser.hoursNeeded = newHours
+  updatedUser.hoursNeeded = newHours;
 
   // update the user in the table
   const updatedUserParams = {
     TableName: process.env.userTable,
     Item: updatedUser,
-  }
+  };
 
   try {
     await DynamoUtilities.put(updatedUserParams, dynamoDb);
@@ -236,20 +235,22 @@ export const update = async (
     ...request,
     status: data.status,
     numHoursReduced: data.numHoursReduced,
-  }
+  };
 
   // update the request in the table
   const updatedRequestParams = {
     TableName: process.env.reductionRequestsTable,
-    Item: updatedRequestPayload
-  }
+    Item: updatedRequestPayload,
+  };
 
   try {
-    const updatedRequest = await DynamoUtilities.put(updatedRequestParams, dynamoDb);
-    return ResponseUtilities.createAPIResponse(updatedRequest);
+    const updatedRequest = await DynamoUtilities.put(
+      updatedRequestParams,
+      dynamoDb,
+    );
+    return ResponseUtilities.createSuccessResponse(updatedRequest);
   } catch (err) {
     console.log(err);
     return ResponseUtilities.createErrorResponse(err.message, 500);
   }
-}
-
+};

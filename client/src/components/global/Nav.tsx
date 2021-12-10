@@ -1,10 +1,10 @@
 import { Auth } from 'aws-amplify';
+import React from 'react';
+import { Container, Nav, Navbar } from 'react-bootstrap';
 import {
   useAuthenticationContext,
   useUserContext,
 } from '../../libs/contextLib';
-import React from 'react';
-import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap';
 
 export default function HourLoggerNav() {
   const { isAuthenticated, userHasAuthenticated } = useAuthenticationContext();
@@ -19,42 +19,25 @@ export default function HourLoggerNav() {
     const type = user.type;
 
     return (
-      <Navbar bg="light" expand="lg">
-        <Container fluid>
-          <Navbar.Brand href="/">Sci Formal Hour Logger</Navbar.Brand>
-          <div className="justify-content-end">
+      <Navbar
+        bg="light"
+        expand="lg"
+        style={{ alignItems: 'flex-start', width: '15%', paddingLeft: '20px' }}
+      >
+        <Container style={{ display: 'block', paddingTop: '50px' }}>
+          <Navbar.Brand href="/">Hour Logger</Navbar.Brand>
+          <div style={{ paddingTop: '100px' }} className="justify-content-end">
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
-              <Nav>
-                <NavDropdown id="hours-dropdown" title="Hours">
-                  <NavDropdown.Item href="/">My Hours</NavDropdown.Item>
-                  <NavDropdown.Item href="/reduction">
-                    Hour Reduction
-                  </NavDropdown.Item>
-
-                  {(type === 'ADMIN' ||
-                    type === 'MANAGER' ||
-                    type === 'COMMS') && (
-                    <NavDropdown.Item href="/check-in">
-                      Volunteer Check-In
-                    </NavDropdown.Item>
-                  )}
-
-                  {type === 'ADMIN' && (
-                    <NavDropdown.Item href="/edit-hours">
-                      Edit Hours
-                    </NavDropdown.Item>
-                  )}
-                </NavDropdown>
+              <Nav className="flex-column">
+                <Nav.Link href="/">My Hours</Nav.Link>
 
                 <Nav.Link href="/users">Users</Nav.Link>
 
-                <Nav.Link href="/payment">Ticket Purchase</Nav.Link>
+                <Nav.Link href="/payment">Tickets</Nav.Link>
 
                 {(type === 'ADMIN' || type === 'COMMS') && (
-                  <Nav.Link href="/reduction-requests">
-                    Reduction Requests
-                  </Nav.Link>
+                  <Nav.Link href="/requests">Requests</Nav.Link>
                 )}
                 <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
               </Nav>

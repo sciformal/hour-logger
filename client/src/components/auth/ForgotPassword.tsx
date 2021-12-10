@@ -1,13 +1,11 @@
 import Auth from '@aws-amplify/auth';
 import { makeStyles } from '@material-ui/core';
-import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import React, { useState } from 'react';
+import { Alert, Form } from 'react-bootstrap';
 import { useAuthenticationContext } from '../../libs/contextLib';
 
 const useStyles = makeStyles(theme => ({
@@ -36,6 +34,7 @@ export const ForgotPassword = () => {
   const [emailInput, setEmailInput] = useState('');
   const [confirmationCodeInput, setConfirmationCodeInput] = useState('');
   const [password, setPassword] = useState('');
+  const [err, setErr] = useState('');
 
   // @ts-ignore
   const { userHasAuthenticated } = useAuthenticationContext();
@@ -77,8 +76,9 @@ export const ForgotPassword = () => {
       userHasAuthenticated(true);
       // @ts-ignore
       window.location = '/';
-    } catch (error) {
-      console.log(error);
+    } catch (err: any) {
+      setErr(err.message);
+      console.log(err);
     }
   };
 
@@ -87,25 +87,27 @@ export const ForgotPassword = () => {
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <div className={classes.paper}>
-          <Avatar className={classes.avatar}>
-            <LockOutlinedIcon />
-          </Avatar>
           <Typography component="h1" variant="h5">
             Forgot Password
           </Typography>
+          <br />
+
+          <Alert variant="info" style={{ width: '100%', textAlign: 'center' }}>
+            If an account is found, you will be sent a confirmation code to
+            reset your password.
+          </Alert>
+
           <form className={classes.form} noValidate>
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="emailInput"
-              label="Email Address"
-              name="emailInput"
-              autoComplete="emailInput"
+            <Form.Label>
+              <b>Email address</b>
+            </Form.Label>
+            <Form.Control
+              autoComplete="email"
               autoFocus
               onChange={handleEmailInputChange}
               value={emailInput}
+              placeholder="Enter email"
+              type="email"
             />
             <Button
               type="submit"
@@ -115,7 +117,7 @@ export const ForgotPassword = () => {
               className={classes.submit}
               onClick={handleForgotPassword}
             >
-              Forgot Password
+              Reset Password
             </Button>
             {/* TODO: Return to sign in from forgot password */}
           </form>
@@ -127,36 +129,35 @@ export const ForgotPassword = () => {
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <div className={classes.paper}>
-          <Avatar className={classes.avatar}>
-            <LockOutlinedIcon />
-          </Avatar>
           <Typography component="h1" variant="h5">
-            Forgot Password Confirmation Code
+            Reset Password
           </Typography>
+          <br />
+          {err !== '' && (
+            <Alert
+              variant="danger"
+              style={{ width: '100%', textAlign: 'center' }}
+            >
+              {err}
+            </Alert>
+          )}
           <form className={classes.form} noValidate>
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              id="confirmationCodeInput"
-              label="Confirmation Code"
-              name="confirmationCodeInput"
-              autoComplete="confirmationCodeInput"
-              autoFocus
+            <Form.Label>
+              <b>Confirmation Code</b>
+            </Form.Label>
+            <Form.Control
+              type="confirmationCode"
+              id="confirmation"
               onChange={handleConfirmationCodeInputChange}
               value={confirmationCodeInput}
             />
-            <TextField
-              variant="outlined"
-              margin="normal"
-              required
-              fullWidth
-              name="password"
-              label="New Password"
+            <br />
+            <Form.Label>
+              <b>New Password</b>
+            </Form.Label>
+            <Form.Control
               type="password"
               id="password"
-              autoComplete="current-password"
               onChange={handlePasswordChange}
               value={password}
             />
@@ -168,7 +169,7 @@ export const ForgotPassword = () => {
               className={classes.submit}
               onClick={handleConfirmForgotPassword}
             >
-              Update Password
+              Reset Password
             </Button>
           </form>
         </div>

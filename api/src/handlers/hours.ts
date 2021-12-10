@@ -1,8 +1,8 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { ErrorConstants } from '../../src/constants/errors';
-import { DynamoUtilities } from '../util/dynamo';
-import { ResponseUtilities } from '../util/response';
+import { DynamoUtilities } from '../util/dynamo-utilities';
+import { ResponseUtilities } from '../util/response-utilities';
 import { HoursUtilities } from '../util/hours-utilities';
 
 const dynamoDb = new DocumentClient();
@@ -57,7 +57,7 @@ export const checkIn = async (
     };
     await DynamoUtilities.put(putParams, dynamoDb);
 
-    return ResponseUtilities.createAPIResponse(newUser);
+    return ResponseUtilities.createSuccessResponse(newUser);
   } catch (err) {
     console.log(err);
     return ResponseUtilities.createErrorResponse(err.message, 500);
@@ -129,7 +129,7 @@ export const updateHours = async (
     };
     await DynamoUtilities.put(putParams, dynamoDb);
 
-    return ResponseUtilities.createAPIResponse(newUser);
+    return ResponseUtilities.createSuccessResponse(newUser);
   } catch (err) {
     console.log(err);
     return ResponseUtilities.createErrorResponse(err.message, 500);

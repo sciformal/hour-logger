@@ -1,22 +1,18 @@
-import { InputLabel, Select } from '@material-ui/core';
-import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
 import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import { Auth, API } from 'aws-amplify';
+import { API, Auth } from 'aws-amplify';
 import React, { useState } from 'react';
-import { Dropdown } from 'react-bootstrap';
-import { UserSituation } from '../../types/situationType'; 
+import { Alert, Form } from 'react-bootstrap';
 import {
   useAuthenticationContext,
   useUserContext,
 } from '../../libs/contextLib';
+import { UserSituation } from '../../types/situationType';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -52,8 +48,8 @@ export default function SignUp() {
   const [userSituation, setUserSituation] = useState('');
   const [confirmationCode, setConfirmationCode] = useState('');
   const [signUpStep, setSignUpStep] = useState(1);
-  const [isPasswordInvalid, setIsPasswordInvalid] = useState(false);
-  const [passwordError, setPasswordError] = useState('');
+
+  const [err, setErr] = useState('');
 
   // @ts-ignore
   const handleFirstNameChange = e => {
@@ -93,8 +89,14 @@ export default function SignUp() {
   // @ts-ignore
   const handleRegister = async e => {
     e.preventDefault();
-    setIsPasswordInvalid(false);
     try {
+      await API.post('hour-logger', '/auth/validate-user', {
+        body: {
+          studentNumber,
+          userType: userSituation,
+        },
+      });
+
       await Auth.signUp({
         username: email,
         password: password,
@@ -102,15 +104,31 @@ export default function SignUp() {
           given_name: firstName,
           family_name: lastName,
           'custom:studentNumber': studentNumber,
+          'custom:userType': userSituation,
         },
       });
       setSignUpStep(2);
+      setErr(''); // reset error message if there was one
     } catch (err: any) {
       console.log(err);
-      if (err.code === 'InvalidPasswordException') {
-        setIsPasswordInvalid(true);
-        setPasswordError(err.message);
-      }
+      setErr(err.message);
+      // TODO: Handle this better when initial validation fails.
+    }
+  };
+
+  const handleHasConfirmation = async e => {
+    e.preventDefault();
+    setErr(''); // reset error message if there was one
+    setSignUpStep(2);
+  };
+
+  const handleRequestConfirmationCode = async e => {
+    e.preventDefault();
+    try {
+      await Auth.resendSignUp(email);
+    } catch (err: any) {
+      console.log(err);
+      setErr(err.message);
     }
   };
 
@@ -137,8 +155,8 @@ export default function SignUp() {
       setUser(user);
       userHasAuthenticated(true);
       window.location.href = '/';
-    } catch (e) {
-      // Expired code?
+    } catch (e: any) {
+      setErr(e.message);
       console.log(e);
     }
   };
@@ -148,105 +166,109 @@ export default function SignUp() {
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <div className={classes.paper}>
-          <Avatar className={classes.avatar}>
-            <LockOutlinedIcon />
-          </Avatar>
           <Typography component="h1" variant="h5">
-            Sign up
+            Create An Account
           </Typography>
+          <br />
+
+          {err !== '' && (
+            <Alert
+              variant="danger"
+              style={{ width: '100%', textAlign: 'center' }}
+            >
+              {err}
+            </Alert>
+          )}
+
           <form className={classes.form} noValidate>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
-                <TextField
-                  autoComplete="fname"
-                  name="firstName"
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="firstName"
-                  label="First Name"
+                <Form.Label>
+                  <b>First Name</b>
+                </Form.Label>
+                <Form.Control
+                  autoFocus
                   onChange={handleFirstNameChange}
                   value={firstName}
-                  autoFocus
+                  type="fname"
                 />
               </Grid>
-              
               <Grid item xs={12} sm={6}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="lastName"
-                  label="Last Name"
-                  name="lastName"
-                  autoComplete="lname"
+                <Form.Label>
+                  <b>Last Name</b>
+                </Form.Label>
+                <Form.Control
+                  autoFocus
                   onChange={handleLastNameChange}
                   value={lastName}
+                  type="lname"
                 />
               </Grid>
 
               <Grid item xs={12}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="studentNumber"
-                  label="Student Number"
-                  name="studentNumber"
+                <Form.Label>
+                  <b>Student Number</b>
+                </Form.Label>
+                <Form.Control
+                  autoFocus
                   onChange={handleStudentNumberChange}
                   value={studentNumber}
                 />
               </Grid>
-              
               <Grid item xs={12}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  autoComplete="email"
+                <Form.Label>
+                  <b>Email address</b>
+                </Form.Label>
+                <Form.Control
+                  autoFocus
                   onChange={handleEmailChange}
                   value={email}
+                  placeholder="Enter email"
+                  type="email"
                 />
               </Grid>
-              
               <Grid item xs={12}>
-                <TextField
-                  variant="outlined"
-                  required
-                  fullWidth
-                  name="password"
-                  label="Password"
+                <Form.Label>
+                  <b>Password</b>
+                </Form.Label>
+                <Form.Control
                   type="password"
                   id="password"
-                  autoComplete="current-password"
                   onChange={handlePasswordChange}
                   value={password}
                 />
               </Grid>
-              
-              {/* @ts-ignore */}
 
-                <InputLabel id="demo-simple-select-label">User Type</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
+              <Grid item xs={12}>
+                <Form.Label>
+                  <b>User Type</b>
+                </Form.Label>
+                <Form.Control
+                  as="select"
                   value={userSituation}
-                  label="User Type"
                   onChange={handleUserSituationChange}
                 >
-                  <Dropdown.Item value={UserSituation.ENGINEER_ENROLLED}>Sci'21 or Sci'22 Student Enrolled in Classes</Dropdown.Item>
-                  <Dropdown.Item value={UserSituation.INTERNSHIP_KTOWN}>Sci'21 or Sci'22 Student on Internship Residing in Kingston</Dropdown.Item>
-                  <Dropdown.Item value={UserSituation.INTERNSHIP}>Sci'21 or Sci'22 Student on Internship Outside of Kingston</Dropdown.Item>
-                  <Dropdown.Item value={UserSituation.GUEST_QUEENS}>Guest Enrolled at Queen's</Dropdown.Item>
-                  <Dropdown.Item value={UserSituation.GUEST}>External Guest</Dropdown.Item>
-                  <Dropdown.Item value={UserSituation.SCIFORMAL}>Sci Formal Committee</Dropdown.Item>
-                </Select>
+                  <option value=""></option>
+                  <option value={UserSituation.ENGINEER_ENROLLED}>
+                    Sci'21 or Sci'22 Student Enrolled in Classes
+                  </option>
+                  <option value={UserSituation.INTERNSHIP_KTOWN}>
+                    Sci'21 or Sci'22 Student on Internship Residing in Kingston
+                  </option>
+                  <option value={UserSituation.INTERNSHIP}>
+                    Sci'21 or Sci'22 Student on Internship Outside of Kingston
+                  </option>
+                  <option value={UserSituation.GUEST_QUEENS}>
+                    Guest Enrolled at Queen's
+                  </option>
+                  <option value={UserSituation.GUEST}>External Guest</option>
+                  <option value={UserSituation.SCIFORMAL}>
+                    Sci Formal Committee
+                  </option>
+                </Form.Control>
+              </Grid>
             </Grid>
-            {/* Show password error if the password is not valid */}
-            {isPasswordInvalid && <div>{passwordError}</div>}
+
             <Button
               type="submit"
               fullWidth
@@ -257,21 +279,18 @@ export default function SignUp() {
             >
               Register
             </Button>
-            <Grid container justifyContent="center">
-              <Grid item>
-                <Link href="/" variant="body2">
-                  Already have an account? Sign in
-                </Link>
-                <br />
-                <Link
-                  href="#confirm"
-                  variant="body2"
-                  onClick={() => setSignUpStep(2)}
-                >
-                  Already have a confirmation code?
-                </Link>
-              </Grid>
-            </Grid>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <Link href="/" variant="body2">
+                &#8592; Sign In
+              </Link>
+              <Link
+                href="#confirm"
+                variant="body2"
+                onClick={handleHasConfirmation}
+              >
+                Confirm Account &#8594;
+              </Link>
+            </div>
           </form>
         </div>
       </Container>
@@ -280,28 +299,28 @@ export default function SignUp() {
     return (
       <Container component="main" maxWidth="xs">
         <div className={classes.paper}>
-          <Avatar className={classes.avatar}>
-            <LockOutlinedIcon />
-          </Avatar>
           <Typography component="h1" variant="h5">
             Confirm Your Account
           </Typography>
+          <br />
+          {err !== '' && (
+            <Alert
+              variant="danger"
+              style={{ width: '100%', textAlign: 'center' }}
+            >
+              {err}
+            </Alert>
+          )}
           <form className={classes.form} noValidate>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <TextField
-                  name="confirmationCode"
-                  variant="outlined"
-                  required
-                  fullWidth
-                  id="confirmationCode"
-                  label="Confirmation Code"
-                  onChange={handleConfirmationCodeChange}
-                  value={confirmationCode}
-                  autoFocus
-                />
-              </Grid>
-            </Grid>
+            <Form.Label>
+              <b>Confirmation Code</b>
+            </Form.Label>
+            <Form.Control
+              type="confirmationCode"
+              id="confirmation"
+              onChange={handleConfirmationCodeChange}
+              value={confirmationCode}
+            />
             <Button
               type="submit"
               fullWidth
@@ -310,8 +329,17 @@ export default function SignUp() {
               className={classes.submit}
               onClick={handleConfirmRegister}
             >
-              Confirm Registration
+              Confirm Account
             </Button>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <Link
+                href="#confirm"
+                variant="body2"
+                onClick={handleRequestConfirmationCode}
+              >
+                Request a new confirmation code
+              </Link>
+            </div>
           </form>
         </div>
       </Container>

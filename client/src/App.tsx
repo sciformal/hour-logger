@@ -2,7 +2,7 @@ import { API, Auth } from 'aws-amplify';
 import React, { useEffect, useState } from 'react';
 import Loader from './components/global/Loader';
 import { AuthenticationContext, UserContext } from './libs/contextLib';
-import Routes from './Routes';
+import HourLoggerRoutes from './Routes';
 import { UserSituation } from './types/situationType';
 // import './styles/App.css';
 
@@ -67,14 +67,10 @@ export default function App() {
     return (
       <div className="App">
         <AuthenticationContext.Provider
-          // @ts-ignore
           value={{ isAuthenticated, userHasAuthenticated }}
         >
-          <UserContext.Provider
-            // @ts-ignore
-            value={{ user, setUser }}
-          >
-            <Routes />
+          <UserContext.Provider value={{ user, setUser }}>
+            <HourLoggerRoutes />
           </UserContext.Provider>
         </AuthenticationContext.Provider>
       </div>
