@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'client/**'
+      - '.github/**'
 
 jobs:
   testAndDeployClient:
@@ -19,13 +20,13 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: '12'
+          node-version: '14'
 
       - name: Cache Dependencies
         uses: actions/cache@v2
         with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          path: ~/.yarn
+          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn-lock.json') }}
           restore-keys: ${{ runner.os }}-node-
 
       - name: Install Dependencies
