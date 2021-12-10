@@ -1,32 +1,68 @@
-import { Link, Route, Switch } from 'react-router-dom';
+import { Link, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { ForgotPassword } from './components/auth/ForgotPassword';
 import SignUp from './components/auth/Register';
+import SignInForm from './components/auth/SignInForm';
 import HourLoggerNav from './components/global/Nav';
-import { CheckInPage } from './pages/CheckInPage';
-import { HomePage } from './pages/HomePage';
-import { ReductionRequestPage } from './pages/ReductionRequestPage';
-import { ReductionRequestsPage } from './pages/ReductionRequestsPage';
-import { UserPage } from './pages/UserPage';
+import { useAuthenticationContext } from './libs/contextLib';
+import { HomePage } from './pages/HoursPage';
+import { RequestsPage } from './pages/RequestsPage';
 import { UsersPage } from './pages/UsersPage';
+import './styles/App.css';
 
-export default function Routes() {
+export default function HourLoggerRoutes() {
+  const { isAuthenticated } = useAuthenticationContext();
+
   return (
-    <>
-      <HourLoggerNav />
-      <Switch>
-        <Route exact path="/" component={HomePage} />
-        <Route exact path="/check-in" component={CheckInPage} />
-        <Route exact path="/users" component={UsersPage} />
-        <Route exact path="/users/:id" component={UserPage} />
-        <Route exact path="/register" component={SignUp} />
-        <Route exact path="/forgot-password" component={ForgotPassword} />
-        <Route exact path="/reduction" component={ReductionRequestPage} />
-        <Route exact path="/reduction-requests" component={ReductionRequestsPage} />
-        <Route component={NoMatch} />
-      </Switch>
-    </>
+    <div className="page-container">
+      {isAuthenticated && <HourLoggerNav />}
+      <Routes>
+        {/* Home Page */}
+        <Route
+          path="/"
+          element={
+            <RequireAuth>
+              <HomePage />
+            </RequireAuth>
+          }
+        />
+
+        <Route
+          path="/users"
+          element={
+            <RequireAuth>
+              <UsersPage />
+            </RequireAuth>
+          }
+        />
+
+        <Route
+          path="/requests"
+          element={
+            <RequireAuth>
+              <RequestsPage />
+            </RequireAuth>
+          }
+        />
+
+        <Route path="/login" element={<SignInForm />} />
+        <Route path="/register" element={<SignUp />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route element={<NoMatch />} />
+      </Routes>
+    </div>
   );
 }
+
+const RequireAuth = ({ children }) => {
+  const { isAuthenticated } = useAuthenticationContext();
+  const location = useLocation();
+
+  return isAuthenticated ? (
+    children
+  ) : (
+    <Navigate to="/login" replace state={{ path: location.pathname }} />
+  );
+};
 
 const NoMatch = () => (
   <div>

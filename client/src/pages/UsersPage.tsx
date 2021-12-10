@@ -1,7 +1,7 @@
 import API from '@aws-amplify/api';
 import { TextField } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
-import { Table } from 'react-bootstrap';
+import { Button, Tab, Table, Tabs } from 'react-bootstrap';
 import Loader from '../components/global/Loader';
 
 const usersHeaders = [
@@ -14,7 +14,6 @@ const usersHeaders = [
 
 export const UsersPage = () => {
   const [loading, setLoading] = useState(true);
-  const [usersCheckedIn, setUsersCheckedIn] = useState(0);
   const [users, setUsers] = useState(null);
   const [query, setQuery] = useState('');
 
@@ -25,13 +24,6 @@ export const UsersPage = () => {
 
   const loadUsers = async () => {
     const users = await API.get('hour-logger', '/users', {});
-    let totalUsersCheckedIn = 0;
-
-    users.forEach(user => {
-      totalUsersCheckedIn += user.isCheckedIn ? 1 : 0;
-    });
-
-    setUsersCheckedIn(totalUsersCheckedIn);
     setUsers(users);
     setLoading(false);
   };
@@ -44,43 +36,134 @@ export const UsersPage = () => {
     return <Loader />;
   } else {
     return (
-      <div style={{ textAlign: 'center', paddingTop: '40px' }}>
-        <h2>All Users</h2>
+      <div style={{ padding: '5%', width: '85%' }}>
+        <h2>Users</h2>
         <br />
         <br />
-
-        <h4>
-          <b>Total Checked In Users</b>: {usersCheckedIn}
-        </h4>
-        <br />
-        <br />
-
-        <div style={{ width: '30%', margin: 'auto' }}>
-          <TextField
-            autoComplete="search"
-            name="search"
-            variant="outlined"
-            fullWidth
-            id="search"
-            label="Search"
-            onChange={handleQueryChange}
-            value={query}
-            autoFocus
-          />
-        </div>
-        <br />
-        <br />
-
-        <h4>My Hours</h4>
-        <br />
-
-        <div style={{ width: '60%', margin: 'auto' }}>
-          <UsersTable users={users} headers={usersHeaders} />
-          {/* TODO: Make pagable */}
-        </div>
+        <Tabs defaultActiveKey="first">
+          <Tab eventKey="first" title="Summary">
+            <UsersSummary />
+          </Tab>
+          <Tab eventKey="second" title="Check In">
+            <CheckIn />
+          </Tab>
+          <Tab eventKey="third" title="All Users">
+            <AllUsers
+              handleQueryChange={handleQueryChange}
+              query={query}
+              users={users}
+            />
+          </Tab>
+        </Tabs>
       </div>
     );
   }
+};
+
+const UsersSummary = () => {
+  return (
+    // Container
+    <div style={{ display: 'flex' }}>
+      {/* Left Side */}
+      <div
+        style={{
+          width: '50%',
+          textAlign: 'center',
+          borderRight: '1px solid #EEEEEE',
+        }}
+      >
+        Blah blah blah left side!
+      </div>
+
+      {/* Right Side */}
+      <div style={{ width: '50%', textAlign: 'center' }}>
+        Blah blah blah right side!
+      </div>
+    </div>
+  );
+};
+
+const CheckInForm = () => {
+  const [studentNumber, setStudentNumber] = useState('');
+
+  // @ts-ignore
+  const handleStudentNumber = e => {
+    setStudentNumber(e.target.value);
+  };
+
+  const handleCheckIn = async () => {
+    await API.post('hour-logger', '/users/check-in', {
+      body: {
+        studentNumber,
+      },
+    });
+  };
+  return (
+    <>
+      <TextField
+        id="outlined-basic"
+        label="Student Number"
+        variant="outlined"
+        value={studentNumber}
+        onChange={handleStudentNumber}
+      />
+      <br></br>
+      <br></br>
+      <Button onClick={handleCheckIn} variant="contained">
+        Enter
+      </Button>
+    </>
+  );
+};
+
+export const CheckIn = () => {
+  return (
+    // Container
+    <div style={{ display: 'flex' }}>
+      {/* Left Side */}
+      <div
+        style={{
+          width: '50%',
+          textAlign: 'center',
+          borderRight: '1px solid #EEEEEE',
+        }}
+      >
+        <CheckInForm />
+      </div>
+
+      {/* Right Side */}
+      <div style={{ width: '50%', textAlign: 'center' }}>
+        Show all checked in users
+      </div>
+    </div>
+  );
+};
+
+const AllUsers = ({ handleQueryChange, query, users }) => {
+  return (
+    <div>
+      <div style={{ width: '30%', margin: 'auto' }}>
+        <TextField
+          autoComplete="search"
+          name="search"
+          variant="outlined"
+          fullWidth
+          id="search"
+          label="Search"
+          onChange={handleQueryChange}
+          value={query}
+          autoFocus
+        />
+      </div>
+      <br />
+      <br />
+
+      <div style={{ width: '60%', margin: 'auto' }}>
+        <UsersTable users={users} headers={usersHeaders} />
+        {/* TODO: Make pagable */}
+      </div>
+    </div>
+  );
 };
 
 function UsersTable({ headers, users }) {

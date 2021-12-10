@@ -1,0 +1,15 @@
+.nav-link {
+    margin-bottom: 0 !important;
+    border:none !important;
+    color: #7245A7;
+    font-size: 20px;
+}
+
+.nav-link:hover {
+    color: black;
+    font-size: 20px;
+}
+
+.tab-content {
+    padding-top: 50px;
+}
