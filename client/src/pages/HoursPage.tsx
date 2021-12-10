@@ -1,19 +1,17 @@
+import API from '@aws-amplify/api';
+import { TextField } from '@material-ui/core';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import { Autocomplete } from '@mui/material';
 import React, { useState } from 'react';
 import { Button, Tab, Tabs } from 'react-bootstrap';
 import 'react-circular-progressbar/dist/styles.css';
-import SignInForm from '../components/auth/SignInForm';
+import Loader from '../components/global/Loader';
 import { Progress } from '../components/global/Progress';
 import { HourLoggerTable } from '../components/global/Table';
-import { useAuthenticationContext, useUserContext } from '../libs/contextLib';
-import { formatHourTransaction } from '../util/hours';
+import { useUserContext } from '../libs/contextLib';
 import '../styles/CustomTabs.css';
-import { TextField } from '@material-ui/core';
-import API from '@aws-amplify/api';
-import Loader from '../components/global/Loader';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import { Autocomplete } from '@mui/material';
+import { formatHourTransaction } from '../util/hours';
 
-const types = ['USER', 'ADMIN', 'MANAGER', 'BOUNCER'];
 const hoursHeaders = ['Date', 'Check In', 'Check Out', 'Hours'];
 
 export const HomePage = () => {
@@ -224,7 +222,6 @@ const HourReduction = ({ user }) => {
             }}
           >
             {user.requests.map(request => {
-              console.log(request);
               const rawDate = new Date(request.date);
               const date = rawDate.toDateString();
 

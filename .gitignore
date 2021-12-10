@@ -2,5 +2,5 @@ node_modules
 .netlify/**
 .env
 .idea/*
-.vscode/launch.json
+.vscode/*
 api/coverage/coverage-summary.json

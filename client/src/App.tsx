@@ -12,7 +12,6 @@ export default function App() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    console.log('Changed routes');
     loadUserInformation();
   }, []);
 

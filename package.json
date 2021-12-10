@@ -7,7 +7,6 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "@spotify/prettier-config": "^12.0.0",
     "@typescript-eslint/parser": "^5.0.0",
     "eslint": "^7.2.0",
     "husky": "^7.0.2",
@@ -26,6 +25,7 @@
     ]
   },
   "devDependencies": {
+    "@spotify/prettier-config": "^12.0.0",
     "eslint-config-airbnb": "18.2.1",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jsx-a11y": "^6.4.1",
