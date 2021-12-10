@@ -1,4 +1,4 @@
-import { ResponseUtilities } from '../../src/util/response';
+import { ResponseUtilities } from '../../src/util/response-utilities';
 
 describe('API Response Builder Tests', () => {
   const cors_headers = {
@@ -10,7 +10,7 @@ describe('API Response Builder Tests', () => {
     it('should return an object with headers and a json body and default 200 status', () => {
       const string = 'hello world';
 
-      const res = ResponseUtilities.createAPIResponse(string);
+      const res = ResponseUtilities.createSuccessResponse(string);
 
       expect(res.statusCode).toEqual(200);
       expect(res.headers).toEqual(cors_headers);
@@ -21,7 +21,7 @@ describe('API Response Builder Tests', () => {
       const string = 'hello world';
       const status = 302;
 
-      const res = ResponseUtilities.createAPIResponse(string, status);
+      const res = ResponseUtilities.createSuccessResponse(string, status);
 
       expect(res.statusCode).toEqual(status);
       expect(res.headers).toEqual(cors_headers);

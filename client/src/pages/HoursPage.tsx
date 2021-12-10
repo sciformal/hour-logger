@@ -210,7 +210,7 @@ const HourReduction = ({ user }) => {
         <br />
         <br />
 
-        {user.requests.length > 0 ? (
+        {user.requests?.length > 0 ? (
           <div
             style={{
               width: '80%',

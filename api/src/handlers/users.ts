@@ -1,10 +1,10 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import { UsersUtilities } from '../util/usersUtilities';
+import { UsersUtilities } from '../util/user-utilities';
 import { ErrorConstants } from '../constants/errors';
-import { DynamoUtilities } from '../../src/util/dynamo';
+import { DynamoUtilities } from '../util/dynamo-utilities';
 import { User } from '../types/models/User';
-import { ResponseUtilities } from '../../src/util/response';
+import { ResponseUtilities } from '../util/response-utilities';
 import { UserType } from '../types/models/UserType';
 
 const dynamoDb = new DocumentClient();
@@ -110,7 +110,7 @@ export const createUser = async (
     }
 
     const user = await DynamoUtilities.put(params, dynamoDb);
-    return ResponseUtilities.createAPIResponse(user);
+    return ResponseUtilities.createSuccessResponse(user);
   } catch (err) {
     console.log(err);
     return ResponseUtilities.createErrorResponse(err.message, 500);
@@ -151,7 +151,7 @@ export const getUser = async (
     const user = await DynamoUtilities.get(params, dynamoDb);
     if (!user) {
       // no user exists
-      return ResponseUtilities.createAPIResponse(user, 204);
+      return ResponseUtilities.createSuccessResponse(user, 204);
     }
 
     const requestParams = {
@@ -170,7 +170,7 @@ export const getUser = async (
       requests,
     };
 
-    return ResponseUtilities.createAPIResponse(compoundUser);
+    return ResponseUtilities.createSuccessResponse(compoundUser);
   } catch (err) {
     console.log(err);
     return ResponseUtilities.createErrorResponse(err.message, 500);
@@ -187,7 +187,7 @@ export const getAllUsers = async (
 
   try {
     const users = await DynamoUtilities.scan(params, dynamoDb);
-    return ResponseUtilities.createAPIResponse(users);
+    return ResponseUtilities.createSuccessResponse(users);
   } catch (err) {
     console.log(err);
     return ResponseUtilities.createErrorResponse(err.message, 500);
@@ -226,7 +226,7 @@ export const deleteUser = async (
 
   try {
     const user = await DynamoUtilities.delete(params, dynamoDb);
-    return ResponseUtilities.createAPIResponse(user, 204);
+    return ResponseUtilities.createSuccessResponse(user, 204);
   } catch (err) {
     console.log(err);
     return ResponseUtilities.createErrorResponse(err.message, 500);

@@ -4,7 +4,7 @@ export class ResponseUtilities {
     'Access-Control-Allow-Credentials': true,
   };
 
-  public static createAPIResponse(body: any, statusCode: number = 200) {
+  public static createSuccessResponse(body: any, statusCode: number = 200) {
     return {
       statusCode,
       headers: this.headers,

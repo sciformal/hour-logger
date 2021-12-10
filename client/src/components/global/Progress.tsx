@@ -5,7 +5,6 @@ export const Progress = props => {
   // @ts-ignore
   const percentage = parseInt((completed / max) * 100);
 
-  
   return (
     <CircularProgressbar
       value={percentage}

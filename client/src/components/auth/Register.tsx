@@ -12,6 +12,7 @@ import {
   useAuthenticationContext,
   useUserContext,
 } from '../../libs/contextLib';
+import { UserSituation } from '../../types/situationType';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -44,7 +45,7 @@ export default function SignUp() {
   const [studentNumber, setStudentNumber] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  // const [userSituation, setUserSituation] = useState('');
+  const [userSituation, setUserSituation] = useState('');
   const [confirmationCode, setConfirmationCode] = useState('');
   const [signUpStep, setSignUpStep] = useState(1);
 
@@ -71,9 +72,9 @@ export default function SignUp() {
   };
 
   // @ts-ignore
-  // const handleUserSituationChange = e => {
-  //   setUserSituation(e.target.value);
-  // };
+  const handleUserSituationChange = e => {
+    setUserSituation(e.target.value);
+  };
 
   // @ts-ignore
   const handlePasswordChange = e => {
@@ -89,6 +90,13 @@ export default function SignUp() {
   const handleRegister = async e => {
     e.preventDefault();
     try {
+      await API.post('hour-logger', '/auth/validate-user', {
+        body: {
+          studentNumber,
+          userType: userSituation,
+        },
+      });
+
       await Auth.signUp({
         username: email,
         password: password,
@@ -96,23 +104,32 @@ export default function SignUp() {
           given_name: firstName,
           family_name: lastName,
           'custom:studentNumber': studentNumber,
+          'custom:userType': userSituation,
         },
       });
       setSignUpStep(2);
       setErr(''); // reset error message if there was one
     } catch (err: any) {
       console.log(err);
-      setErr(err.message);
+      if (err.response) {
+        // custom response from the validate user call
+        const errMessage = err.response.data.message;
+        if (errMessage.indexOf('DynamoDB') >= 0) {
+          const errMsg = 'The student number has already been registered.';
+          setErr(errMsg);
+        }
+
+        if (errMessage.indexOf('userType') >= 0) {
+          const errMsg = 'Please select a valid user type.';
+          setErr(errMsg);
+        }
+      } else {
+        setErr(err.message);
+      }
     }
   };
 
-  const handleHasConfirmation = async e => {
-    e.preventDefault();
-    setErr(''); // reset error message if there was one
-    setSignUpStep(2);
-  };
-
-  const handleRequestConfirmationCode = async e => {
+  const handleResendConfirmationCode = async e => {
     e.preventDefault();
     try {
       await Auth.resendSignUp(email);
@@ -138,7 +155,7 @@ export default function SignUp() {
           email,
           studentNumber,
           userId,
-          // userSituation,
+          userSituation,
         },
       });
 
@@ -146,6 +163,7 @@ export default function SignUp() {
       userHasAuthenticated(true);
       window.location.href = '/';
     } catch (e: any) {
+      console.log(e.response);
       setErr(e.message);
       console.log(e);
     }
@@ -183,7 +201,6 @@ export default function SignUp() {
                   type="fname"
                 />
               </Grid>
-
               <Grid item xs={12} sm={6}>
                 <Form.Label>
                   <b>Last Name</b>
@@ -206,7 +223,6 @@ export default function SignUp() {
                   value={studentNumber}
                 />
               </Grid>
-
               <Grid item xs={12}>
                 <Form.Label>
                   <b>Email address</b>
@@ -219,7 +235,6 @@ export default function SignUp() {
                   type="email"
                 />
               </Grid>
-
               <Grid item xs={12}>
                 <Form.Label>
                   <b>Password</b>
@@ -230,6 +245,35 @@ export default function SignUp() {
                   onChange={handlePasswordChange}
                   value={password}
                 />
+              </Grid>
+
+              <Grid item xs={12}>
+                <Form.Label>
+                  <b>User Type</b>
+                </Form.Label>
+                <Form.Control
+                  as="select"
+                  value={userSituation}
+                  onChange={handleUserSituationChange}
+                >
+                  <option value=""></option>
+                  <option value={UserSituation.ENGINEER_ENROLLED}>
+                    Sci'21 or Sci'22 Student Enrolled in Classes
+                  </option>
+                  <option value={UserSituation.INTERNSHIP_KTOWN}>
+                    Sci'21 or Sci'22 Student on Internship Residing in Kingston
+                  </option>
+                  <option value={UserSituation.INTERNSHIP}>
+                    Sci'21 or Sci'22 Student on Internship Outside of Kingston
+                  </option>
+                  <option value={UserSituation.GUEST_QUEENS}>
+                    Guest Enrolled at Queen's
+                  </option>
+                  <option value={UserSituation.GUEST}>External Guest</option>
+                  <option value={UserSituation.SCIFORMAL}>
+                    Sci Formal Committee
+                  </option>
+                </Form.Control>
               </Grid>
             </Grid>
 
@@ -250,7 +294,10 @@ export default function SignUp() {
               <Link
                 href="#confirm"
                 variant="body2"
-                onClick={handleHasConfirmation}
+                onClick={() => {
+                  setErr('');
+                  setSignUpStep(2);
+                }}
               >
                 Confirm Account &#8594;
               </Link>
@@ -295,13 +342,22 @@ export default function SignUp() {
             >
               Confirm Account
             </Button>
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <Link
+                onClick={() => {
+                  setErr('');
+                  setSignUpStep(1);
+                }}
+                variant="body2"
+              >
+                &#8592; Create Account
+              </Link>
               <Link
                 href="#confirm"
                 variant="body2"
-                onClick={handleRequestConfirmationCode}
+                onClick={handleResendConfirmationCode}
               >
-                Request a new confirmation code
+                Resend Code &#8635;
               </Link>
             </div>
           </form>

@@ -1,6 +1,6 @@
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import { DynamoUtilities } from './dynamo';
-import { UserSituation } from '../types/requests/UserRequest';
+import { DynamoUtilities } from './dynamo-utilities';
+import { UserSituation } from '../types/models/UserType';
 import { User } from '../types/models/User';
 
 const dynamoDb = new DocumentClient();
@@ -25,37 +25,40 @@ export class UsersUtilities {
     return true;
   };
 
-  public static totalHours = (userSituation: UserSituation ): Partial<User> => {
+  public static totalHours = (userSituation: UserSituation): Partial<User> => {
     if (userSituation === UserSituation.ENGINEER_ENROLLED) {
       return {
         finalHoursNeeded: 10,
         regularHoursNeeded: 8,
       };
-    } else if (userSituation === UserSituation.INTERNSHIP_KTOWN) {
+    }
+    if (userSituation === UserSituation.INTERNSHIP_KTOWN) {
       return {
         finalHoursNeeded: 0,
         regularHoursNeeded: 5,
       };
-    } else if (userSituation === UserSituation.INTERNSHIP) {
-      return {
-        finalHoursNeeded: 0, 
-        regularHoursNeeded: 0,
-      };
-    } else if (userSituation === UserSituation.GUEST_QUEENS) {
-      return {
-        finalHoursNeeded: 0, 
-        regularHoursNeeded: 5,
-      };
-    } else if (userSituation === UserSituation.GUEST) {
-      return {
-        finalHoursNeeded: 0,
-        regularHoursNeeded: 0,
-      };
-    } else if (userSituation === UserSituation.SCIFORMAL) {
+    }
+    if (userSituation === UserSituation.INTERNSHIP) {
       return {
         finalHoursNeeded: 0,
         regularHoursNeeded: 0,
       };
     }
-  }
+    if (userSituation === UserSituation.GUEST_QUEENS) {
+      return {
+        finalHoursNeeded: 0,
+        regularHoursNeeded: 5,
+      };
+    }
+    if (userSituation === UserSituation.GUEST) {
+      return {
+        finalHoursNeeded: 0,
+        regularHoursNeeded: 0,
+      };
+    }
+    return {
+      finalHoursNeeded: 0,
+      regularHoursNeeded: 0,
+    };
+  };
 }

@@ -3,7 +3,7 @@ import { updateHours, checkIn } from '../../src/handlers/hours';
 import { UpdateHoursRequest } from '../../src/types/requests/UpdateHoursRequest';
 import { HoursUtilities } from '../../src/util/hours-utilities';
 import { sampleTransaction } from '../mocks/hours';
-import { DynamoUtilities } from '../../src/util/dynamo';
+import { DynamoUtilities } from '../../src/util/dynamo-utilities';
 import { ErrorConstants } from '../../src/constants/errors';
 import { sampleApiGatewayEvent } from '../mocks/event';
 import { CheckInRequest } from '../../src/types/requests/HoursRequest';

@@ -16,7 +16,7 @@ export const CheckInPage = () => {
     await API.post('hour-logger', '/users/check-in', {
       body: {
         studentNumber,
-      }
+      },
     });
   };
 

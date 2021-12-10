@@ -92,6 +92,11 @@ export const ForgotPassword = () => {
           </Typography>
           <br />
 
+          <Alert variant="info" style={{ width: '100%', textAlign: 'center' }}>
+            If an account is found, you will be sent a confirmation code to
+            reset your password.
+          </Alert>
+
           <form className={classes.form} noValidate>
             <Form.Label>
               <b>Email address</b>
