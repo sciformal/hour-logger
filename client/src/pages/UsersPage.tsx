@@ -1,12 +1,10 @@
 import API from '@aws-amplify/api';
+import { makeStyles } from '@material-ui/core';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import { makeStyles, TextField } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
-import { Alert, Form, Tab, Table, Tabs } from 'react-bootstrap';
+import { Alert, Button, Form, Tab, Table, Tabs } from 'react-bootstrap';
 import Loader from '../components/global/Loader';
 import Link from '@material-ui/core/Link';
-import Button from '@material-ui/core/Button';
-import { Form } from 'react-bootstrap';
 
 const usersHeaders = [
   'Name',
@@ -106,7 +104,6 @@ const CheckInForm = () => {
           studentNumber,
         },
       });
-      console.log(result);
       setUser(result);
       setSubmitted(true);
     } catch (err: any) {
