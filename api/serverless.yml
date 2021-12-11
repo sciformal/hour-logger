@@ -42,7 +42,7 @@ functions:
     description: 'Sends a registration email'
     events:
       - http:
-          path: /auth/validate-user
+          path: /users/validate
           method: post
           cors: true
 
