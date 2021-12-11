@@ -191,7 +191,7 @@ const CheckInForm = () => {
   }
 };
 
-export const CheckIn = () => {
+const CheckIn = () => {
   return (
     // Container
     <div style={{ display: 'flex' }}>
@@ -289,7 +289,7 @@ function UsersTable({ headers, users }) {
                 </a>
               </td>
               <td>{user.studentNumber}</td>
-              <td>{user.hours}</td>
+              <td>{user.hours.toFixed(2)}</td>
               <td>{user.hoursNeeded}</td>
               <td>{user.isCheckedIn ? 'Yes' : 'No'}</td>
             </tr>

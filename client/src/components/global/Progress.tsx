@@ -3,6 +3,7 @@ import { CircularProgressbar } from 'react-circular-progressbar';
 export const Progress = props => {
   const { completed, max } = props;
   // @ts-ignore
+
   const percentage = parseInt((completed / max) * 100);
 
   return (
