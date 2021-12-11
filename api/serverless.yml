@@ -44,6 +44,7 @@ functions:
       - http:
           path: /auth/validate-user
           method: post
+          cors: true
 
   create-user:
     handler: src/handlers/users.createUser

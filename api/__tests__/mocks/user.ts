@@ -14,7 +14,7 @@ export const sampleUserRequest: UserRequest = {
   email: 'john.doe@queensu.ca',
   studentNumber: sampleStudentNumber,
   userId: sampleUserId,
-  userSituation: UserSituation.ENGINEER_ENROLLED,
+  userType: UserSituation.ENGINEER_ENROLLED,
 };
 
 export const sampleUser: User = {

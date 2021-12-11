@@ -76,7 +76,7 @@ export const createUser = async (
     );
   }
 
-  if (!data.userSituation) {
+  if (!data.userType) {
     return ResponseUtilities.createErrorResponse(
       ErrorConstants.VALIDATION_USER_SITUATION,
     );
@@ -87,9 +87,10 @@ export const createUser = async (
   const userPayload: User = {
     ...data,
     hours: 0,
+    finalHours: 0,
     finalHoursNeeded: requiredHours.finalHoursNeeded,
     regularHoursNeeded: requiredHours.regularHoursNeeded,
-    type: data.type || UserType.USER,
+    type: data.userType || UserType.USER,
     isCheckedIn: false,
     transactions: [],
   };

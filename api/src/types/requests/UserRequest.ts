@@ -9,5 +9,5 @@ export interface UserRequest {
   email: string;
   studentNumber: string;
   userId: string;
-  userSituation: UserSituation;
+  userType: UserSituation;
 }
