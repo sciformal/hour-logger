@@ -371,6 +371,55 @@ const TransferHours = ({ user }) => {
         <h4>
           <b>My Hour Transfers</b>
         </h4>
+
+        <br />
+        <br />
+
+        {user.requests?.length > 0 ? (
+          <div
+            style={{
+              width: '80%',
+              margin: 'auto',
+              display: 'flex',
+              gap: '10px',
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+            }}
+          >
+            {user.requests.map(request => {
+              const rawDate = new Date(request.date);
+              const date = rawDate.toDateString();
+
+              return (
+                <div
+                  key={request.requestId}
+                  style={{
+                    display: 'flex',
+                    flexWrap: 'nowrap',
+                    flexDirection: 'row',
+                    border: '1px solid #eeeeee',
+                    borderRadius: '5px',
+                    width: '100%',
+                    padding: '5px',
+                  }}
+                >
+                  {/* Left Side */}
+                  <div
+                    style={{ textAlign: 'left', width: '70%', margin: '10px' }}
+                  >
+                    <h5>{date}</h5>
+                    <p>{request.message}</p>
+                  </div>
+
+                  {/* Right Side */}
+                  <div style={{ margin: 'auto' }}>{request.status}</div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div>No transfer hours requests yet.</div>
+        )}
       </div>
     </div>
   );

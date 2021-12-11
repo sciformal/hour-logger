@@ -1,8 +1,11 @@
 import API from '@aws-amplify/api';
-import { TextField } from '@material-ui/core';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import { makeStyles, TextField } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
-import { Button, Tab, Table, Tabs } from 'react-bootstrap';
+import { Alert, Form, Tab, Table, Tabs } from 'react-bootstrap';
 import Loader from '../components/global/Loader';
+import Link from '@material-ui/core/Link';
+import Button from '@material-ui/core/Button';
 
 const usersHeaders = [
   'Name',
@@ -83,8 +86,19 @@ const UsersSummary = () => {
   );
 };
 
+const useStyles = makeStyles(theme => ({
+  submit: {
+    margin: theme.spacing(3, 0, 2),
+  },
+}));
+
 const CheckInForm = () => {
+  const classes = useStyles();
   const [studentNumber, setStudentNumber] = useState('');
+  const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [user, setUser] = useState(null);
+  const [err, setErr] = useState('');
 
   // @ts-ignore
   const handleStudentNumber = e => {
@@ -92,31 +106,103 @@ const CheckInForm = () => {
   };
 
   const handleCheckIn = async () => {
-    await API.post('hour-logger', '/users/check-in', {
-      body: {
-        studentNumber,
-      },
-    });
+    setSubmitting(true);
+    setErr('');
+    try {
+      const result = await API.post('hour-logger', '/users/check-in', {
+        body: {
+          studentNumber,
+        },
+      });
+      console.log(result);
+      setUser(result);
+      setSubmitted(true);
+    } catch (err: any) {
+      console.log(err);
+      if (err.response) {
+        const errMessage = err.response.data.message;
+        if (errMessage.indexOf('DynamoDB') >= 0) {
+          const errMsg = 'The student number has already been registered.';
+          setErr(errMsg);
+        } else {
+          setErr('User could not be checked in.');
+        }
+      }
+      setSubmitted(false);
+    } finally {
+      setSubmitting(false);
+    }
   };
-  return (
-    <>
-      <TextField
-        id="outlined-basic"
-        label="Student Number"
-        variant="outlined"
-        value={studentNumber}
-        onChange={handleStudentNumber}
-      />
-      <br></br>
-      <br></br>
-      <Button onClick={handleCheckIn} variant="contained">
-        Enter
-      </Button>
-    </>
-  );
+
+  if (submitting) {
+    return <Loader />;
+  } else {
+    if (submitted) {
+      return (
+        <>
+          <div>
+            <h5>
+              {user.firstName} has been checked{' '}
+              {user.isCheckedIn ? 'in' : 'out'}!
+            </h5>
+            <br />
+            <CheckCircleOutlineIcon
+              fontSize="large"
+              style={{ width: '60%', height: '3em' }}
+            />
+          </div>
+          <br />
+          <Link
+            onClick={() => {
+              setErr('');
+              setStudentNumber('');
+              setSubmitted(false);
+            }}
+          >
+            Check in another user?
+          </Link>
+        </>
+      );
+    } else {
+      return (
+        <>
+          <div style={{ width: '60%', margin: 'auto' }}>
+            <Form.Label style={{ textAlign: 'left', width: '100%' }}>
+              <b>Student Number</b>
+            </Form.Label>
+            <Form.Control
+              autoFocus
+              onChange={handleStudentNumber}
+              value={studentNumber}
+            />
+          </div>
+          <br />
+          <Button
+            onClick={handleCheckIn}
+            variant="contained"
+            type="submit"
+            className={classes.submit}
+            color="primary"
+          >
+            Check In
+          </Button>
+          <br />
+          <br />
+          {err !== '' && (
+            <Alert
+              variant="danger"
+              style={{ width: '80%', textAlign: 'center', margin: 'auto' }}
+            >
+              {err}
+            </Alert>
+          )}
+        </>
+      );
+    }
+  }
 };
 
-export const CheckIn = () => {
+const CheckIn = () => {
   return (
     // Container
     <div style={{ display: 'flex' }}>
@@ -128,6 +214,11 @@ export const CheckIn = () => {
           borderRight: '1px solid #EEEEEE',
         }}
       >
+        <h4>
+          <b>Check In</b>
+        </h4>
+        <br></br>
+
         <CheckInForm />
       </div>
 
@@ -191,7 +282,7 @@ function UsersTable({ headers, users }) {
                 </a>
               </td>
               <td>{user.studentNumber}</td>
-              <td>{user.hours}</td>
+              <td>{user.hours.toFixed(2)}</td>
               <td>{user.hoursNeeded}</td>
               <td>{user.isCheckedIn ? 'Yes' : 'No'}</td>
             </tr>
