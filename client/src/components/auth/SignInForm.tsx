@@ -72,6 +72,8 @@ export default function SignInForm() {
       let cognitoUserInfo = await Auth.currentUserInfo();
       const userId = cognitoUserInfo.username;
       const studentNumber = cognitoUserInfo.attributes['custom:studentNumber'];
+      const userType = cognitoUserInfo.attributes['custom:userType'];
+      console.log(cognitoUserInfo);
       const { given_name, family_name, email } = cognitoUserInfo.attributes; // desctructure the cognito user info object.
       const { status, data } = await API.get(
         'hour-logger',
@@ -86,6 +88,7 @@ export default function SignInForm() {
             userId,
             email,
             studentNumber,
+            userType,
             firstName: given_name,
             lastName: family_name,
           },
