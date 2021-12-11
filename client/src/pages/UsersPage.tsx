@@ -6,6 +6,7 @@ import { Alert, Form, Tab, Table, Tabs } from 'react-bootstrap';
 import Loader from '../components/global/Loader';
 import Link from '@material-ui/core/Link';
 import Button from '@material-ui/core/Button';
+import { Form } from 'react-bootstrap';
 
 const usersHeaders = [
   'Name',
@@ -18,21 +19,16 @@ const usersHeaders = [
 export const UsersPage = () => {
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState(null);
-  const [query, setQuery] = useState('');
 
   useEffect(() => {
     // TODO: Sort users by name alphabetically
     loadUsers();
-  }, [query]);
+  }, []);
 
   const loadUsers = async () => {
     const users = await API.get('hour-logger', '/users', {});
     setUsers(users);
     setLoading(false);
-  };
-
-  const handleQueryChange = e => {
-    setQuery(e.target.value);
   };
 
   if (loading) {
@@ -51,11 +47,7 @@ export const UsersPage = () => {
             <CheckIn />
           </Tab>
           <Tab eventKey="third" title="All Users">
-            <AllUsers
-              handleQueryChange={handleQueryChange}
-              query={query}
-              users={users}
-            />
+            <AllUsers users={users} />
           </Tab>
         </Tabs>
       </div>
@@ -230,28 +222,46 @@ const CheckIn = () => {
   );
 };
 
-const AllUsers = ({ handleQueryChange, query, users }) => {
+const AllUsers = ({ users }) => {
+  const [query, handleQuery] = useState('');
+
+  const handleQueryChange = (e: any) => {
+    handleQuery(e.target.value);
+  };
+
+  const testField = value => {
+    return value.toLowerCase().indexOf(query.toLowerCase()) >= 0;
+  };
+
+  const isMatch = user => {
+    return (
+      testField(user.firstName) ||
+      testField(user.lastName) ||
+      testField(user.studentNumber) ||
+      testField(user.email)
+    );
+  };
+
+  const filteredUsers = !query ? users : users.filter(isMatch);
+
   return (
     <div>
       <div style={{ width: '30%', margin: 'auto' }}>
-        <TextField
-          autoComplete="search"
-          name="search"
-          variant="outlined"
-          fullWidth
-          id="search"
-          label="Search"
+        <Form.Label>
+          <b>Search Users</b>
+        </Form.Label>
+        <Form.Control
+          autoFocus
           onChange={handleQueryChange}
           value={query}
-          autoFocus
+          type="lname"
         />
       </div>
       <br />
       <br />
 
       <div style={{ width: '60%', margin: 'auto' }}>
-        <UsersTable users={users} headers={usersHeaders} />
-        {/* TODO: Make pagable */}
+        <UsersTable users={filteredUsers} headers={usersHeaders} />
       </div>
     </div>
   );
