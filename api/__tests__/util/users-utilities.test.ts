@@ -28,6 +28,7 @@ describe('Users Utilities Tests', () => {
       expect(uniqueStudentNumber).toBeFalsy;
     });
   });
+
   describe('User Situation Tests', () => {
     it('should set the proper number of hours for ENGINEER_ENROLLED', async () => {
       const requiredHours = UsersUtilities.totalHours(

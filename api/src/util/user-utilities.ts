@@ -1,6 +1,6 @@
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { DynamoUtilities } from './dynamo-utilities';
-import { UserSituation } from '../types/models/UserType';
+import { UserSituation, UserType } from '../types/models/UserType';
 import { User } from '../types/models/User';
 
 const dynamoDb = new DocumentClient();
@@ -26,39 +26,41 @@ export class UsersUtilities {
   };
 
   public static totalHours = (userSituation: UserSituation): Partial<User> => {
-    if (userSituation === UserSituation.ENGINEER_ENROLLED) {
-      return {
-        finalHoursNeeded: 10,
-        regularHoursNeeded: 8,
-      };
+    switch (userSituation) {
+      case UserSituation.ENGINEER_ENROLLED:
+        return {
+          finalHoursNeeded: 10,
+          regularHoursNeeded: 8,
+        };
+      case UserSituation.INTERNSHIP_KTOWN:
+        return {
+          finalHoursNeeded: 0,
+          regularHoursNeeded: 5,
+        };
+      case UserSituation.INTERNSHIP:
+        return {
+          finalHoursNeeded: 0,
+          regularHoursNeeded: 0,
+        };
+      case UserSituation.GUEST_QUEENS:
+        return {
+          finalHoursNeeded: 0,
+          regularHoursNeeded: 5,
+        };
+      default:
+        return {
+          finalHoursNeeded: 0,
+          regularHoursNeeded: 0,
+        };
     }
-    if (userSituation === UserSituation.INTERNSHIP_KTOWN) {
-      return {
-        finalHoursNeeded: 0,
-        regularHoursNeeded: 5,
-      };
+  };
+
+  public static adminLevel = (studentNumber): UserType => {
+    // TODO: Build in the sci formal managers here.
+    if (studentNumber === '20066282') {
+      return UserType.ADMIN;
     }
-    if (userSituation === UserSituation.INTERNSHIP) {
-      return {
-        finalHoursNeeded: 0,
-        regularHoursNeeded: 0,
-      };
-    }
-    if (userSituation === UserSituation.GUEST_QUEENS) {
-      return {
-        finalHoursNeeded: 0,
-        regularHoursNeeded: 5,
-      };
-    }
-    if (userSituation === UserSituation.GUEST) {
-      return {
-        finalHoursNeeded: 0,
-        regularHoursNeeded: 0,
-      };
-    }
-    return {
-      finalHoursNeeded: 0,
-      regularHoursNeeded: 0,
-    };
+
+    return UserType.USER;
   };
 }

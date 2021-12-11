@@ -82,7 +82,8 @@ export const createUser = async (
     );
   }
 
-  const requiredHours = UsersUtilities.totalHours(data.userSituation);
+  const requiredHours = UsersUtilities.totalHours(data.userType);
+  const adminType = UsersUtilities.adminLevel(data.studentNumber);
 
   const userPayload: User = {
     ...data,
@@ -90,7 +91,7 @@ export const createUser = async (
     finalHours: 0,
     finalHoursNeeded: requiredHours.finalHoursNeeded,
     regularHoursNeeded: requiredHours.regularHoursNeeded,
-    type: data.userType || UserType.USER,
+    type: adminType,
     isCheckedIn: false,
     transactions: [],
   };
