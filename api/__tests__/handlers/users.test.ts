@@ -172,7 +172,7 @@ describe('User Endpoint Tests', () => {
         );
       });
       it('should return 400 when the request body doesnt contain userSituation', async () => {
-        delete validUser.userSituation;
+        delete validUser.userType;
 
         const mockEvent: APIGatewayProxyEvent = {
           ...sampleApiGatewayEvent,

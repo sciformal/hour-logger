@@ -26,6 +26,8 @@ export default function App() {
         //@ts-ignore
         const studentNumber =
           cognitoUserInfo.attributes['custom:studentNumber'];
+        const userType = cognitoUserInfo.attributes['custom:userType'];
+
         const { status, data } = await API.get(
           'hour-logger',
           `/users/${userId}`,
@@ -39,6 +41,7 @@ export default function App() {
               userId,
               email,
               studentNumber,
+              userType,
               firstName: given_name,
               lastName: family_name,
               userSituation: UserSituation.ENGINEER_ENROLLED,
