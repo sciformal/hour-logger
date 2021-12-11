@@ -213,10 +213,10 @@ export const update = async (
     ...user,
   };
 
-  const currHours = Number(updatedUser.hoursNeeded);
+  const currHours = Number(updatedUser.regularHoursNeeded);
   const removal = Number(data.numHoursReduced);
   const newHours = currHours - removal;
-  updatedUser.hoursNeeded = newHours;
+  updatedUser.regularHoursNeeded = newHours;
 
   // update the user in the table
   const updatedUserParams = {
