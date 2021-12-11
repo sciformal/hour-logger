@@ -3,14 +3,16 @@ import { ForgotPassword } from './components/auth/ForgotPassword';
 import SignUp from './components/auth/Register';
 import SignInForm from './components/auth/SignInForm';
 import HourLoggerNav from './components/global/Nav';
-import { useAuthenticationContext } from './libs/contextLib';
+import { useAuthenticationContext, useUserContext } from './libs/contextLib';
 import { HomePage } from './pages/HoursPage';
 import { RequestsPage } from './pages/RequestsPage';
 import { UsersPage } from './pages/UsersPage';
 import './styles/App.css';
 
 export default function HourLoggerRoutes() {
+  const { user } = useUserContext();
   const { isAuthenticated } = useAuthenticationContext();
+  console.log(user);
 
   return (
     <div className="page-container">
@@ -30,7 +32,9 @@ export default function HourLoggerRoutes() {
           path="/users"
           element={
             <RequireAuth>
-              <UsersPage />
+              <RequireAdmin user={user}>
+                <UsersPage />
+              </RequireAdmin>
             </RequireAuth>
           }
         />
@@ -39,7 +43,9 @@ export default function HourLoggerRoutes() {
           path="/requests"
           element={
             <RequireAuth>
-              <RequestsPage />
+              <RequireAdmin user={user}>
+                <RequestsPage />
+              </RequireAdmin>
             </RequireAuth>
           }
         />
@@ -52,6 +58,14 @@ export default function HourLoggerRoutes() {
     </div>
   );
 }
+
+const RequireAdmin = ({ children, user }) => {
+  if (user?.type === 'ADMIN') {
+    return children;
+  } else {
+    return <Navigate to="/unauthenticated" replace />;
+  }
+};
 
 const RequireAuth = ({ children }) => {
   const { isAuthenticated } = useAuthenticationContext();

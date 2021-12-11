@@ -132,22 +132,10 @@ export const CheckIn = () => {
 };
 
 const AllUsers = ({ users }) => {
-  const [filteredUsers, setFilteredUsers] = useState(users);
   const [query, handleQuery] = useState('');
 
-  useEffect(() => {
-    if (query === '') {
-      setFilteredUsers(users);
-    } else {
-      const filteredUsers = filterUsersSearch(users);
-      console.log(filteredUsers);
-      setFilteredUsers(filteredUsers);
-    }
-  }, [users, filteredUsers, query]);
-
-  const filterUsersSearch = users => {
-    const test = [...users];
-    return test.filter(isMatch);
+  const handleQueryChange = (e: any) => {
+    handleQuery(e.target.value);
   };
 
   const testField = value => {
@@ -163,9 +151,7 @@ const AllUsers = ({ users }) => {
     );
   };
 
-  const handleQueryChange = (e: any) => {
-    handleQuery(e.target.value);
-  };
+  const filteredUsers = !query ? users : users.filter(isMatch);
 
   return (
     <div>

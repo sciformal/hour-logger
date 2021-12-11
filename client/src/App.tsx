@@ -4,7 +4,6 @@ import Loader from './components/global/Loader';
 import { AuthenticationContext, UserContext } from './libs/contextLib';
 import HourLoggerRoutes from './Routes';
 import { UserSituation } from './types/situationType';
-// import './styles/App.css';
 
 export default function App() {
   const [isAuthenticating, setIsAuthenticating] = useState(true); // has the users session loaded yet?
