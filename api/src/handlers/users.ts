@@ -87,6 +87,7 @@ export const createUser = async (
   const userPayload: User = {
     ...data,
     hours: 0,
+    finalHours: 0,
     finalHoursNeeded: requiredHours.finalHoursNeeded,
     regularHoursNeeded: requiredHours.regularHoursNeeded,
     type: data.type || UserType.USER,
