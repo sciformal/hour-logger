@@ -23,6 +23,7 @@ export const CheckInPage = () => {
   return (
     <div style={{ textAlign: 'center' }}>
       <h1 style={{ textAlign: 'center', padding: '50px' }}>Check In Page</h1>
+
       <TextField
         id="outlined-basic"
         label="Student Number"
