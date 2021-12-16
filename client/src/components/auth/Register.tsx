@@ -90,7 +90,7 @@ export default function SignUp() {
   const handleRegister = async e => {
     e.preventDefault();
     try {
-      await API.post('hour-logger', '/auth/validate-user', {
+      await API.post('hour-logger', '/users/validate', {
         body: {
           studentNumber,
           userType: userSituation,
