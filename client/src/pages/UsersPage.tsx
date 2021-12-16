@@ -14,6 +14,12 @@ const usersHeaders = [
   'Checked In',
 ];
 
+const checkedInUsersHeaders = [
+  'Name',
+  'Check In Time',
+  'Check Out'
+];
+
 export const UsersPage = () => {
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState(null);
@@ -42,7 +48,7 @@ export const UsersPage = () => {
             <UsersSummary />
           </Tab>
           <Tab eventKey="second" title="Check In">
-            <CheckIn />
+            <CheckIn users={users}/>
           </Tab>
           <Tab eventKey="third" title="All Users">
             <AllUsers users={users} />
@@ -191,14 +197,16 @@ const CheckInForm = () => {
   }
 };
 
-const CheckIn = () => {
+const CheckIn = ({ users }) => {
+  const checkedInUsers =  users.filter(user => user.isCheckedIn);
+
   return (
     // Container
     <div style={{ display: 'flex' }}>
       {/* Left Side */}
       <div
         style={{
-          width: '50%',
+          width: '40%',
           textAlign: 'center',
           borderRight: '1px solid #EEEEEE',
         }}
@@ -212,8 +220,11 @@ const CheckIn = () => {
       </div>
 
       {/* Right Side */}
-      <div style={{ width: '50%', textAlign: 'center' }}>
-        Show all checked in users
+      <div style={{ width: '60%', textAlign: 'center', padding: 20 }}>
+        <h4>
+          <b>Checked In Users</b>
+        </h4>
+        <CheckedInUsersTable users={checkedInUsers} headers={checkedInUsersHeaders} />
       </div>
     </div>
   );
@@ -299,3 +310,71 @@ function UsersTable({ headers, users }) {
     </Table>
   );
 }
+
+function CheckedInUsersTable({ headers, users }) {
+  const classes = useStyles();
+  const [err, setErr] = useState('');
+
+  const handleCheckIn = async (user: any) => {
+    setErr('');
+    try {
+      await API.post('hour-logger', '/users/check-in', {
+        body: {
+          // @ts-ignore
+          studentNumber: user.studentNumber,
+        },
+      });
+    } catch (err: any) {
+      console.log(err);
+      setErr(err);
+  }
+};
+  return ( 
+    <>
+    <Table bordered>
+      <thead>
+        <tr>
+          {
+            // @ts-ignore
+            headers.map(name => (
+              // @ts-ignore
+              <th key={name}>{name}</th>
+            ))
+          }
+        </tr>
+      </thead>
+      <tbody>
+        {
+          // @ts-ignore
+          users.map(user => (
+            <tr key={user.userId}>
+              <td>{user.firstName + ' ' + user.lastName}</td>
+              <td>{ new Date(user.transactions.at(-1).checkIn).toDateString() + ' ' + new Date(user.transactions.at(-1).checkIn).toLocaleTimeString()}</td>
+              <td>{          
+                <Button
+                  onClick={() => handleCheckIn(user)}
+                  variant="contained"
+                  type="submit"
+                  className={classes.submit}
+                  color="primary"
+                >
+                Check Out
+              </Button> }
+              </td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </Table>
+              {err !== '' && (
+                <Alert
+                  variant="danger"
+                  style={{ width: '80%', textAlign: 'center', margin: 'auto' }}
+                >
+                  {err}
+                </Alert>
+              )}
+              </>
+  );
+}
+
