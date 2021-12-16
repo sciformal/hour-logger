@@ -68,7 +68,7 @@ export const customEmails = (event, _context, callback) => {
   const name = event.request.userAttributes.given_name;
   const code = event.request.codeParameter;
   console.log(event.triggerSource);
-  if (event.triggerSource === 'CustomMessage_SignUp') {
+  if (event.triggerSource === 'CustomMessage_SignUp' || event.triggerSource === 'CustomMessage_ResendCode') {
     event.response = {
       emailSubject: CustomEmails.CONFIRMATION_CODE_SUBJECT,
       emailMessage: CustomEmails.createConfirmationCodeEmail(name, code),
