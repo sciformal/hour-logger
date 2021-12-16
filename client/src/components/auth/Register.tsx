@@ -68,6 +68,7 @@ export default function SignUp() {
 
   // @ts-ignore
   const handleEmailChange = e => {
+    console.log(e.target.value);
     setEmail(e.target.value);
   };
 
@@ -130,7 +131,8 @@ export default function SignUp() {
   };
 
   const handleResendConfirmationCode = async e => {
-    e.preventDefault();
+    e.preventDefault();console.log(email);
+
     try {
       await Auth.resendSignUp(email);
     } catch (err: any) {
@@ -188,7 +190,7 @@ export default function SignUp() {
             </Alert>
           )}
 
-          <form className={classes.form} noValidate>
+          <form className={classes.form} noValidate autoComplete="off">
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <Form.Label>
@@ -206,7 +208,6 @@ export default function SignUp() {
                   <b>Last Name</b>
                 </Form.Label>
                 <Form.Control
-                  autoFocus
                   onChange={handleLastNameChange}
                   value={lastName}
                   type="lname"
@@ -218,7 +219,6 @@ export default function SignUp() {
                   <b>Student Number</b>
                 </Form.Label>
                 <Form.Control
-                  autoFocus
                   onChange={handleStudentNumberChange}
                   value={studentNumber}
                 />
@@ -228,11 +228,11 @@ export default function SignUp() {
                   <b>Email address</b>
                 </Form.Label>
                 <Form.Control
-                  autoFocus
                   onChange={handleEmailChange}
                   value={email}
                   placeholder="Enter email"
                   type="email"
+                  autoComplete="false"
                 />
               </Grid>
               <Grid item xs={12}>
