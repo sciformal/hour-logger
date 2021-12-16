@@ -1,19 +1,19 @@
 import { v4 as uuid } from 'uuid';
 import {
-  ReductionRequest,
-  ReductionStatus,
-} from '../../src/types/models/ReductionRequest';
+  RequestModel,
+  RequestStatus,
+} from '../../src/types/database/ReductionRequest';
+import { RequestType } from '../../src/types/requests/Request';
 import { sampleUserId } from './user';
 
 export const sampleReductionRequestDTO = {
   userId: sampleUserId,
   message: 'Please reduce my hours!',
-  firstName: "John",
-  lastName: "Doe"
+  type: RequestType.REDUCTION,
 };
 
-export const sampleReductionRequest: ReductionRequest = {
+export const sampleReductionRequest: RequestModel = {
   ...sampleReductionRequestDTO,
   requestId: uuid(),
-  status: ReductionStatus.PENDING,
+  status: RequestStatus.PENDING,
 };

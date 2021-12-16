@@ -90,7 +90,7 @@ export default function SignUp() {
   const handleRegister = async e => {
     e.preventDefault();
     try {
-      await API.post('hour-logger', '/auth/validate-user', {
+      await API.post('hour-logger', '/users/validate', {
         body: {
           studentNumber,
           userType: userSituation,
@@ -198,7 +198,8 @@ export default function SignUp() {
                   autoFocus
                   onChange={handleFirstNameChange}
                   value={firstName}
-                  type="fname"
+                  type="firstName"
+                  id="firstName"
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
@@ -209,7 +210,8 @@ export default function SignUp() {
                   autoFocus
                   onChange={handleLastNameChange}
                   value={lastName}
-                  type="lname"
+                  type="lastName"
+                  id="lastName"
                 />
               </Grid>
 
@@ -221,11 +223,12 @@ export default function SignUp() {
                   autoFocus
                   onChange={handleStudentNumberChange}
                   value={studentNumber}
+                  id="studentNumber"
                 />
               </Grid>
               <Grid item xs={12}>
                 <Form.Label>
-                  <b>Email address</b>
+                  <b>Email</b>
                 </Form.Label>
                 <Form.Control
                   autoFocus
@@ -233,6 +236,7 @@ export default function SignUp() {
                   value={email}
                   placeholder="Enter email"
                   type="email"
+                  id="email"
                 />
               </Grid>
               <Grid item xs={12}>
@@ -253,10 +257,11 @@ export default function SignUp() {
                 </Form.Label>
                 <Form.Control
                   as="select"
+                  id="userType"
                   value={userSituation}
                   onChange={handleUserSituationChange}
                 >
-                  <option value=""></option>
+                  <option value="">Select your user type</option>
                   <option value={UserSituation.ENGINEER_ENROLLED}>
                     Sci'21 or Sci'22 Student Enrolled in Classes
                   </option>

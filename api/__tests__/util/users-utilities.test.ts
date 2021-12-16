@@ -1,5 +1,5 @@
-import { UserSituation } from '../../src/types/models/UserType';
-import { User } from '../../src/types/models/User';
+import { UserSituation } from '../../src/types/database/UserType';
+import { User } from '../../src/types/database/User';
 import { sampleStudentNumber, sampleUser } from '../mocks/user';
 import { UsersUtilities } from '../../src/util/user-utilities';
 import { DynamoUtilities } from '../../src/util/dynamo-utilities';

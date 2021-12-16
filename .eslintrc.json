@@ -8,6 +8,7 @@
     "jest": true,
     "node": true
   },
+  "ignorePatterns": ["cypress/**"],
   "rules": {
     "no-console": "off",
     "import/prefer-default-export": "off",
@@ -37,7 +38,7 @@
     "max-len": [
       "warn",
       {
-        "code": 100,
+        "code": 144,
         "tabWidth": 2,
         "comments": 80,
         "ignoreComments": false,

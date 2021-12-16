@@ -1,16 +1,17 @@
 /**
  * DynamoDB user model.
  */
-export enum ReductionStatus {
+export enum RequestStatus {
   PENDING = 'PENDING',
   APPROVED = 'APPROVED',
   DENIED = 'DENIED',
 }
 
-export interface ReductionRequest {
+export interface RequestModel {
   requestId: string;
   userId: string;
   message: string;
-  status: ReductionStatus;
+  status: RequestStatus;
   numHoursReduced?: number;
+  toUserId?: string;
 }

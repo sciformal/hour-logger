@@ -1,53 +1,50 @@
-import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { v4 as uuid } from 'uuid';
-import { DynamoUtilities } from '../util/dynamo-utilities';
-import {
-  ReductionRequest,
-  ReductionStatus,
-} from '../types/models/ReductionRequest';
 import { ErrorConstants } from '../constants/errors';
+import {
+  RequestModel,
+  RequestStatus,
+} from '../types/database/ReductionRequest';
+import { RequestType } from '../types/requests/Request';
+import { DynamoUtilities } from '../util/dynamo-utilities';
 import { ResponseUtilities } from '../util/response-utilities';
+import { ValidationUtilities } from '../util/validation-utilities';
 
 const dynamoDb = new DocumentClient();
 
+/**
+ * Handler for the POST /requests endpoint.
+ * Creates a new reduction request in the DynamoDB table.
+ *
+ * @param event   The API Gateway event object.
+ * @returns       The request object in the DynamoDB table.
+ */
 export const create = async (
   event: APIGatewayProxyEvent,
 ): Promise<APIGatewayProxyResult> => {
-  if (!event.body) {
-    return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_BODY_MISSING,
-    );
-  }
+  let validatedData;
 
-  let data;
+  // Validate request payload
   try {
-    data = JSON.parse(event.body);
-  } catch (err) {
-    console.log(err);
-    return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_BODY_INVALID,
-    );
+    validatedData = ValidationUtilities.validateCreateRequestFields(event);
+  } catch (e) {
+    console.log(e);
+    return ResponseUtilities.createErrorResponse(e.message, 400);
   }
 
-  if (!data.userId) {
-    return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_BODY_USERID,
-    );
-  }
+  // Validate that the user exists
+  let user;
+  const userParams = {
+    TableName: process.env.userTable,
+    Key: {
+      userId: validatedData.userId,
+    },
+  };
 
-  const { userId } = data;
   try {
-    const params = {
-      TableName: process.env.userTable,
-      Key: {
-        userId,
-      },
-    };
-
-    const user = await DynamoUtilities.get(params, dynamoDb);
+    user = await DynamoUtilities.get(userParams, dynamoDb);
     if (!user) {
-      // no user exists
       return ResponseUtilities.createErrorResponse(
         ErrorConstants.DYNAMO_USERID_NOT_FOUND,
       );
@@ -57,33 +54,15 @@ export const create = async (
     return ResponseUtilities.createErrorResponse(err.message, 500);
   }
 
-  if (!data.firstName) {
-    return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_BODY_FIRSTNAME,
-    );
-  }
-
-  if (!data.lastName) {
-    return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_BODY_LASTNAME,
-    );
-  }
-
-  if (!data.message) {
-    return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_BODY_REDUCTION_REQUEST_MESSAGE,
-    );
-  }
-
-  const reductionRequestPayload: ReductionRequest = {
-    ...data,
+  const databasePayload: RequestModel = {
+    ...validatedData,
     requestId: uuid(),
-    status: ReductionStatus.PENDING,
+    status: RequestStatus.PENDING,
   };
 
   const params = {
     TableName: process.env.reductionRequestsTable,
-    Item: reductionRequestPayload,
+    Item: databasePayload,
   };
 
   try {
@@ -114,60 +93,21 @@ export const get = async (
 export const update = async (
   event: APIGatewayProxyEvent,
 ): Promise<APIGatewayProxyResult> => {
-  if (!event.pathParameters) {
-    return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_PATH_MISSING,
-    );
-  }
+  let validatedData;
 
-  const { requestId } = event.pathParameters;
-
-  if (!requestId) {
-    return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_BODY_REQUESTID,
-    );
-  }
-
-  if (!event.body) {
-    return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_BODY_MISSING,
-    );
-  }
-
-  let data;
+  // Validate request payload
   try {
-    data = JSON.parse(event.body);
-  } catch (err) {
-    return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_BODY_INVALID,
-    );
-  }
-
-  if (!data.status) {
-    return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_BODY_STATUS,
-    );
-  }
-
-  if (data.status === ReductionStatus.APPROVED) {
-    if (!data.numHoursReduced) {
-      return ResponseUtilities.createErrorResponse(
-        ErrorConstants.VALIDATION_BODY_NUM_HOURS_REDUCED,
-      );
-    }
-  } else if (data.status === ReductionStatus.DENIED) {
-    // update the request to denied
-  } else {
-    return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_BODY_STATUS_INVALID,
-    );
+    validatedData = ValidationUtilities.validateCreateRequestFields(event);
+  } catch (e) {
+    console.log(e);
+    return ResponseUtilities.createErrorResponse(e.message, 400);
   }
 
   // check if requestId exists
   const params = {
     TableName: process.env.reductionRequestsTable,
     Key: {
-      requestId,
+      requestId: validatedData.requestId,
     },
   };
 
@@ -185,56 +125,159 @@ export const update = async (
     return ResponseUtilities.createErrorResponse(err.message, 500);
   }
 
-  const { userId } = request;
+  if (validatedData.status === RequestStatus.DENIED) {
+    // update and return;
+    const updatedRequestPayload = {
+      ...request,
+      status: validatedData.status,
+      numHours: 0,
+    };
 
-  // pull in the user
-  const userParams = {
-    TableName: process.env.userTable,
-    Key: {
-      userId,
-    },
-  };
+    // update the request in the table
+    const updatedRequestParams = {
+      TableName: process.env.reductionRequestsTable,
+      Item: updatedRequestPayload,
+    };
 
-  let user;
-
-  try {
-    user = await DynamoUtilities.get(userParams, dynamoDb);
-    if (!user) {
-      return ResponseUtilities.createErrorResponse(
-        ErrorConstants.DYNAMO_USERID_NOT_FOUND,
+    try {
+      const updatedRequest = await DynamoUtilities.put(
+        updatedRequestParams,
+        dynamoDb,
       );
+      return ResponseUtilities.createSuccessResponse(updatedRequest);
+    } catch (err) {
+      console.log(err);
+      return ResponseUtilities.createErrorResponse(err.message, 500);
     }
-  } catch (err) {
-    console.log(err);
-    return ResponseUtilities.createErrorResponse(err.message, 500);
   }
 
-  const updatedUser = {
-    ...user,
-  };
+  if (validatedData.type === RequestType.REDUCTION) {
+    const { userId } = request;
 
-  const currHours = Number(updatedUser.regularHoursNeeded);
-  const removal = Number(data.numHoursReduced);
-  const newHours = currHours - removal;
-  updatedUser.regularHoursNeeded = newHours;
+    // pull in the user
+    const userParams = {
+      TableName: process.env.userTable,
+      Key: {
+        userId,
+      },
+    };
 
-  // update the user in the table
-  const updatedUserParams = {
-    TableName: process.env.userTable,
-    Item: updatedUser,
-  };
+    let user;
 
-  try {
-    await DynamoUtilities.put(updatedUserParams, dynamoDb);
-  } catch (err) {
-    console.log(err);
-    return ResponseUtilities.createErrorResponse(err.message, 500);
+    try {
+      user = await DynamoUtilities.get(userParams, dynamoDb);
+      if (!user) {
+        return ResponseUtilities.createErrorResponse(
+          ErrorConstants.DYNAMO_USERID_NOT_FOUND,
+        );
+      }
+    } catch (err) {
+      console.log(err);
+      return ResponseUtilities.createErrorResponse(err.message, 500);
+    }
+
+    const updatedUser = {
+      ...user,
+    };
+
+    const currHours = Number(updatedUser.regularHoursNeeded);
+    const removal = Number(validatedData.numHours);
+    let newHours = currHours - removal;
+
+    if (newHours < 0) {
+      newHours = 0;
+    }
+
+    updatedUser.regularHoursNeeded = newHours;
+
+    // update the user in the table
+    const updatedUserParams = {
+      TableName: process.env.userTable,
+      Item: updatedUser,
+    };
+
+    try {
+      await DynamoUtilities.put(updatedUserParams, dynamoDb);
+    } catch (err) {
+      console.log(err);
+      return ResponseUtilities.createErrorResponse(err.message, 500);
+    }
+  } else {
+    const { userId, toUserId } = request;
+
+    // pull in the user
+    const userParams = {
+      TableName: process.env.userTable,
+      Key: {
+        userId,
+      },
+    };
+
+    const toUserParams = {
+      TableName: process.env.userTable,
+      Key: {
+        toUserId,
+      },
+    };
+
+    let user;
+    let toUser;
+
+    try {
+      user = await DynamoUtilities.get(userParams, dynamoDb);
+      toUser = await DynamoUtilities.get(toUserParams, dynamoDb);
+      if (!user) {
+        return ResponseUtilities.createErrorResponse(
+          ErrorConstants.DYNAMO_USERID_NOT_FOUND,
+        );
+      }
+    } catch (err) {
+      console.log(err);
+      return ResponseUtilities.createErrorResponse(err.message, 500);
+    }
+
+    const updatedUser = {
+      ...user,
+    };
+
+    const updatedToUser = {
+      ...toUser,
+    };
+
+    const currUserHours = Number(updatedUser.regularHours);
+    const currToUserHours = Number(updatedToUser.regularHours);
+    const removalHours = Number(validatedData.numHours);
+
+    const newHoursUser = currUserHours - removalHours;
+    const newHoursToUser = currToUserHours + removalHours;
+
+    updatedUser.regularHours = newHoursUser;
+    updatedToUser.regularHours = newHoursToUser;
+
+    // update the user in the table
+    const updatedUserParams = {
+      TableName: process.env.userTable,
+      Item: updatedUser,
+    };
+
+    const updatedToUserParams = {
+      TableName: process.env.userTable,
+      Item: updatedUser,
+    };
+
+    try {
+      await DynamoUtilities.put(updatedUserParams, dynamoDb);
+      await DynamoUtilities.put(updatedToUserParams, dynamoDb);
+    } catch (err) {
+      console.log(err);
+      return ResponseUtilities.createErrorResponse(err.message, 500);
+    }
   }
 
   const updatedRequestPayload = {
     ...request,
-    status: data.status,
-    numHoursReduced: data.numHoursReduced,
+    status: validatedData.status,
+    numHours: validatedData.numHours,
   };
 
   // update the request in the table

@@ -1,4 +1,4 @@
-import { User } from '../types/models/User';
+import { User } from '../types/database/User';
 
 export class HoursUtilities {
   public static handleCheckInProcess = (user: User): User => {

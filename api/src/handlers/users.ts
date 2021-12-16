@@ -1,11 +1,10 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import { UsersUtilities } from '../util/user-utilities';
 import { ErrorConstants } from '../constants/errors';
+import { User } from '../types/database/User';
 import { DynamoUtilities } from '../util/dynamo-utilities';
-import { User } from '../types/models/User';
 import { ResponseUtilities } from '../util/response-utilities';
-import { UserType } from '../types/models/UserType';
+import { UsersUtilities } from '../util/user-utilities';
 
 const dynamoDb = new DocumentClient();
 
@@ -36,31 +35,31 @@ export const createUser = async (
 
   if (!data.firstName) {
     return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_BODY_FIRSTNAME,
+      ErrorConstants.createValidationString('firstName'),
     );
   }
 
   if (!data.lastName) {
     return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_BODY_LASTNAME,
+      ErrorConstants.createValidationString('lastName'),
     );
   }
 
   if (!data.email) {
     return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_BODY_EMAIL,
+      ErrorConstants.createValidationString('email'),
     );
   }
 
   if (!data.studentNumber) {
     return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_BODY_STUDENTNUMBER,
+      ErrorConstants.createValidationString('studentNumber'),
     );
   }
 
   if (!data.userId) {
     return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_BODY_USERID,
+      ErrorConstants.createValidationString('userId'),
     );
   }
 
@@ -78,7 +77,7 @@ export const createUser = async (
 
   if (!data.userType) {
     return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_USER_SITUATION,
+      ErrorConstants.createValidationString('userType'),
     );
   }
 

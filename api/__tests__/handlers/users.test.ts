@@ -1,6 +1,4 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
-import { UserSituation } from '../../src/types/models/UserType';
-import { UsersUtilities } from '../../src/util/user-utilities';
 import { ErrorConstants } from '../../src/constants/errors';
 import {
   createUser,
@@ -8,11 +6,12 @@ import {
   getAllUsers,
   getUser,
 } from '../../src/handlers/users';
-import { UserRequest } from '../../src/types/requests/UserRequest';
+import { UserRequest } from '../../src/types/requests/User';
 import { DynamoUtilities } from '../../src/util/dynamo-utilities';
+import { UsersUtilities } from '../../src/util/user-utilities';
 import { sampleApiGatewayEvent } from '../mocks/event';
-import { sampleUser, sampleUserId, sampleUserRequest } from '../mocks/user';
 import { sampleReductionRequest } from '../mocks/request';
+import { sampleUser, sampleUserId, sampleUserRequest } from '../mocks/user';
 
 jest.mock('aws-sdk', () => ({
   DynamoDB: {
@@ -106,7 +105,9 @@ describe('User Endpoint Tests', () => {
         const response = await createUser(mockEvent);
         expect(response.statusCode).toEqual(400);
         expect(response.body).toEqual(
-          JSON.stringify({ message: ErrorConstants.VALIDATION_BODY_FIRSTNAME }),
+          JSON.stringify({
+            message: ErrorConstants.createValidationString('firstName'),
+          }),
         );
       });
 
@@ -121,7 +122,9 @@ describe('User Endpoint Tests', () => {
         const response = await createUser(mockEvent);
         expect(response.statusCode).toEqual(400);
         expect(response.body).toEqual(
-          JSON.stringify({ message: ErrorConstants.VALIDATION_BODY_LASTNAME }),
+          JSON.stringify({
+            message: ErrorConstants.createValidationString('lastName'),
+          }),
         );
       });
 
@@ -136,7 +139,9 @@ describe('User Endpoint Tests', () => {
         const response = await createUser(mockEvent);
         expect(response.statusCode).toEqual(400);
         expect(response.body).toEqual(
-          JSON.stringify({ message: ErrorConstants.VALIDATION_BODY_EMAIL }),
+          JSON.stringify({
+            message: ErrorConstants.createValidationString('email'),
+          }),
         );
       });
 
@@ -152,7 +157,7 @@ describe('User Endpoint Tests', () => {
         expect(response.statusCode).toEqual(400);
         expect(response.body).toEqual(
           JSON.stringify({
-            message: ErrorConstants.VALIDATION_BODY_STUDENTNUMBER,
+            message: ErrorConstants.createValidationString('studentNumber'),
           }),
         );
       });
@@ -168,7 +173,9 @@ describe('User Endpoint Tests', () => {
         const response = await createUser(mockEvent);
         expect(response.statusCode).toEqual(400);
         expect(response.body).toEqual(
-          JSON.stringify({ message: ErrorConstants.VALIDATION_BODY_USERID }),
+          JSON.stringify({
+            message: ErrorConstants.createValidationString('userId'),
+          }),
         );
       });
       it('should return 400 when the request body doesnt contain userSituation', async () => {
@@ -182,7 +189,9 @@ describe('User Endpoint Tests', () => {
         const response = await createUser(mockEvent);
         expect(response.statusCode).toEqual(400);
         expect(response.body).toEqual(
-          JSON.stringify({ message: ErrorConstants.VALIDATION_USER_SITUATION }),
+          JSON.stringify({
+            message: ErrorConstants.createValidationString('userType'),
+          }),
         );
       });
 

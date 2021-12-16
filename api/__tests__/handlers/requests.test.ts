@@ -1,10 +1,8 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
 import { ErrorConstants } from '../../src/constants/errors';
 import { create, get, update } from '../../src/handlers/requests';
-import {
-  ReductionRequest,
-  ReductionStatus,
-} from '../../src/types/models/ReductionRequest';
+import { RequestStatus } from '../../src/types/database/ReductionRequest';
+import { Request, UpdateRequest } from '../../src/types/requests/Request';
 import { DynamoUtilities } from '../../src/util/dynamo-utilities';
 import { sampleApiGatewayEvent } from '../mocks/event';
 import {
@@ -24,8 +22,8 @@ jest.mock('aws-sdk', () => ({
 }));
 
 describe('Requests API Tests', () => {
-  describe('Create Reduction Request', () => {
-    let validRequest: Partial<ReductionRequest>;
+  describe('Create Request', () => {
+    let validRequest: Partial<Request>;
     beforeEach(() => {
       validRequest = {
         ...sampleReductionRequestDTO,
@@ -85,7 +83,9 @@ describe('Requests API Tests', () => {
       const response = await create(mockEvent);
       expect(response.statusCode).toEqual(400);
       expect(response.body).toEqual(
-        JSON.stringify({ message: ErrorConstants.VALIDATION_BODY_USERID }),
+        JSON.stringify({
+          message: ErrorConstants.createValidationString('userId'),
+        }),
       );
     });
 
@@ -101,7 +101,7 @@ describe('Requests API Tests', () => {
       expect(response.statusCode).toEqual(400);
       expect(response.body).toEqual(
         JSON.stringify({
-          message: ErrorConstants.VALIDATION_BODY_REDUCTION_REQUEST_MESSAGE,
+          message: ErrorConstants.createValidationString('message'),
         }),
       );
     });
@@ -202,11 +202,11 @@ describe('Requests API Tests', () => {
   });
 
   describe('Update Requests', () => {
-    let validRequest: Partial<ReductionRequest>;
+    let validRequest: Partial<UpdateRequest>;
     beforeEach(() => {
       validRequest = {
-        status: ReductionStatus.APPROVED,
-        numHoursReduced: 10,
+        status: RequestStatus.APPROVED,
+        numHours: 10,
       };
 
       jest.spyOn(DynamoUtilities, 'put').mockImplementation(
@@ -229,7 +229,7 @@ describe('Requests API Tests', () => {
           requestId: sampleReductionRequest.requestId,
         },
         body: JSON.stringify({
-          status: ReductionStatus.DENIED,
+          status: RequestStatus.DENIED,
         }),
       };
 
@@ -245,8 +245,8 @@ describe('Requests API Tests', () => {
           requestId: sampleReductionRequest.requestId,
         },
         body: JSON.stringify({
-          status: ReductionStatus.APPROVED,
-          numHoursReduced: 10,
+          status: RequestStatus.APPROVED,
+          numHours: 10,
         }),
       };
 
@@ -261,7 +261,7 @@ describe('Requests API Tests', () => {
       const mockEvent: APIGatewayProxyEvent = {
         ...sampleApiGatewayEvent,
         body: JSON.stringify({
-          status: ReductionStatus.APPROVED,
+          status: RequestStatus.APPROVED,
           numHoursReduced: 10,
         }),
       };
@@ -306,7 +306,7 @@ describe('Requests API Tests', () => {
           requestId: sampleReductionRequest.requestId,
         },
         body: JSON.stringify({
-          status: ReductionStatus.APPROVED,
+          status: RequestStatus.APPROVED,
         }),
       };
 
@@ -314,7 +314,7 @@ describe('Requests API Tests', () => {
       expect(response.statusCode).toEqual(400);
       expect(response.body).toEqual(
         JSON.stringify({
-          message: ErrorConstants.VALIDATION_BODY_NUM_HOURS_REDUCED,
+          message: ErrorConstants.createValidationString('numHours'),
         }),
       );
     });

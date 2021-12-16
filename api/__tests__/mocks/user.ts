@@ -1,8 +1,7 @@
 import { v4 as uuid } from 'uuid';
-import { UserSituation, UserType } from '../../src/types/models/UserType';
-import { GlobalConstants } from '../../src/constants/global';
-import { UserRequest } from '../../src/types/requests/UserRequest';
-import { User } from '../../src/types/models/User';
+import { User } from '../../src/types/database/User';
+import { UserSituation, UserType } from '../../src/types/database/UserType';
+import { UserRequest } from '../../src/types/requests/User';
 
 export const sampleUserId = uuid();
 
