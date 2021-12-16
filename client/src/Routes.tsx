@@ -6,6 +6,7 @@ import HourLoggerNav from './components/global/Nav';
 import { useAuthenticationContext, useUserContext } from './libs/contextLib';
 import { HomePage } from './pages/HoursPage';
 import { RequestsPage } from './pages/RequestsPage';
+import { UnauthenticatedPage } from './pages/Unauthenticated';
 import { UsersPage } from './pages/UsersPage';
 import './styles/App.css';
 
@@ -53,6 +54,7 @@ export default function HourLoggerRoutes() {
         <Route path="/login" element={<SignInForm />} />
         <Route path="/register" element={<SignUp />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/unauthenticated" element={<UnauthenticatedPage />} />
         <Route element={<NoMatch />} />
       </Routes>
     </div>
