@@ -1,6 +1,6 @@
 import { CustomEmails } from '../constants/emails';
 import { ErrorConstants } from '../constants/errors';
-import { UserSituation } from '../types/models/UserType';
+import { UserSituation } from '../types/database/UserType';
 import { ResponseUtilities } from '../util/response-utilities';
 import { UsersUtilities } from '../util/user-utilities';
 
@@ -30,13 +30,13 @@ export const preSignUpValidation = async event => {
 
   if (!data.studentNumber) {
     return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_BODY_STUDENTNUMBER,
+      ErrorConstants.createValidationString('studentNumber'),
     );
   }
 
   if (!data.userType) {
     return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_BODY_USERTYPE,
+      ErrorConstants.createValidationString('userType'),
     );
   }
 
@@ -67,6 +67,7 @@ export const preSignUpValidation = async event => {
 export const customEmails = (event, _context, callback) => {
   const name = event.request.userAttributes.given_name;
   const code = event.request.codeParameter;
+  console.log(event.triggerSource);
   if (event.triggerSource === 'CustomMessage_SignUp' || event.triggerSource === 'CustomMessage_ResendCode') {
     event.response = {
       emailSubject: CustomEmails.CONFIRMATION_CODE_SUBJECT,

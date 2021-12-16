@@ -6,7 +6,7 @@ import { sampleTransaction } from '../mocks/hours';
 import { DynamoUtilities } from '../../src/util/dynamo-utilities';
 import { ErrorConstants } from '../../src/constants/errors';
 import { sampleApiGatewayEvent } from '../mocks/event';
-import { CheckInRequest } from '../../src/types/requests/HoursRequest';
+import { CheckInRequest } from '../../src/types/requests/CheckIn';
 import { sampleStudentNumber, sampleUser } from '../mocks/user';
 
 jest.mock('aws-sdk', () => ({
@@ -76,7 +76,7 @@ describe('Hours API Request', () => {
       expect(response.statusCode).toEqual(400);
       expect(response.body).toEqual(
         JSON.stringify({
-          message: ErrorConstants.VALIDATION_BODY_STUDENTNUMBER,
+          message: ErrorConstants.createValidationString('studentNumber'),
         }),
       );
     });
@@ -159,7 +159,7 @@ describe('Hours API Request', () => {
       expect(response.statusCode).toEqual(400);
       expect(response.body).toEqual(
         JSON.stringify({
-          message: ErrorConstants.VALIDATION_BODY_STUDENTNUMBER,
+          message: ErrorConstants.createValidationString('studentNumber'),
         }),
       );
     });
@@ -176,7 +176,7 @@ describe('Hours API Request', () => {
       expect(response.statusCode).toEqual(400);
       expect(response.body).toEqual(
         JSON.stringify({
-          message: ErrorConstants.VALIDATION_BODY_CHECKIN,
+          message: ErrorConstants.createValidationString('checkIn'),
         }),
       );
     });
@@ -193,7 +193,7 @@ describe('Hours API Request', () => {
       expect(response.statusCode).toEqual(400);
       expect(response.body).toEqual(
         JSON.stringify({
-          message: ErrorConstants.VALIDATION_BODY_CHECKOUT,
+          message: ErrorConstants.createValidationString('checkOut'),
         }),
       );
     });

@@ -1,4 +1,4 @@
-import { UserSituation } from '../models/UserType';
+import { UserSituation } from '../database/UserType';
 
 /**
  * User Request Object for creating users.

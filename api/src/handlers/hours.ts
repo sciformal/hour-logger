@@ -26,7 +26,7 @@ export const checkIn = async (
 
   if (!data.studentNumber) {
     return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_BODY_STUDENTNUMBER,
+      ErrorConstants.createValidationString('studentNumber'),
     );
   }
   const { studentNumber } = data;
@@ -86,17 +86,17 @@ export const updateHours = async (
 
   if (!data.studentNumber) {
     return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_BODY_STUDENTNUMBER,
+      ErrorConstants.createValidationString('studentNumber'),
     );
   }
   if (!data.checkIn) {
     return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_BODY_CHECKIN,
+      ErrorConstants.createValidationString('checkIn'),
     );
   }
   if (!data.checkOut) {
     return ResponseUtilities.createErrorResponse(
-      ErrorConstants.VALIDATION_BODY_CHECKOUT,
+      ErrorConstants.createValidationString('checkOut'),
     );
   }
 

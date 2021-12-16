@@ -1,7 +1,7 @@
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { DynamoUtilities } from './dynamo-utilities';
-import { UserSituation, UserType } from '../types/models/UserType';
-import { User } from '../types/models/User';
+import { UserSituation, UserType } from '../types/database/UserType';
+import { User } from '../types/database/User';
 
 const dynamoDb = new DocumentClient();
 

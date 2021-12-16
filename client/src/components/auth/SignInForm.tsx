@@ -124,9 +124,10 @@ export default function SignInForm() {
         )}
         <form className={classes.form}>
           <Form.Label>
-            <b>Email address</b>
+            <b>Email</b>
           </Form.Label>
           <Form.Control
+            id="email"
             autoFocus
             onChange={handleEmailInputChange}
             value={emailInput}

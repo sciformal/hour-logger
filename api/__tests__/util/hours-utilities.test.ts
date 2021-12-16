@@ -5,7 +5,7 @@ import {
 } from '../mocks/hours';
 import { HoursUtilities } from '../../src/util/hours-utilities';
 import { sampleUser } from '../mocks/user';
-import { User } from '../../src/types/models/User';
+import { User } from '../../src/types/database/User';
 
 describe('Hours Utilities Tests', () => {
   describe('Check In User Tests', () => {

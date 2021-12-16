@@ -1,5 +1,7 @@
 service: hour-logger
 
+useDotEnv: true
+
 frameworkVersion: '2'
 
 package:
@@ -36,10 +38,10 @@ custom:
     excludeFiles: src/**/*.test.js
 
 functions:
-  pre-signup:
+  validate-user:
     handler: src/handlers/auth.preSignUpValidation
     memorySize: 128
-    description: 'Sends a registration email'
+    description: 'Validates a user before they sign up with Cognito.'
     events:
       - http:
           path: /users/validate
@@ -49,18 +51,17 @@ functions:
   create-user:
     handler: src/handlers/users.createUser
     memorySize: 128
-    description: 'Creates user'
+    description: 'Creates a user in the DynamoDB table.'
     events:
       - http:
           path: /users
           method: post
-          # authorizer: aws_iam
           cors: true
 
   get-user:
     handler: src/handlers/users.getUser
     memorySize: 128
-    description: 'Gets current user informations'
+    description: 'Get the given user information.'
     events:
       - http:
           path: /users/{userId}
@@ -74,7 +75,7 @@ functions:
   delete-user:
     handler: src/handlers/users.deleteUser
     memorySize: 128
-    description: 'Deletes a user from the DynamoDB table'
+    description: 'Deletes a given user from the DynamoDB table'
     events:
       - http:
           path: /users/{userId}
@@ -103,7 +104,6 @@ functions:
       - http:
           path: /users/check-in
           method: post
-          # authorizer: aws_iam
           cors: true
 
   update-hours:
@@ -114,7 +114,6 @@ functions:
       - http:
           path: /hours/update
           method: post
-          # authorizer: aws_iam
           cors: true
 
   pretty-emails:
@@ -127,18 +126,17 @@ functions:
           method: post
           cors: true
 
-  create-reduction-request:
+  create-request:
     handler: src/handlers/requests.create
     memorySize: 128
-    description: 'Creates new hour reduction request'
+    description: 'Creates a new request'
     events:
       - http:
           path: /requests
           method: post
-          # authorizer: aws_iam
           cors: true
 
-  get-reduction-requests:
+  get-requests:
     handler: src/handlers/requests.get
     memorySize: 128
     description: 'Gets all reduction requests'
@@ -148,7 +146,7 @@ functions:
           method: get
           cors: true
 
-  update-reduction-request:
+  update-request:
     handler: src/handlers/requests.update
     memorySize: 128
     description: 'Update a reduction request'
