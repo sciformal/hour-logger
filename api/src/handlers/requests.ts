@@ -97,7 +97,7 @@ export const update = async (
 
   // Validate request payload
   try {
-    validatedData = ValidationUtilities.validateCreateRequestFields(event);
+    validatedData = ValidationUtilities.validateUpdateRequestFields(event);
   } catch (e) {
     console.log(e);
     return ResponseUtilities.createErrorResponse(e.message, 400);

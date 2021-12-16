@@ -219,7 +219,17 @@ describe('Requests API Tests', () => {
             }
           }),
       );
-      jest.spyOn(DynamoUtilities, 'get').mockResolvedValue(sampleUser);
+
+      jest.spyOn(DynamoUtilities, 'get').mockResolvedValue(
+        async params =>
+          new Promise((resolve, reject) => {
+            if (params.TableName === process.env.reductionRequestsTable) {
+              resolve(sampleReductionRequest);
+            } else {
+              resolve(sampleUser);
+            }
+          }),
+      );
     });
 
     it('should return a 200 and update the request to denied when denied', async () => {
