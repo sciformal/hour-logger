@@ -318,7 +318,7 @@ function CheckedInUsersTable({ headers, users }) {
   const handleCheckIn = async (user: any) => {
     setErr('');
     try {
-      const result = await API.post('hour-logger', '/users/check-in', {
+      await API.post('hour-logger', '/users/check-in', {
         body: {
           // @ts-ignore
           studentNumber: user.studentNumber,
@@ -329,7 +329,8 @@ function CheckedInUsersTable({ headers, users }) {
       setErr(err);
   }
 };
-  return (
+  return ( 
+    <>
     <Table bordered>
       <thead>
         <tr>
@@ -365,6 +366,15 @@ function CheckedInUsersTable({ headers, users }) {
         }
       </tbody>
     </Table>
+              {err !== '' && (
+                <Alert
+                  variant="danger"
+                  style={{ width: '80%', textAlign: 'center', margin: 'auto' }}
+                >
+                  {err}
+                </Alert>
+              )}
+              </>
   );
 }
 
