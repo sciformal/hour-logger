@@ -181,7 +181,6 @@ export const getUser = async (
 export const getAllUsers = async (
   event: APIGatewayProxyEvent,
 ): Promise<APIGatewayProxyResult> => {
-  console.log(event);
   const params = {
     TableName: process.env.userTable,
   };
@@ -189,6 +188,27 @@ export const getAllUsers = async (
   try {
     const users = await DynamoUtilities.scan(params, dynamoDb);
     return ResponseUtilities.createSuccessResponse(users);
+  } catch (err) {
+    console.log(err);
+    return ResponseUtilities.createErrorResponse(err.message, 500);
+  }
+};
+
+export const getUsersAndIds = async (
+  event: APIGatewayProxyEvent,
+): Promise<APIGatewayProxyResult> => {
+  const params = {
+    TableName: process.env.userTable,
+  };
+
+  try {
+    const users = await DynamoUtilities.scan(params, dynamoDb);
+    const usersWithIds = users.map(user => ({
+      firstName: user.firstName,
+      lastName: user.lastName,
+      userId: user.userId,
+    }));
+    return ResponseUtilities.createSuccessResponse(usersWithIds);
   } catch (err) {
     console.log(err);
     return ResponseUtilities.createErrorResponse(err.message, 500);
