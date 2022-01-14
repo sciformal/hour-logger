@@ -13,7 +13,6 @@ import './styles/App.css';
 export default function HourLoggerRoutes() {
   const { user } = useUserContext();
   const { isAuthenticated } = useAuthenticationContext();
-  console.log(user);
 
   return (
     <div className="page-container">
