@@ -68,7 +68,6 @@ export default function SignUp() {
 
   // @ts-ignore
   const handleEmailChange = e => {
-    console.log(e.target.value);
     setEmail(e.target.value);
   };
 
@@ -131,7 +130,7 @@ export default function SignUp() {
   };
 
   const handleResendConfirmationCode = async e => {
-    e.preventDefault();console.log(email);
+    e.preventDefault();
 
     try {
       await Auth.resendSignUp(email);
@@ -164,10 +163,9 @@ export default function SignUp() {
       setUser(user);
       userHasAuthenticated(true);
       window.location.href = '/';
-    } catch (e: any) {
-      console.log(e.response);
+    } catch (err: any) {
+      console.log(err);
       setErr(e.message);
-      console.log(e);
     }
   };
 
@@ -328,6 +326,17 @@ export default function SignUp() {
             </Alert>
           )}
           <form className={classes.form} noValidate>
+            <Form.Label>
+              <b>Confirm Email</b>
+            </Form.Label>
+            <Form.Control
+              autoFocus
+              onChange={handleEmailChange}
+              value={email}
+              type="email"
+              id="email"
+            />
+            <br />
             <Form.Label>
               <b>Confirmation Code</b>
             </Form.Label>
