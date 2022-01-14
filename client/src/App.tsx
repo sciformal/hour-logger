@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import Loader from './components/global/Loader';
 import { AuthenticationContext, UserContext } from './libs/contextLib';
 import HourLoggerRoutes from './Routes';
-import { UserSituation } from './types/situationType';
+import { UserSituation } from './types/database/UserType';
 import { BrowserRouter as Router } from 'react-router-dom';
 
 export default function App() {

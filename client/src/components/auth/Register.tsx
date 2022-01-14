@@ -12,7 +12,7 @@ import {
   useAuthenticationContext,
   useUserContext,
 } from '../../libs/contextLib';
-import { UserSituation } from '../../types/situationType';
+import { UserSituation } from '../../types/database/UserType';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -131,7 +131,8 @@ export default function SignUp() {
   };
 
   const handleResendConfirmationCode = async e => {
-    e.preventDefault();console.log(email);
+    e.preventDefault();
+    console.log(email);
 
     try {
       await Auth.resendSignUp(email);
