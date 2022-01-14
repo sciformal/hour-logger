@@ -96,6 +96,16 @@ functions:
           method: get
           cors: true
 
+  get-users-id:
+    handler: src/handlers/users.getUsersAndIds
+    memorySize: 128
+    description: 'Gets all user names and userIds'
+    events:
+      - http:
+          path: /users/userIds
+          method: get
+          cors: true
+
   check-in:
     handler: src/handlers/hours.checkIn
     memorySize: 128

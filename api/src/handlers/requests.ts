@@ -58,6 +58,7 @@ export const create = async (
     ...validatedData,
     requestId: uuid(),
     status: RequestStatus.PENDING,
+    date: new Date().toISOString(),
   };
 
   const params = {
