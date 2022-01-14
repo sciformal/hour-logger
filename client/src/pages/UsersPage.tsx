@@ -5,7 +5,6 @@ import React, { useEffect, useState } from 'react';
 import { Alert, Button, Form, Tab, Table, Tabs } from 'react-bootstrap';
 import Loader from '../components/global/Loader';
 import Link from '@material-ui/core/Link';
-import MaterialTable from 'material-table';
 
 const usersHeaders = [
   'Name',
