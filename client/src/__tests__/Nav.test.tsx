@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { AuthenticationContext, UserContext } from '../libs/contextLib';
 import HourLoggerNav from '../components/global/Nav';
+import { BrowserRouter as Router } from 'react-router-dom';
 
 export const sampleUser = {
   firstName: 'John',
@@ -38,7 +39,9 @@ describe('Navigation Bar Tests', () => {
       // render with auth context to pass in user information
       <AuthenticationContext.Provider value={mockAuthContext}>
         <UserContext.Provider value={userContext}>
-          <HourLoggerNav />
+          <Router>
+            <HourLoggerNav />
+          </Router>
         </UserContext.Provider>
       </AuthenticationContext.Provider>,
     );
@@ -59,7 +62,9 @@ describe('Navigation Bar Tests', () => {
     render(
       <AuthenticationContext.Provider value={mockAuthContext}>
         <UserContext.Provider value={userContext}>
-          <HourLoggerNav />
+          <Router>
+            <HourLoggerNav />
+          </Router>
         </UserContext.Provider>
       </AuthenticationContext.Provider>,
     );
@@ -86,7 +91,9 @@ describe('Navigation Bar Tests', () => {
     render(
       <AuthenticationContext.Provider value={mockAuthContext}>
         <UserContext.Provider value={userContext}>
-          <HourLoggerNav />
+          <Router>
+            <HourLoggerNav />
+          </Router>
         </UserContext.Provider>
       </AuthenticationContext.Provider>,
     );
