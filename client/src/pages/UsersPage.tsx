@@ -14,11 +14,7 @@ const usersHeaders = [
   'Checked In',
 ];
 
-const checkedInUsersHeaders = [
-  'Name',
-  'Check In Time',
-  'Check Out'
-];
+const checkedInUsersHeaders = ['Name', 'Check In Time', 'Check Out'];
 
 export const UsersPage = () => {
   const [loading, setLoading] = useState(true);
@@ -48,7 +44,7 @@ export const UsersPage = () => {
             <UsersSummary />
           </Tab>
           <Tab eventKey="second" title="Check In">
-            <CheckIn users={users}/>
+            <CheckIn users={users} />
           </Tab>
           <Tab eventKey="third" title="All Users">
             <AllUsers users={users} />
@@ -198,7 +194,7 @@ const CheckInForm = () => {
 };
 
 const CheckIn = ({ users }) => {
-  const checkedInUsers =  users.filter(user => user.isCheckedIn);
+  const checkedInUsers = users.filter(user => user.isCheckedIn);
 
   return (
     // Container
@@ -224,7 +220,10 @@ const CheckIn = ({ users }) => {
         <h4>
           <b>Checked In Users</b>
         </h4>
-        <CheckedInUsersTable users={checkedInUsers} headers={checkedInUsersHeaders} />
+        <CheckedInUsersTable
+          users={checkedInUsers}
+          headers={checkedInUsersHeaders}
+        />
       </div>
     </div>
   );
@@ -276,39 +275,7 @@ const AllUsers = ({ users }) => {
 };
 
 function UsersTable({ headers, users }) {
-  return (
-    <Table bordered>
-      <thead>
-        <tr>
-          {
-            // @ts-ignore
-            headers.map(name => (
-              // @ts-ignore
-              <th key={name}>{name}</th>
-            ))
-          }
-        </tr>
-      </thead>
-      <tbody>
-        {
-          // @ts-ignore
-          users.map(user => (
-            <tr key={user.userId}>
-              <td>
-                <a href={`/users/${user.userId}`}>
-                  {user.firstName + ' ' + user.lastName}
-                </a>
-              </td>
-              <td>{user.studentNumber}</td>
-              <td>{user.hours.toFixed(2)}</td>
-              <td>{user.hoursNeeded}</td>
-              <td>{user.isCheckedIn ? 'Yes' : 'No'}</td>
-            </tr>
-          ))
-        }
-      </tbody>
-    </Table>
-  );
+  return <div>There will be a table here.</div>;
 }
 
 function CheckedInUsersTable({ headers, users }) {
@@ -327,54 +294,61 @@ function CheckedInUsersTable({ headers, users }) {
     } catch (err: any) {
       console.log(err);
       setErr(err);
-  }
-};
-  return ( 
+    }
+  };
+  return (
     <>
-    <Table bordered>
-      <thead>
-        <tr>
+      <Table bordered>
+        <thead>
+          <tr>
+            {
+              // @ts-ignore
+              headers.map(name => (
+                // @ts-ignore
+                <th key={name}>{name}</th>
+              ))
+            }
+          </tr>
+        </thead>
+        <tbody>
           {
             // @ts-ignore
-            headers.map(name => (
-              // @ts-ignore
-              <th key={name}>{name}</th>
+            users.map(user => (
+              <tr key={user.userId}>
+                <td>{user.firstName + ' ' + user.lastName}</td>
+                <td>
+                  {new Date(user.transactions.at(-1).checkIn).toDateString() +
+                    ' ' +
+                    new Date(
+                      user.transactions.at(-1).checkIn,
+                    ).toLocaleTimeString()}
+                </td>
+                <td>
+                  {
+                    <Button
+                      onClick={() => handleCheckIn(user)}
+                      variant="contained"
+                      type="submit"
+                      className={classes.submit}
+                      color="primary"
+                    >
+                      Check Out
+                    </Button>
+                  }
+                </td>
+              </tr>
             ))
           }
-        </tr>
-      </thead>
-      <tbody>
-        {
-          // @ts-ignore
-          users.map(user => (
-            <tr key={user.userId}>
-              <td>{user.firstName + ' ' + user.lastName}</td>
-              <td>{ new Date(user.transactions.at(-1).checkIn).toDateString() + ' ' + new Date(user.transactions.at(-1).checkIn).toLocaleTimeString()}</td>
-              <td>{          
-                <Button
-                  onClick={() => handleCheckIn(user)}
-                  variant="contained"
-                  type="submit"
-                  className={classes.submit}
-                  color="primary"
-                >
-                Check Out
-              </Button> }
-              </td>
-            </tr>
-          ))
-        }
-      </tbody>
-    </Table>
-              {err !== '' && (
-                <Alert
-                  variant="danger"
-                  style={{ width: '80%', textAlign: 'center', margin: 'auto' }}
-                >
-                  {err}
-                </Alert>
-              )}
-              </>
+        </tbody>
+      </Table>
+      {err !== '' && (
+        <Alert
+          variant="danger"
+          style={{ width: '80%', textAlign: 'center', margin: 'auto' }}
+        >
+          {err}
+        </Alert>
+      )}
+    </>
   );
 }
-

@@ -1,6 +1,8 @@
+import { Button } from '@material-ui/core';
 import { Auth } from 'aws-amplify';
 import React from 'react';
 import { Container, Nav, Navbar } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import {
   useAuthenticationContext,
   useUserContext,
@@ -30,19 +32,17 @@ export default function HourLoggerNav() {
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
             <Navbar.Collapse id="basic-navbar-nav">
               <Nav className="flex-column">
-                <Nav.Link href="/">My Hours</Nav.Link>
+                <Link to="/">My Hours</Link>
 
                 {(type === 'ADMIN' || type === 'MANAGER') && (
-                  <Nav.Link href="/users">Users</Nav.Link>
+                  <Link to="/users">Users</Link>
                 )}
 
-                <Nav.Link href="/payment">Tickets</Nav.Link>
+                <Link to="/payment">Tickets</Link>
 
-                {type === 'ADMIN' && (
-                  <Nav.Link href="/requests">Requests</Nav.Link>
-                )}
+                {type === 'ADMIN' && <Link to="/requests">Requests</Link>}
 
-                <Nav.Link onClick={handleLogout}>Logout</Nav.Link>
+                <Button onClick={handleLogout}>Logout</Button>
               </Nav>
             </Navbar.Collapse>
           </div>

@@ -4,6 +4,7 @@ import Loader from './components/global/Loader';
 import { AuthenticationContext, UserContext } from './libs/contextLib';
 import HourLoggerRoutes from './Routes';
 import { UserSituation } from './types/situationType';
+import { BrowserRouter as Router } from 'react-router-dom';
 
 export default function App() {
   const [isAuthenticating, setIsAuthenticating] = useState(true); // has the users session loaded yet?
@@ -16,42 +17,40 @@ export default function App() {
 
   const loadUserInformation = async () => {
     try {
-      if (await Auth.currentSession()) {
-        let user;
+      await Auth.currentSession();
+      let user;
 
-        let cognitoUserInfo = await Auth.currentUserInfo();
-        const userId = cognitoUserInfo.username;
-        const { given_name, family_name, email } = cognitoUserInfo.attributes; // desctructure the cognito user info object.
-        //@ts-ignore
-        const studentNumber =
-          cognitoUserInfo.attributes['custom:studentNumber'];
-        const userType = cognitoUserInfo.attributes['custom:userType'];
+      let cognitoUserInfo = await Auth.currentUserInfo();
+      const userId = cognitoUserInfo.username;
+      const { given_name, family_name, email } = cognitoUserInfo.attributes; // desctructure the cognito user info object.
+      //@ts-ignore
+      const studentNumber = cognitoUserInfo.attributes['custom:studentNumber'];
+      const userType = cognitoUserInfo.attributes['custom:userType'];
 
-        const { status, data } = await API.get(
-          'hour-logger',
-          `/users/${userId}`,
-          { response: true },
-        );
+      const { status, data } = await API.get(
+        'hour-logger',
+        `/users/${userId}`,
+        { response: true },
+      );
 
-        if (status === 204) {
-          // User doesnt exist in DB, create new user
-          user = await API.post('hour-logger', '/users', {
-            body: {
-              userId,
-              email,
-              studentNumber,
-              userType,
-              firstName: given_name,
-              lastName: family_name,
-              userSituation: UserSituation.ENGINEER_ENROLLED,
-            },
-          });
-        } else {
-          user = data;
-        }
-        setUser(user);
-        userHasAuthenticated(true);
+      if (status === 204) {
+        // User doesnt exist in DB, create new user
+        user = await API.post('hour-logger', '/users', {
+          body: {
+            userId,
+            email,
+            studentNumber,
+            userType,
+            firstName: given_name,
+            lastName: family_name,
+            userSituation: UserSituation.ENGINEER_ENROLLED,
+          },
+        });
+      } else {
+        user = data;
       }
+      setUser(user);
+      userHasAuthenticated(true);
     } catch (e) {
       console.log(e);
     } finally {
@@ -61,7 +60,7 @@ export default function App() {
 
   if (isAuthenticating) {
     return (
-      <div className="App">
+      <div className="App" style={{ height: '100vh', lineHeight: '100vh' }}>
         <Loader />
       </div>
     );
@@ -72,7 +71,9 @@ export default function App() {
           value={{ isAuthenticated, userHasAuthenticated }}
         >
           <UserContext.Provider value={{ user, setUser }}>
-            <HourLoggerRoutes />
+            <Router>
+              <HourLoggerRoutes />
+            </Router>
           </UserContext.Provider>
         </AuthenticationContext.Provider>
       </div>
