@@ -51,8 +51,8 @@ export default function App() {
       }
       setUser(user);
       userHasAuthenticated(true);
-    } catch (e) {
-      console.log(e);
+    } catch (err) {
+      console.log(err);
     } finally {
       setIsAuthenticating(false);
     }
