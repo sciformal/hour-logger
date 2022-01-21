@@ -18,7 +18,7 @@ export default function HourLoggerNav() {
   };
 
   if (isAuthenticated && user !== null) {
-    const type = user.type;
+    const type = user.userType;
 
     return (
       <Navbar
