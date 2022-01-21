@@ -1,6 +1,6 @@
 import { CustomEmails } from '../constants/emails';
 import { ErrorConstants } from '../constants/errors';
-import { UserSituation } from '../types/database/UserType';
+import { UserType } from '../types/database/UserType';
 import { ResponseUtilities } from '../util/response-utilities';
 import { UsersUtilities } from '../util/user-utilities';
 
@@ -50,7 +50,7 @@ export const preSignUpValidation = async event => {
     );
   }
 
-  if (!Object.values(UserSituation).includes(data.userType)) {
+  if (!Object.values(UserType).includes(data.userType)) {
     return ResponseUtilities.createErrorResponse('invalid user type');
   }
 
@@ -68,7 +68,10 @@ export const customEmails = (event, _context, callback) => {
   const name = event.request.userAttributes.given_name;
   const code = event.request.codeParameter;
   console.log(event.triggerSource);
-  if (event.triggerSource === 'CustomMessage_SignUp' || event.triggerSource === 'CustomMessage_ResendCode') {
+  if (
+    event.triggerSource === 'CustomMessage_SignUp' ||
+    event.triggerSource === 'CustomMessage_ResendCode'
+  ) {
     event.response = {
       emailSubject: CustomEmails.CONFIRMATION_CODE_SUBJECT,
       emailMessage: CustomEmails.createConfirmationCodeEmail(name, code),

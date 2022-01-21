@@ -1,7 +1,7 @@
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import { DynamoUtilities } from './dynamo-utilities';
-import { UserSituation, UserType } from '../types/database/UserType';
 import { User } from '../types/database/User';
+import { AdminType, UserType } from '../types/database/UserType';
+import { DynamoUtilities } from './dynamo-utilities';
 
 const dynamoDb = new DocumentClient();
 
@@ -25,24 +25,24 @@ export class UsersUtilities {
     return true;
   };
 
-  public static totalHours = (userSituation: UserSituation): Partial<User> => {
-    switch (userSituation) {
-      case UserSituation.ENGINEER_ENROLLED:
+  public static totalHours = (userType: UserType): Partial<User> => {
+    switch (userType) {
+      case UserType.ENGINEER_ENROLLED:
         return {
           finalHoursNeeded: 10,
           regularHoursNeeded: 8,
         };
-      case UserSituation.INTERNSHIP_KTOWN:
+      case UserType.INTERNSHIP_KTOWN:
         return {
           finalHoursNeeded: 0,
           regularHoursNeeded: 5,
         };
-      case UserSituation.INTERNSHIP:
+      case UserType.INTERNSHIP:
         return {
           finalHoursNeeded: 0,
           regularHoursNeeded: 0,
         };
-      case UserSituation.GUEST_QUEENS:
+      case UserType.GUEST_QUEENS:
         return {
           finalHoursNeeded: 0,
           regularHoursNeeded: 5,
@@ -55,12 +55,12 @@ export class UsersUtilities {
     }
   };
 
-  public static adminLevel = (studentNumber): UserType => {
+  public static adminLevel = (studentNumber): AdminType => {
     // TODO: Build in the sci formal managers here.
     if (studentNumber === '20066282') {
-      return UserType.ADMIN;
+      return AdminType.ADMIN;
     }
 
-    return UserType.USER;
+    return AdminType.USER;
   };
 }
