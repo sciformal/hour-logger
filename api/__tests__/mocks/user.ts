@@ -19,6 +19,7 @@ export const sampleUserRequest: UserRequest = {
 export const sampleUser: User = {
   ...sampleUserRequest,
   hours: 0,
+  finalHours: 0,
   regularHoursNeeded: 8,
   finalHoursNeeded: 10,
   adminType: AdminType.USER,

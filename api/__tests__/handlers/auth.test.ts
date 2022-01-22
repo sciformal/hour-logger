@@ -1,8 +1,23 @@
+import { APIGatewayProxyEvent } from 'aws-lambda';
 import { CustomEmails } from '../../src/constants/emails';
-import { customEmails } from '../../src/handlers/auth';
+import { ErrorConstants } from '../../src/constants/errors';
+import { customEmails, preSignUpValidation } from '../../src/handlers/auth';
 import { sampleApiGatewayEvent } from '../mocks/event';
 
 describe('Authentication Tests', () => {
+  describe('Pre signup validation', () => {
+    it('should return 400 when the request doesnt contain a body', async () => {
+      const mockEvent: APIGatewayProxyEvent = {
+        ...sampleApiGatewayEvent,
+      };
+
+      const response = await preSignUpValidation(mockEvent);
+      expect(response.statusCode).toEqual(400);
+      expect(response.body).toEqual(
+        JSON.stringify({ message: ErrorConstants.VALIDATION_BODY_MISSING }),
+      );
+    });
+  });
   it('should modify the events email fields on sign up', () => {
     const signUpEvent = {
       ...sampleApiGatewayEvent,
