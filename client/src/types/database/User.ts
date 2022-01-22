@@ -1,4 +1,4 @@
-import { HourTransaction } from './HourTransaction';
+import { HourTransaction, HourRequest } from './HourTransaction';
 import { AdminType, UserType } from './UserType';
 
 /**
@@ -16,6 +16,7 @@ export interface User {
   regularHoursNeeded: number;
   isCheckedIn: boolean;
   transactions: Array<HourTransaction>;
+  requests: Array<HourRequest>;
   adminType: AdminType;
   userType: UserType;
 }
