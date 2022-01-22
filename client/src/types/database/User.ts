@@ -1,4 +1,4 @@
-import { HourTransaction } from './HourTransaction';
+import { HourTransaction, HourRequest } from './HourTransaction';
 import { UserSituation, UserType } from './UserType';
 
 /**
@@ -18,4 +18,5 @@ export interface User {
   type: UserType;
   userType: UserSituation;
   transactions: Array<HourTransaction>;
+  requests: Array<HourRequest>;
 }

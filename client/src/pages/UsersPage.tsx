@@ -1,18 +1,11 @@
 import API from '@aws-amplify/api';
 import { makeStyles } from '@material-ui/core';
+import Link from '@material-ui/core/Link';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import React, { useEffect, useState } from 'react';
 import { Alert, Button, Form, Tab, Table, Tabs } from 'react-bootstrap';
 import Loader from '../components/global/Loader';
-import Link from '@material-ui/core/Link';
-
-const usersHeaders = [
-  'Name',
-  'Student Number',
-  'Hours Completed',
-  'Hours Required',
-  'Checked In',
-];
+import UsersTable from '../components/users/UserTable';
 
 const checkedInUsersHeaders = ['Name', 'Check In Time', 'Check Out'];
 
@@ -27,6 +20,7 @@ export const UsersPage = () => {
 
   const loadUsers = async () => {
     const users = await API.get('hour-logger', '/users', {});
+    console.log(users);
     setUsers(users);
     setLoading(false);
   };
@@ -40,42 +34,16 @@ export const UsersPage = () => {
         <br />
         <br />
         <Tabs defaultActiveKey="first">
-          <Tab eventKey="first" title="Summary">
-            <UsersSummary />
+          <Tab eventKey="first" title="Users">
+            <AllUsers users={users} />
           </Tab>
           <Tab eventKey="second" title="Check In">
             <CheckIn users={users} />
-          </Tab>
-          <Tab eventKey="third" title="All Users">
-            <AllUsers users={users} />
           </Tab>
         </Tabs>
       </div>
     );
   }
-};
-
-const UsersSummary = () => {
-  return (
-    // Container
-    <div style={{ display: 'flex' }}>
-      {/* Left Side */}
-      <div
-        style={{
-          width: '50%',
-          textAlign: 'center',
-          borderRight: '1px solid #EEEEEE',
-        }}
-      >
-        Blah blah blah left side!
-      </div>
-
-      {/* Right Side */}
-      <div style={{ width: '50%', textAlign: 'center' }}>
-        Blah blah blah right side!
-      </div>
-    </div>
-  );
 };
 
 const useStyles = makeStyles(theme => ({
@@ -267,16 +235,12 @@ const AllUsers = ({ users }) => {
       <br />
       <br />
 
-      <div style={{ width: '60%', margin: 'auto' }}>
-        <UsersTable users={filteredUsers} headers={usersHeaders} />
+      <div style={{ width: '80%', margin: 'auto' }}>
+        <UsersTable users={filteredUsers} />
       </div>
     </div>
   );
 };
-
-function UsersTable({ headers, users }) {
-  return <div>There will be a table here.</div>;
-}
 
 function CheckedInUsersTable({ headers, users }) {
   const classes = useStyles();
