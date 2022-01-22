@@ -1,10 +1,9 @@
 import { API, Auth } from 'aws-amplify';
 import React, { useEffect, useState } from 'react';
+import { BrowserRouter as Router } from 'react-router-dom';
 import Loader from './components/global/Loader';
 import { AuthenticationContext, UserContext } from './libs/contextLib';
 import HourLoggerRoutes from './Routes';
-import { UserSituation } from './types/database/UserType';
-import { BrowserRouter as Router } from 'react-router-dom';
 
 export default function App() {
   const [isAuthenticating, setIsAuthenticating] = useState(true); // has the users session loaded yet?
@@ -43,7 +42,6 @@ export default function App() {
             userType,
             firstName: given_name,
             lastName: family_name,
-            userSituation: UserSituation.ENGINEER_ENROLLED,
           },
         });
       } else {

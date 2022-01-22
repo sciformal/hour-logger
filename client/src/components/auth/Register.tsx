@@ -12,7 +12,7 @@ import {
   useAuthenticationContext,
   useUserContext,
 } from '../../libs/contextLib';
-import { UserSituation } from '../../types/database/UserType';
+import { UserType } from '../../types/database/UserType';
 
 const useStyles = makeStyles(theme => ({
   paper: {
@@ -45,7 +45,7 @@ export default function SignUp() {
   const [studentNumber, setStudentNumber] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [userSituation, setUserSituation] = useState('');
+  const [userType, setUserType] = useState('');
   const [confirmationCode, setConfirmationCode] = useState('');
   const [signUpStep, setSignUpStep] = useState(1);
 
@@ -72,8 +72,8 @@ export default function SignUp() {
   };
 
   // @ts-ignore
-  const handleUserSituationChange = e => {
-    setUserSituation(e.target.value);
+  const handleUserTypeChange = e => {
+    setUserType(e.target.value);
   };
 
   // @ts-ignore
@@ -93,7 +93,7 @@ export default function SignUp() {
       await API.post('hour-logger', '/users/validate', {
         body: {
           studentNumber,
-          userType: userSituation,
+          userType,
         },
       });
 
@@ -104,7 +104,7 @@ export default function SignUp() {
           given_name: firstName,
           family_name: lastName,
           'custom:studentNumber': studentNumber,
-          'custom:userType': userSituation,
+          'custom:userType': userType,
         },
       });
       setSignUpStep(2);
@@ -141,6 +141,7 @@ export default function SignUp() {
   };
 
   // @ts-ignore
+  // TODO: FIelds here should be taken from Cognito and not assumed frmo form
   const handleConfirmRegister = async e => {
     e.preventDefault();
     try {
@@ -156,7 +157,7 @@ export default function SignUp() {
           email,
           studentNumber,
           userId,
-          userSituation,
+          userType,
         },
       });
 
@@ -256,24 +257,24 @@ export default function SignUp() {
                 <Form.Control
                   as="select"
                   id="userType"
-                  value={userSituation}
-                  onChange={handleUserSituationChange}
+                  value={userType}
+                  onChange={handleUserTypeChange}
                 >
                   <option value="">Select your user type</option>
-                  <option value={UserSituation.ENGINEER_ENROLLED}>
+                  <option value={UserType.ENGINEER_ENROLLED}>
                     Sci'21 or Sci'22 Student Enrolled in Classes
                   </option>
-                  <option value={UserSituation.INTERNSHIP_KTOWN}>
+                  <option value={UserType.INTERNSHIP_KTOWN}>
                     Sci'21 or Sci'22 Student on Internship Residing in Kingston
                   </option>
-                  <option value={UserSituation.INTERNSHIP}>
+                  <option value={UserType.INTERNSHIP}>
                     Sci'21 or Sci'22 Student on Internship Outside of Kingston
                   </option>
-                  <option value={UserSituation.GUEST_QUEENS}>
+                  <option value={UserType.GUEST_QUEENS}>
                     Guest Enrolled at Queen's
                   </option>
-                  <option value={UserSituation.GUEST}>External Guest</option>
-                  <option value={UserSituation.SCIFORMAL}>
+                  <option value={UserType.GUEST}>External Guest</option>
+                  <option value={UserType.SCIFORMAL}>
                     Sci Formal Committee
                   </option>
                 </Form.Control>

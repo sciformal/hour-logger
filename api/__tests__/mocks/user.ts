@@ -1,6 +1,6 @@
 import { v4 as uuid } from 'uuid';
 import { User } from '../../src/types/database/User';
-import { UserSituation, UserType } from '../../src/types/database/UserType';
+import { AdminType, UserType } from '../../src/types/database/UserType';
 import { UserRequest } from '../../src/types/requests/User';
 
 export const sampleUserId = uuid();
@@ -13,15 +13,16 @@ export const sampleUserRequest: UserRequest = {
   email: 'john.doe@queensu.ca',
   studentNumber: sampleStudentNumber,
   userId: sampleUserId,
-  userType: UserSituation.ENGINEER_ENROLLED,
+  userType: UserType.ENGINEER_ENROLLED,
 };
 
 export const sampleUser: User = {
   ...sampleUserRequest,
   hours: 0,
+  finalHours: 0,
   regularHoursNeeded: 8,
   finalHoursNeeded: 10,
-  type: UserType.USER,
+  adminType: AdminType.USER,
   isCheckedIn: false,
   transactions: [],
 };

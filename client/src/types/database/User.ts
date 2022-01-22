@@ -1,5 +1,5 @@
 import { HourTransaction, HourRequest } from './HourTransaction';
-import { UserSituation, UserType } from './UserType';
+import { AdminType, UserType } from './UserType';
 
 /**
  * DynamoDB user model.
@@ -15,8 +15,8 @@ export interface User {
   finalHoursNeeded: number;
   regularHoursNeeded: number;
   isCheckedIn: boolean;
-  type: UserType;
-  userType: UserSituation;
   transactions: Array<HourTransaction>;
   requests: Array<HourRequest>;
+  adminType: AdminType;
+  userType: UserType;
 }

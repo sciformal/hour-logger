@@ -1,7 +1,7 @@
 /**
  * Allowed user types.
  */
-export enum UserType {
+export enum AdminType {
   USER = 'USER',
   MANAGER = 'MANAGER',
   ADMIN = 'ADMIN',
@@ -10,7 +10,7 @@ export enum UserType {
 /**
  * Allowed guest types.
  */
-export enum UserSituation {
+export enum UserType {
   ENGINEER_ENROLLED = 'ENGINEER_ENROLLED',
   INTERNSHIP_KTOWN = 'INTERNSHIP_KTOWN',
   INTERNSHIP = 'INTERNSHIP',
