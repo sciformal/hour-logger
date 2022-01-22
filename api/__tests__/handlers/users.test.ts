@@ -178,7 +178,7 @@ describe('User Endpoint Tests', () => {
           }),
         );
       });
-      it('should return 400 when the request body doesnt contain userSituation', async () => {
+      it('should return 400 when the request body doesnt contain userType', async () => {
         delete validUser.userType;
 
         const mockEvent: APIGatewayProxyEvent = {

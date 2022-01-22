@@ -35,7 +35,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           package-manager: yarn
-          threshold: 75
+          threshold: 70
           working-directory: ${{ env.working-directory }}
 
       - name: Configure AWS Credentials

@@ -61,7 +61,7 @@ export default function HourLoggerRoutes() {
 }
 
 const RequireAdmin = ({ children, user }) => {
-  if (user?.type === 'ADMIN') {
+  if (user?.adminType === 'ADMIN') {
     return children;
   } else {
     return <Navigate to="/unauthenticated" replace />;

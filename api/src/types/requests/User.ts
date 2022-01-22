@@ -1,4 +1,4 @@
-import { UserSituation } from '../database/UserType';
+import { UserType } from '../database/UserType';
 
 /**
  * User Request Object for creating users.
@@ -9,5 +9,5 @@ export interface UserRequest {
   email: string;
   studentNumber: string;
   userId: string;
-  userType: UserSituation;
+  userType: UserType;
 }

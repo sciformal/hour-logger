@@ -2,26 +2,34 @@ import { render, screen } from '@testing-library/react';
 import { AuthenticationContext, UserContext } from '../libs/contextLib';
 import HourLoggerNav from '../components/global/Nav';
 import { BrowserRouter as Router } from 'react-router-dom';
+import { User } from '../types/database/User';
+import { AdminType, UserType } from '../types/database/UserType';
+import { v4 as uuid } from 'uuid';
 
-export const sampleUser = {
+export const sampleUser: User = {
+  userId: uuid(),
   firstName: 'John',
   lastName: 'Doe',
   email: 'john.doe@queensu.ca',
+  studentNumber: '12345678',
   hours: 0,
-  hoursNeeded: 20,
-  type: 'USER',
+  regularHoursNeeded: 20,
+  finalHours: 0,
+  finalHoursNeeded: 10,
+  adminType: AdminType.USER,
+  userType: UserType.ENGINEER_ENROLLED,
   isCheckedIn: false,
   transactions: [],
 };
 
-export const sampleManager = {
+export const sampleManager: User = {
   ...sampleUser,
-  type: 'MANAGER',
+  adminType: AdminType.MANAGER,
 };
 
 export const sampleAdmin = {
   ...sampleUser,
-  type: 'ADMIN',
+  adminType: AdminType.ADMIN,
 };
 
 describe('Navigation Bar Tests', () => {
