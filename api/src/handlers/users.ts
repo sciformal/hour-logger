@@ -156,7 +156,7 @@ export const getUser = async (
     }
 
     const requestParams = {
-      TableName: process.env.reductionRequestsTable,
+      TableName: process.env.requestsTable,
       IndexName: 'UserIdIndex',
       KeyConditionExpression: 'userId = :v_title',
       ExpressionAttributeValues: {

@@ -212,7 +212,7 @@ describe('Requests API Tests', () => {
       jest.spyOn(DynamoUtilities, 'put').mockImplementation(
         async params =>
           new Promise((resolve, reject) => {
-            if (params.TableName === process.env.reductionRequestsTable) {
+            if (params.TableName === process.env.requestsTable) {
               resolve(sampleReductionRequest);
             } else {
               resolve(sampleUser);
@@ -223,7 +223,7 @@ describe('Requests API Tests', () => {
       jest.spyOn(DynamoUtilities, 'get').mockResolvedValue(
         async params =>
           new Promise((resolve, reject) => {
-            if (params.TableName === process.env.reductionRequestsTable) {
+            if (params.TableName === process.env.requestsTable) {
               resolve(sampleReductionRequest);
             } else {
               resolve(sampleUser);

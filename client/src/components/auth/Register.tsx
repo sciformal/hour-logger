@@ -90,6 +90,10 @@ export default function SignUp() {
   const handleRegister = async e => {
     e.preventDefault();
     try {
+      if (studentNumber.length !== 8) {
+        setErr("Student number must be 8 digits.");
+        return;
+      }
       await API.post('hour-logger', '/users/validate', {
         body: {
           studentNumber,

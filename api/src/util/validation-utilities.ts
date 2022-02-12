@@ -114,7 +114,7 @@ export class ValidationUtilities {
     dynamoDb: DocumentClient,
   ) {
     const params = {
-      TableName: process.env.reductionRequestsTable,
+      TableName: process.env.requestsTable,
       Key: {
         requestId,
       },
