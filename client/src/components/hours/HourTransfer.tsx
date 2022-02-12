@@ -7,7 +7,6 @@ import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import { Alert, Button, Form } from 'react-bootstrap';
 
 export const TransferHours = ({ user }) => {
-  const [err, setErr] = useState('');
 
   return (
     <div style={{ display: 'flex' }}>
@@ -129,7 +128,7 @@ const TransferHoursForm = ({ user }) => {
   };
 
   const handleRequest = async () => {
-    if (toUserId == '') {
+    if (toUserId === '') {
       setErr("Please select a user to transfer hours to.");
       return;
     }
@@ -138,7 +137,7 @@ const TransferHoursForm = ({ user }) => {
       setErr("Please enter a reason for your request.");
       return;
     }
-    if (numHours == '') {
+    if (numHours === '') {
       setErr("Please enter number of hours you are transferring.");
       return;
     }

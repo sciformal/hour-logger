@@ -14,7 +14,7 @@ provider:
   region: us-west-1
   environment:
     userTable: ${env:userTable}-${self:provider.stage}
-    requestsTable: ${env:reductionRequestsTable}-${self:provider.stage}
+    requestsTable: ${env:requestsTable}-${self:provider.stage}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -223,4 +223,4 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-        TableName: ${self:provider.environment.reductionRequestsTable}
+        TableName: ${self:provider.environment.requestsTable}
