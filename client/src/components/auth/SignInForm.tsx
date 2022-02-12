@@ -146,10 +146,6 @@ export default function SignInForm() {
             value={password}
           />
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
             <Link
               href="/forgot-password"
               variant="body2"

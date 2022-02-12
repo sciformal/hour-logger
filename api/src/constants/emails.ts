@@ -5,7 +5,7 @@ export class CustomEmails {
   /**
    * Subject line for confirmation code emails
    */
-  public static CONFIRMATION_CODE_SUBJECT = 'Sci FormalHour Logger | Confirmation Code';
+  public static CONFIRMATION_CODE_SUBJECT = 'Sci Formal Hour Logger | Confirmation Code';
   public static PASSWORD_RESET_SUBJECT = 'Sci Formal Hour Logger | Password Reset';
 
   /**
