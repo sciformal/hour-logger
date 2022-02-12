@@ -13,8 +13,55 @@ import { User } from '../../types/database/User';
 import Collapse from '@mui/material/Collapse';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
+import { useState } from 'react';
+import { Form } from 'react-bootstrap';
 
-export default function UsersTable({ users }) {
+const AllUsers = ({ users }) => {
+  const [query, handleQuery] = useState('');
+
+  const handleQueryChange = (e: any) => {
+    handleQuery(e.target.value);
+  };
+
+  const testField = value => {
+    return value.toLowerCase().indexOf(query.toLowerCase()) >= 0;
+  };
+
+  const isMatch = user => {
+    return (
+      testField(user.firstName) ||
+      testField(user.lastName) ||
+      testField(user.studentNumber) ||
+      testField(user.email)
+    );
+  };
+
+  const filteredUsers = !query ? users : users.filter(isMatch);
+
+  return (
+    <div>
+      <div style={{ width: '30%', margin: 'auto' }}>
+        <Form.Label>
+          <b>Search Users</b>
+        </Form.Label>
+        <Form.Control
+          autoFocus
+          onChange={handleQueryChange}
+          value={query}
+          type="lname"
+        />
+      </div>
+      <br />
+      <br />
+
+      <div style={{ width: '80%', margin: 'auto' }}>
+        <UsersTable users={filteredUsers} />
+      </div>
+    </div>
+  );
+};
+
+export function UsersTable({ users }) {
   return (
     <TableContainer component={Paper}>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -129,3 +176,5 @@ function UserTransactions(props) {
     </Table>
   );
 }
+
+export default AllUsers;

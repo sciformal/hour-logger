@@ -9,7 +9,8 @@ import Loader from '../global/Loader';
 
 export const HourReduction = () => {
   const { user, setUser } = useUserContext();
-  const reductionRequests = user.requests.filter(
+
+  const reductionRequests = user.requests?.filter(
     request => request.type === 'REDUCTION',
   );
 

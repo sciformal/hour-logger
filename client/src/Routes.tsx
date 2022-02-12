@@ -50,7 +50,14 @@ export default function HourLoggerRoutes() {
           }
         />
 
-        <Route path="/login" element={<SignInForm />} />
+        <Route
+          path="/login"
+          element={
+            <RedirectAuthenticated>
+              <SignInForm />
+            </RedirectAuthenticated>
+          }
+        />
         <Route path="/register" element={<SignUp />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/unauthenticated" element={<UnauthenticatedPage />} />
@@ -61,7 +68,7 @@ export default function HourLoggerRoutes() {
 }
 
 const RequireAdmin = ({ children, user }) => {
-  if (user?.adminType === 'ADMIN') {
+  if (user?.type === 'ADMIN') {
     return children;
   } else {
     return <Navigate to="/unauthenticated" replace />;
@@ -77,6 +84,11 @@ const RequireAuth = ({ children }) => {
   ) : (
     <Navigate to="/login" replace state={{ path: location.pathname }} />
   );
+};
+
+const RedirectAuthenticated = ({ children }) => {
+  const { isAuthenticated } = useAuthenticationContext();
+  return isAuthenticated ? <Navigate to="/" replace /> : children;
 };
 
 const NoMatch = () => (
