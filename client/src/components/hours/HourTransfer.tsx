@@ -7,8 +7,6 @@ import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import { Form } from 'react-bootstrap';
 
 export const TransferHours = ({ user }) => {
-  console.log(user);
-
   const transferRequests = user.requests.filter(
     request => request.type === 'TRANSFER',
   );

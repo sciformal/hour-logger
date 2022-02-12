@@ -11,7 +11,6 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import React, { useState } from 'react';
 import { Alert, Button, Form } from 'react-bootstrap';
-import { propTypes } from 'react-bootstrap/esm/Image';
 import Loader from '../../components/global/Loader';
 import { User } from '../../types/database/User';
 
@@ -26,8 +25,7 @@ const CheckIn = ({ users }) => {
 
   const removeCheckedInUser = user => {
     // logic to remove the checked in user.
-    console.log('Removing user: ', user);
-    setCheckedInUsers(checkedInUsers.filter(u => u.userId !== u.userId));
+    setCheckedInUsers(checkedInUsers.filter(u => u.userId !== user.userId));
   };
 
   return (

@@ -7,6 +7,11 @@ frameworkVersion: '2'
 package:
   individually: true
 
+plugins:
+  - serverless-webpack
+  - serverless-offline
+  - serverless-dotenv-plugin
+
 provider:
   name: aws
   runtime: nodejs12.x
@@ -24,11 +29,6 @@ provider:
         - dynamodb:Query
         - dynamodb:Scan
       Resource: '*'
-
-plugins:
-  - serverless-webpack
-  - serverless-offline
-  - serverless-dotenv-plugin
 
 custom:
   webpack:
