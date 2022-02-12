@@ -90,7 +90,7 @@ export const createUser = async (
     finalHours: 0,
     finalHoursNeeded: requiredHours.finalHoursNeeded,
     regularHoursNeeded: requiredHours.regularHoursNeeded,
-    type: adminType,
+    adminType,
     isCheckedIn: false,
     transactions: [],
   };
@@ -156,7 +156,7 @@ export const getUser = async (
     }
 
     const requestParams = {
-      TableName: process.env.reductionRequestsTable,
+      TableName: process.env.requestsTable,
       IndexName: 'UserIdIndex',
       KeyConditionExpression: 'userId = :v_title',
       ExpressionAttributeValues: {

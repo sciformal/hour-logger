@@ -16,7 +16,7 @@ export const sampleUser: User = {
   regularHoursNeeded: 20,
   finalHours: 0,
   finalHoursNeeded: 10,
-  adminType: AdminType.USER,
+  type: AdminType.USER,
   userType: UserType.ENGINEER_ENROLLED,
   isCheckedIn: false,
   transactions: [],

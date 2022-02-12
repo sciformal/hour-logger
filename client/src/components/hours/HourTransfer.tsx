@@ -1,16 +1,12 @@
-import { Button, TextField } from '@material-ui/core';
+import { TextField } from '@material-ui/core';
 import { Autocomplete } from '@mui/material';
 import { API } from 'aws-amplify';
 import { useEffect, useState } from 'react';
 import Loader from '../global/Loader';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import { Form } from 'react-bootstrap';
+import { Alert, Button, Form } from 'react-bootstrap';
 
 export const TransferHours = ({ user }) => {
-  const transferRequests = user.requests.filter(
-    request => request.type === 'TRANSFER',
-  );
-
   return (
     <div style={{ display: 'flex' }}>
       {/* Left Side */}
@@ -102,6 +98,7 @@ const TransferHoursForm = ({ user }) => {
   const [users, setUsers] = useState([]);
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [err, setErr] = useState('');
 
   useEffect(() => {
     loadUsers();
@@ -117,7 +114,7 @@ const TransferHoursForm = ({ user }) => {
     }
   };
 
-  const userNames = users.map(user => user.firstName + ' ' + user.lastName);
+  const userNames = users?.map(user => user.firstName + ' ' + user.lastName);
   const handleMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     setMessage(e.target.value);
@@ -128,6 +125,19 @@ const TransferHoursForm = ({ user }) => {
   };
 
   const handleRequest = async () => {
+    if (toUserId === '') {
+      setErr('Please select a user to transfer hours to.');
+      return;
+    }
+
+    if (message.length < 1) {
+      setErr('Please enter a reason for your request.');
+      return;
+    }
+    if (numHours === '') {
+      setErr('Please enter number of hours you are transferring.');
+      return;
+    }
     setSubmitting(true);
 
     const userId = user.userId;
@@ -147,6 +157,7 @@ const TransferHoursForm = ({ user }) => {
         },
       });
       setSubmitted(true);
+      setErr('');
     } catch (err) {
       console.log(err);
       setSubmitted(false);
@@ -176,6 +187,18 @@ const TransferHoursForm = ({ user }) => {
     } else {
       return (
         <>
+          {err !== '' && (
+            <>
+              <Alert
+                variant="danger"
+                style={{ width: '80%', textAlign: 'center', margin: 'auto' }}
+              >
+                {err}
+              </Alert>
+              <br />
+              <br />
+            </>
+          )}
           <Autocomplete
             disablePortal
             id="combo-box-demo"

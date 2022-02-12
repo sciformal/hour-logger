@@ -1,15 +1,13 @@
-import { Button } from '@material-ui/core';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import { API } from 'aws-amplify';
 import { useEffect } from 'react';
 import { useState } from 'react';
-import { Form } from 'react-bootstrap';
+import { Alert, Button, Form } from 'react-bootstrap';
 import { useUserContext } from '../../libs/contextLib';
 import Loader from '../global/Loader';
 
 export const HourReduction = () => {
   const { user, setUser } = useUserContext();
-
   const reductionRequests = user.requests?.filter(
     request => request.type === 'REDUCTION',
   );
@@ -111,6 +109,7 @@ const HourReductionForm = ({ user, addRequest }) => {
   const [message, setMessage] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [err, setErr] = useState('');
 
   const handleMessageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
@@ -118,6 +117,11 @@ const HourReductionForm = ({ user, addRequest }) => {
   };
 
   const handleRequest = async () => {
+    if (message.length < 1) {
+      setErr('Please enter a reason for your request.');
+      return;
+    }
+
     setSubmitting(true);
 
     const userId = user.userId;
@@ -137,9 +141,11 @@ const HourReductionForm = ({ user, addRequest }) => {
         body: request,
       });
       setSubmitted(true);
+      setErr('');
       addRequest(response);
-    } catch (err) {
+    } catch (err: any) {
       console.log(err);
+      setErr(err.message);
       setSubmitted(false);
     } finally {
       setSubmitting(false);
@@ -167,14 +173,26 @@ const HourReductionForm = ({ user, addRequest }) => {
           <br />
           <br />
 
-          <button className="fake-button" onClick={() => clearRequestForm()}>
+          <Button onClick={() => clearRequestForm()}>
             Submit another request? &#8594;
-          </button>
+          </Button>
         </div>
       );
     } else {
       return (
         <>
+          {err !== '' && (
+            <>
+              <Alert
+                variant="danger"
+                style={{ width: '80%', textAlign: 'center', margin: 'auto' }}
+              >
+                {err}
+              </Alert>
+              <br />
+              <br />
+            </>
+          )}
           <Form.Label>
             <b>Why should we reduce your hours?</b>
           </Form.Label>

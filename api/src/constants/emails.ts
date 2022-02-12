@@ -5,8 +5,11 @@ export class CustomEmails {
   /**
    * Subject line for confirmation code emails
    */
-  public static CONFIRMATION_CODE_SUBJECT = 'Sci FormalHour Logger | Confirmation Code';
-  public static PASSWORD_RESET_SUBJECT = 'Sci Formal Hour Logger | Password Reset';
+  public static CONFIRMATION_CODE_SUBJECT =
+    'Sci Formal Hour Logger | Confirmation Code';
+
+  public static PASSWORD_RESET_SUBJECT =
+    'Sci Formal Hour Logger | Password Reset';
 
   /**
    * Create a custom confirmation code email for users when they sign up.
@@ -35,7 +38,7 @@ export class CustomEmails {
     </body>
     </html>`;
 
-    public static createResetPasswordEmail = (name, code) => `<html>
+  public static createResetPasswordEmail = (name, code) => `<html>
     <body style="background-color:#333; font-family: PT Sans,Trebuchet MS,sans-serif; ">
       <div style="margin: 0 auto; width: auto; background-color: #fff; font-size: 1.2rem; font-style: normal;font-weight: normal;line-height: 19px; padding: 20" align="center">
         <div style="text-align: left; padding: 20; Margin-left: 20px;">
@@ -54,5 +57,4 @@ export class CustomEmails {
       </div>
     </body>
     </html>`;
-
 }

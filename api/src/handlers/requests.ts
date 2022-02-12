@@ -62,7 +62,7 @@ export const create = async (
   };
 
   const params = {
-    TableName: process.env.reductionRequestsTable,
+    TableName: process.env.requestsTable,
     Item: databasePayload,
   };
 
@@ -79,7 +79,7 @@ export const get = async (
   event: APIGatewayProxyEvent,
 ): Promise<APIGatewayProxyResult> => {
   const params = {
-    TableName: process.env.reductionRequestsTable,
+    TableName: process.env.requestsTable,
   };
 
   try {
@@ -106,7 +106,7 @@ export const update = async (
 
   // check if requestId exists
   const params = {
-    TableName: process.env.reductionRequestsTable,
+    TableName: process.env.requestsTable,
     Key: {
       requestId: validatedData.requestId,
     },
@@ -136,7 +136,7 @@ export const update = async (
 
     // update the request in the table
     const updatedRequestParams = {
-      TableName: process.env.reductionRequestsTable,
+      TableName: process.env.requestsTable,
       Item: updatedRequestPayload,
     };
 
@@ -283,7 +283,7 @@ export const update = async (
 
   // update the request in the table
   const updatedRequestParams = {
-    TableName: process.env.reductionRequestsTable,
+    TableName: process.env.requestsTable,
     Item: updatedRequestPayload,
   };
 

@@ -1,7 +1,5 @@
 service: hour-logger
 
-useDotEnv: true
-
 frameworkVersion: '2'
 
 package:
@@ -10,7 +8,6 @@ package:
 plugins:
   - serverless-webpack
   - serverless-offline
-  - serverless-dotenv-plugin
 
 provider:
   name: aws
@@ -18,8 +15,8 @@ provider:
   stage: ${opt:stage, 'dev'}
   region: us-west-1
   environment:
-    userTable: ${env:userTable}-${self:provider.stage}
-    requestsTable: ${env:reductionRequestsTable}-${self:provider.stage}
+    userTable: users-${opt.stage}
+    requestsTable: requests-${opt.stage}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -223,4 +220,4 @@ resources:
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1
-        TableName: ${self:provider.environment.reductionRequestsTable}
+        TableName: ${self:provider.environment.requestsTable}
