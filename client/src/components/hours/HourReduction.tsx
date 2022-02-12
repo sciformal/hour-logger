@@ -118,10 +118,9 @@ const HourReductionForm = ({ user, addRequest }) => {
 
   const handleRequest = async () => {
     if (message.length < 1) {
-      setErr("Please enter a reason for your request.");
+      setErr('Please enter a reason for your request.');
       return;
     }
-
 
     setSubmitting(true);
 
@@ -182,16 +181,16 @@ const HourReductionForm = ({ user, addRequest }) => {
     } else {
       return (
         <>
-                  {err !== '' && (
-                    <>
-            <Alert
-              variant="danger"
-              style={{ width: '80%', textAlign: 'center', margin: 'auto' }}
-            >
-              {err}
-            </Alert>
-            <br/>
-            <br/>
+          {err !== '' && (
+            <>
+              <Alert
+                variant="danger"
+                style={{ width: '80%', textAlign: 'center', margin: 'auto' }}
+              >
+                {err}
+              </Alert>
+              <br />
+              <br />
             </>
           )}
           <Form.Label>

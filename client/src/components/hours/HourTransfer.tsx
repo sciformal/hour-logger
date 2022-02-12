@@ -7,6 +7,9 @@ import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import { Alert, Button, Form } from 'react-bootstrap';
 
 export const TransferHours = ({ user }) => {
+  const transferRequests = user.requests.filter(
+    request => request.type === 'TRANSFER',
+  );
 
   return (
     <div style={{ display: 'flex' }}>
@@ -38,7 +41,7 @@ export const TransferHours = ({ user }) => {
         <br />
         <br />
 
-        {user.requests?.length > 0 ? (
+        {transferRequests.length > 0 ? (
           <div
             style={{
               width: '80%',
@@ -49,42 +52,40 @@ export const TransferHours = ({ user }) => {
               flexWrap: 'wrap',
             }}
           >
-            {user.requests
-              .filter(request => request.type === 'TRANSFER')
-              .map(request => {
-                const rawDate = new Date(request.date);
-                const date = rawDate.toDateString();
+            {transferRequests.map(request => {
+              const rawDate = new Date(request.date);
+              const date = rawDate.toDateString();
 
-                return (
+              return (
+                <div
+                  key={request.requestId}
+                  style={{
+                    display: 'flex',
+                    flexWrap: 'nowrap',
+                    flexDirection: 'row',
+                    border: '1px solid #eeeeee',
+                    borderRadius: '5px',
+                    width: '100%',
+                    padding: '5px',
+                  }}
+                >
+                  {/* Left Side */}
                   <div
-                    key={request.requestId}
                     style={{
-                      display: 'flex',
-                      flexWrap: 'nowrap',
-                      flexDirection: 'row',
-                      border: '1px solid #eeeeee',
-                      borderRadius: '5px',
-                      width: '100%',
-                      padding: '5px',
+                      textAlign: 'left',
+                      width: '70%',
+                      margin: '10px',
                     }}
                   >
-                    {/* Left Side */}
-                    <div
-                      style={{
-                        textAlign: 'left',
-                        width: '70%',
-                        margin: '10px',
-                      }}
-                    >
-                      <h5>{date}</h5>
-                      <p>{request.message}</p>
-                    </div>
-
-                    {/* Right Side */}
-                    <div style={{ margin: 'auto' }}>{request.status}</div>
+                    <h5>{date}</h5>
+                    <p>{request.message}</p>
                   </div>
-                );
-              })}
+
+                  {/* Right Side */}
+                  <div style={{ margin: 'auto' }}>{request.status}</div>
+                </div>
+              );
+            })}
           </div>
         ) : (
           <div>No transfer hours requests yet.</div>
@@ -129,16 +130,16 @@ const TransferHoursForm = ({ user }) => {
 
   const handleRequest = async () => {
     if (toUserId === '') {
-      setErr("Please select a user to transfer hours to.");
+      setErr('Please select a user to transfer hours to.');
       return;
     }
 
     if (message.length < 1) {
-      setErr("Please enter a reason for your request.");
+      setErr('Please enter a reason for your request.');
       return;
     }
     if (numHours === '') {
-      setErr("Please enter number of hours you are transferring.");
+      setErr('Please enter number of hours you are transferring.');
       return;
     }
     setSubmitting(true);
@@ -190,16 +191,16 @@ const TransferHoursForm = ({ user }) => {
     } else {
       return (
         <>
-                          {err !== '' && (
-                    <>
-            <Alert
-              variant="danger"
-              style={{ width: '80%', textAlign: 'center', margin: 'auto' }}
-            >
-              {err}
-            </Alert>
-            <br/>
-            <br/>
+          {err !== '' && (
+            <>
+              <Alert
+                variant="danger"
+                style={{ width: '80%', textAlign: 'center', margin: 'auto' }}
+              >
+                {err}
+              </Alert>
+              <br />
+              <br />
             </>
           )}
           <Autocomplete

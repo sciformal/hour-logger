@@ -20,6 +20,7 @@ export const sampleUser: User = {
   userType: UserType.ENGINEER_ENROLLED,
   isCheckedIn: false,
   transactions: [],
+  requests: [],
 };
 
 export const sampleManager: User = {

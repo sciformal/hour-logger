@@ -34,7 +34,8 @@ export const HoursSummary = ({ user }: IUserProps) => {
         >
           <div>
             <h5>
-              Normal Hours ({user.hours}/{user.regularHoursNeeded} hours)
+              Normal Hours ({user.hours.toFixed(1)}/{user.regularHoursNeeded}{' '}
+              hours)
             </h5>
             <Progress max={user.regularHoursNeeded} completed={user.hours} />
           </div>

@@ -90,7 +90,7 @@ export const createUser = async (
     finalHours: 0,
     finalHoursNeeded: requiredHours.finalHoursNeeded,
     regularHoursNeeded: requiredHours.regularHoursNeeded,
-    type: adminType,
+    adminType,
     isCheckedIn: false,
     transactions: [],
   };
