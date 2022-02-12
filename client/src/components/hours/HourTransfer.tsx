@@ -7,6 +7,10 @@ import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import { Alert, Button, Form } from 'react-bootstrap';
 
 export const TransferHours = ({ user }) => {
+  const transferRequests = user.requests.filter(
+    request => request.type === 'TRANSFER',
+  );
+
   return (
     <div style={{ display: 'flex' }}>
       {/* Left Side */}

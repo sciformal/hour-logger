@@ -16,10 +16,11 @@ export const sampleUser: User = {
   regularHoursNeeded: 20,
   finalHours: 0,
   finalHoursNeeded: 10,
-  type: AdminType.USER,
+  adminType: AdminType.USER,
   userType: UserType.ENGINEER_ENROLLED,
   isCheckedIn: false,
   transactions: [],
+  requests: [],
 };
 
 export const sampleManager: User = {
