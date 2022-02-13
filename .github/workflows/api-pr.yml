@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - 'api/**'
+      - 'integration/**'
+      - '.github/**'
 
 jobs:
   testAndDeployLambda:
