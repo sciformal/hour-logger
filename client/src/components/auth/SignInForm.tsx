@@ -109,6 +109,12 @@ export default function SignInForm() {
       <CssBaseline />
       <div className={classes.paper}>
         <Typography component="h1" variant="h5">
+          Sci Formal - Hour Logger
+        </Typography>
+        <br />
+        <br />
+
+        <Typography component="h1" variant="h5">
           Sign In
         </Typography>
         <br />

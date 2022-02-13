@@ -55,7 +55,7 @@ describe('Navigation Bar Tests', () => {
       </AuthenticationContext.Provider>,
     );
 
-    const navigationItems = ['Hour Logger', 'Tickets', 'Logout'];
+    const navigationItems = ['Tickets', 'Logout'];
 
     navigationItems.forEach(item => {
       const htmlNode = screen.getByText(item);
@@ -78,13 +78,7 @@ describe('Navigation Bar Tests', () => {
       </AuthenticationContext.Provider>,
     );
 
-    const navigationItems = [
-      'Hour Logger',
-      'My Hours',
-      'Users',
-      'Tickets',
-      'Logout',
-    ];
+    const navigationItems = ['Hours', 'Users', 'Tickets', 'Logout'];
 
     navigationItems.forEach(item => {
       const htmlNode = screen.getByText(item);
@@ -107,14 +101,7 @@ describe('Navigation Bar Tests', () => {
       </AuthenticationContext.Provider>,
     );
 
-    const navigationItems = [
-      'Hour Logger',
-      'My Hours',
-      'Users',
-      'Tickets',
-      'Requests',
-      'Logout',
-    ];
+    const navigationItems = ['Hours', 'Users', 'Tickets', 'Requests', 'Logout'];
 
     navigationItems.forEach(item => {
       const htmlNode = screen.getByText(item);

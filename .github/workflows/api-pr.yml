@@ -8,6 +8,9 @@ on:
 jobs:
   testAndDeployLambda:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x]
     env:
       working-directory: ./api
 
@@ -17,7 +20,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: '12'
+          node-version: ${{ matrix.node-version }}
 
       - name: Cache Dependencies
         uses: actions/cache@v2
@@ -45,7 +48,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ca-central-1
 
-      - name: Install Serverless framework
+      - name: Serverless Deployment
         run: npm install -g serverless
 
       - name: Lambda Deployment

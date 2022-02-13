@@ -16,6 +16,7 @@ export class HoursUtilities {
             el.checkOut,
           );
           newUser.hours = timeElapsed + totalHours; // add new hours
+          el.hours = timeElapsed;
         } else {
           // loop over all hours and recalculate hours completed
           totalHours += HoursUtilities.calculateHours(el.checkIn, el.checkOut);

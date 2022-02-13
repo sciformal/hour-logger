@@ -1,61 +1,97 @@
-import { Button } from '@material-ui/core';
 import { Auth } from 'aws-amplify';
-import React from 'react';
-import { Container, Nav, Navbar } from 'react-bootstrap';
+import React, { useState } from 'react';
+import { IconContext } from 'react-icons';
+import * as AiIcons from 'react-icons/ai';
+import * as BiIcons from 'react-icons/bi';
+import * as FaIcons from 'react-icons/fa';
+import * as FiIcons from 'react-icons/fi';
 import { Link } from 'react-router-dom';
 import {
   useAuthenticationContext,
   useUserContext,
 } from '../../libs/contextLib';
+import '../../styles/Navbar.css';
+
+const TICKETS_URL = 'https://tickets.scienceformal.ca';
 
 export default function HourLoggerNav() {
-  const { isAuthenticated, userHasAuthenticated } = useAuthenticationContext();
+  const { userHasAuthenticated } = useAuthenticationContext();
   const { user } = useUserContext();
+  const type = user.adminType;
 
-  const handleLogout = async () => {
-    await Auth.signOut();
-    userHasAuthenticated(false);
-  };
+  const [sidebar, setSidebar] = useState(false);
 
-  if (isAuthenticated && user !== null) {
-    const type = user.adminType;
+  const showSidebar = () => setSidebar(!sidebar);
 
-    return (
-      <Navbar
-        bg="light"
-        expand="lg"
-        style={{ alignItems: 'flex-start', width: '15%', paddingLeft: '20px' }}
-      >
-        <Container style={{ display: 'block', paddingTop: '50px' }}>
-          <Navbar.Brand href="/">Hour Logger</Navbar.Brand>
-          <div style={{ paddingTop: '100px' }} className="justify-content-end">
-            <Navbar.Toggle aria-controls="basic-navbar-nav" />
-            <Navbar.Collapse id="basic-navbar-nav">
-              <Nav className="flex-column">
-                <Link to="/">My Hours</Link>
+  return (
+    <>
+      <IconContext.Provider value={{ color: '#fff' }}>
+        <div className="navbar">
+          <Link to="#" className="menu-bars">
+            <FaIcons.FaBars onClick={showSidebar} />
+          </Link>
+        </div>
+        <nav className={sidebar ? 'nav-menu active' : 'nav-menu'}>
+          <ul className="nav-menu-items" onClick={showSidebar}>
+            {/* Navbar Toggle */}
+            <li className="navbar-toggle">
+              <Link to="#" className="menu-bars">
+                <AiIcons.AiOutlineClose />
+              </Link>
+            </li>
 
-                {(type === 'ADMIN' || type === 'MANAGER') && (
-                  <Link to="/users">Users</Link>
-                )}
+            {/* Hours Page */}
+            <li key="hours" className="nav-text">
+              <Link to="/">
+                <BiIcons.BiTimeFive />
+                <span>Hours</span>
+              </Link>
+            </li>
 
-                <Link to="/payment">Tickets</Link>
+            {/* Users Page */}
+            {(type === 'ADMIN' || type === 'MANAGER') && (
+              <li key="users" className="nav-text">
+                <Link to="/users">
+                  <FiIcons.FiUsers />
+                  <span>Users</span>
+                </Link>
+              </li>
+            )}
 
-                {type === 'ADMIN' && <Link to="/requests">Requests</Link>}
+            {/* Requests Page */}
+            {type === 'ADMIN' && (
+              <li key="requests" className="nav-text">
+                <Link to="/requests">
+                  <FaIcons.FaCartPlus />
+                  <span>Requests</span>
+                </Link>
+              </li>
+            )}
 
-                <Button onClick={handleLogout}>Logout</Button>
-              </Nav>
-            </Navbar.Collapse>
-          </div>
-        </Container>
-      </Navbar>
-    );
-  } else {
-    return (
-      <Navbar bg="light" expand="lg">
-        <Container>
-          <Navbar.Brand href="/">Sci Formal Hour Logger</Navbar.Brand>
-        </Container>
-      </Navbar>
-    );
-  }
+            {/* Tickets Page */}
+            <li key="requests" className="nav-text">
+              <Link to={{ pathname: TICKETS_URL }} target="_blank">
+                <FiIcons.FiExternalLink />
+                <span>Tickets</span>
+              </Link>
+            </li>
+
+            {/* Logout */}
+            <li key="logout" className="nav-text">
+              <Link
+                to="#"
+                onClick={() => {
+                  Auth.signOut();
+                  userHasAuthenticated(false);
+                }}
+              >
+                <FiIcons.FiUsers />
+                <span>Logout</span>
+              </Link>
+            </li>
+          </ul>
+        </nav>
+      </IconContext.Provider>
+    </>
+  );
 }
