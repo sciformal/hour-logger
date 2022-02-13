@@ -61,4 +61,4 @@ jobs:
 
       - name: API Integration Tests
         run: |
-          npx newman run integration/integration-tests.json -e integration/beta-environment.json
+          npx newman run integration/integration-tests.json -e integration/environment.json
