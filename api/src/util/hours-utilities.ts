@@ -36,6 +36,7 @@ export class HoursUtilities {
         newUser.transactions.push({
           checkIn: date.toString(),
           checkOut: null,
+          hours: null,
         });
       } else {
         const transactions = [];
@@ -59,6 +60,7 @@ export class HoursUtilities {
     newUser.transactions.push({
       checkIn,
       checkOut,
+      hours: HoursUtilities.calculateHours(checkIn, checkOut),
     });
 
     let totalHours = 0;
