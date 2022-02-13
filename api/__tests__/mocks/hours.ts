@@ -6,4 +6,5 @@ export const sampleCheckOutTime = 'Mon Oct 11 2021 15:30:02 GMT+0530 (IST)';
 export const sampleTransaction: HourTransaction = {
   checkIn: sampleCheckInTime,
   checkOut: sampleCheckOutTime,
+  hours: 3.5,
 };
