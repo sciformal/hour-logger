@@ -61,5 +61,4 @@ jobs:
 
       - name: API Integration Tests
         run: |
-          npx newman run integration-tests.json -e beta-environment.json
-        working-directory: ${{ env.integration-directory }}
+          npx newman run integration/integration-tests.json -e integration/beta-environment.json
