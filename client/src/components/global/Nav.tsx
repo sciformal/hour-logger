@@ -69,11 +69,11 @@ export default function HourLoggerNav() {
             )}
 
             {/* Tickets Page */}
-            <li key="requests" className="nav-text">
-              <Link to={{ pathname: TICKETS_URL }} target="_blank">
+            <li key="tickets" className="nav-text">
+              <a href={TICKETS_URL} target="_blank" rel="noreferrer">
                 <FiIcons.FiExternalLink />
                 <span>Tickets</span>
-              </Link>
+              </a>
             </li>
 
             {/* Logout */}

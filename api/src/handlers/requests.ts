@@ -87,6 +87,7 @@ export const get = async (
     return ResponseUtilities.createSuccessResponse(requests);
   } catch (err) {
     console.log(err);
+    console.log('[requests.ts:L90');
     return ResponseUtilities.createErrorResponse(err.message, 500);
   }
 };
@@ -123,6 +124,8 @@ export const update = async (
     }
   } catch (err) {
     console.log(err);
+    console.log('[requests.ts:L126');
+
     return ResponseUtilities.createErrorResponse(err.message, 500);
   }
 
@@ -148,11 +151,14 @@ export const update = async (
       return ResponseUtilities.createSuccessResponse(updatedRequest);
     } catch (err) {
       console.log(err);
+      console.log('[requests.ts:L151');
       return ResponseUtilities.createErrorResponse(err.message, 500);
     }
   }
 
-  if (validatedData.type === RequestType.REDUCTION) {
+  console.log(validatedData.type);
+  console.log(RequestType.REDUCTION);
+  if (request.type === RequestType.REDUCTION) {
     const { userId } = request;
 
     // pull in the user
@@ -174,6 +180,7 @@ export const update = async (
       }
     } catch (err) {
       console.log(err);
+      console.log('[requests.ts:L177');
       return ResponseUtilities.createErrorResponse(err.message, 500);
     }
 
@@ -201,6 +208,7 @@ export const update = async (
       await DynamoUtilities.put(updatedUserParams, dynamoDb);
     } catch (err) {
       console.log(err);
+      console.log('[requests.ts:L205');
       return ResponseUtilities.createErrorResponse(err.message, 500);
     }
   } else {
@@ -234,6 +242,7 @@ export const update = async (
       }
     } catch (err) {
       console.log(err);
+      console.log('[requests.ts:L279');
       return ResponseUtilities.createErrorResponse(err.message, 500);
     }
 
@@ -271,6 +280,7 @@ export const update = async (
       await DynamoUtilities.put(updatedToUserParams, dynamoDb);
     } catch (err) {
       console.log(err);
+      console.log('[requests.ts:L279');
       return ResponseUtilities.createErrorResponse(err.message, 500);
     }
   }
@@ -295,6 +305,7 @@ export const update = async (
     return ResponseUtilities.createSuccessResponse(updatedRequest);
   } catch (err) {
     console.log(err);
+    console.log('[requests.ts:L300');
     return ResponseUtilities.createErrorResponse(err.message, 500);
   }
 };
