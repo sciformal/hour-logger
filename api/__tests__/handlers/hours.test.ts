@@ -126,6 +126,7 @@ describe('Hours API Request', () => {
       checkIn: 'Tue Oct 12 2021 20:57:17 GMT+0000 (Coordinated Universal Time)',
       checkOut:
         'Tue Oct 12 2021 22:57:20 GMT+0000 (Coordinated Universal Time)',
+      hours: 1,
     };
 
     let validRequest;
