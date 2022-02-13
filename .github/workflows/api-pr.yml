@@ -12,7 +12,8 @@ jobs:
       matrix:
         node-version: [16.x]
     env:
-      working-directory: ./api
+      api-directory: ./api
+      integration-directory: './integration'
 
     steps:
       - uses: actions/checkout@v2
@@ -31,7 +32,7 @@ jobs:
 
       - name: Install Dependencies
         run: yarn
-        working-directory: ${{ env.working-directory }}
+        working-directory: ${{ env.api-directory }}
 
       - name: Run Unit Tests
         uses: artiomtr/jest-coverage-report-action@v2.0-rc.1
@@ -39,7 +40,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           package-manager: yarn
           threshold: 70
-          working-directory: ${{ env.working-directory }}
+          working-directory: ${{ env.api-directory }}
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -48,10 +49,17 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ca-central-1
 
-      - name: Serverless Deployment
+      - name: Install Serverless Framework
         run: npm install -g serverless
 
       - name: Lambda Deployment
         run: |
           serverless deploy --stage=beta
-        working-directory: ${{ env.working-directory }}
+        working-directory: ${{ env.api-directory }}
+
+      - name: API Integration Tests
+        uses: matt-ball/newman-action@master
+        with:
+          collection: postman_collection.json
+          environment: postman_environment.json
+          working-directory: ${{ env.integration-directory }}
