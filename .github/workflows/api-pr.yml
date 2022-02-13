@@ -60,8 +60,6 @@ jobs:
         working-directory: ${{ env.api-directory }}
 
       - name: API Integration Tests
-        uses: matt-ball/newman-action@master
-        with:
-          collection: integration-tests.json
-          environment: beta-environment.json
-          workingDir: ${{ env.integration-directory }}
+        run: |
+          npx newman run integration-tests.json -e beta-environment.json
+        working-directory: ${{ env.integration-directory }}
