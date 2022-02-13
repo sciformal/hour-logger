@@ -15,7 +15,7 @@ import '../../styles/Navbar.css';
 const TICKETS_URL = 'https://tickets.scienceformal.ca';
 
 export default function HourLoggerNav() {
-  const { isAuthenticated, userHasAuthenticated } = useAuthenticationContext();
+  const { userHasAuthenticated } = useAuthenticationContext();
   const { user } = useUserContext();
   const type = user.adminType;
 
