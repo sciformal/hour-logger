@@ -6,6 +6,7 @@ import {
   RequestModel,
   RequestStatus,
 } from '../types/database/ReductionRequest';
+import { User } from '../types/database/User';
 import { RequestType } from '../types/requests/Request';
 import { DynamoUtilities } from '../util/dynamo-utilities';
 import { ResponseUtilities } from '../util/response-utilities';
@@ -156,8 +157,6 @@ export const update = async (
     }
   }
 
-  console.log(validatedData.type);
-  console.log(RequestType.REDUCTION);
   if (request.type === RequestType.REDUCTION) {
     const { userId } = request;
 
@@ -218,14 +217,14 @@ export const update = async (
     const userParams = {
       TableName: process.env.userTable,
       Key: {
-        userId,
+        userId: userId,
       },
     };
 
     const toUserParams = {
       TableName: process.env.userTable,
       Key: {
-        toUserId,
+        userId: toUserId,
       },
     };
 
@@ -242,27 +241,27 @@ export const update = async (
       }
     } catch (err) {
       console.log(err);
-      console.log('[requests.ts:L279');
+      console.log('[requests.ts]:L243');
       return ResponseUtilities.createErrorResponse(err.message, 500);
     }
 
-    const updatedUser = {
+    const updatedUser: User = {
       ...user,
     };
 
-    const updatedToUser = {
+    const updatedToUser: User = {
       ...toUser,
     };
 
-    const currUserHours = Number(updatedUser.regularHours);
-    const currToUserHours = Number(updatedToUser.regularHours);
+    const currUserHours = Number(updatedUser.hours || 0);
+    const currToUserHours = Number(updatedToUser.hours || 0);
     const removalHours = Number(validatedData.numHours);
 
     const newHoursUser = currUserHours - removalHours;
     const newHoursToUser = currToUserHours + removalHours;
 
-    updatedUser.regularHours = newHoursUser;
-    updatedToUser.regularHours = newHoursToUser;
+    updatedUser.hours = newHoursUser;
+    updatedToUser.hours = newHoursToUser;
 
     // update the user in the table
     const updatedUserParams = {
@@ -272,7 +271,7 @@ export const update = async (
 
     const updatedToUserParams = {
       TableName: process.env.userTable,
-      Item: updatedUser,
+      Item: updatedToUser,
     };
 
     try {
@@ -280,7 +279,7 @@ export const update = async (
       await DynamoUtilities.put(updatedToUserParams, dynamoDb);
     } catch (err) {
       console.log(err);
-      console.log('[requests.ts:L279');
+      console.log('[requests.ts]:L279');
       return ResponseUtilities.createErrorResponse(err.message, 500);
     }
   }
