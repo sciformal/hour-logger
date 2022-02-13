@@ -13,7 +13,7 @@ export const HomePage = () => {
 
   // Signed in
   return (
-    <div style={{ padding: '5%', width: '85%' }}>
+    <div style={{ padding: '5%', textAlign: 'center' }}>
       <h2>My Hours</h2>
       <br />
       <br />

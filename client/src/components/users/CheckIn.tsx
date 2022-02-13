@@ -96,6 +96,10 @@ const CheckInForm = props => {
   };
 
   const handleCheckIn = async () => {
+    if (studentNumber.length !== 8) {
+      setErr('Student number must be 8 digits.');
+      return;
+    }
     setSubmitting(true);
     setErr('');
     try {
@@ -115,12 +119,7 @@ const CheckInForm = props => {
       console.log(err);
       if (err.response) {
         const errMessage = err.response.data.message;
-        if (errMessage.indexOf('DynamoDB') >= 0) {
-          const errMsg = 'The student number has already been registered.';
-          setErr(errMsg);
-        } else {
-          setErr('User could not be checked in.');
-        }
+        setErr(errMessage);
       }
       setSubmitted(false);
     } finally {
@@ -160,6 +159,18 @@ const CheckInForm = props => {
     } else {
       return (
         <>
+          {err !== '' && (
+            <>
+              <Alert
+                variant="danger"
+                style={{ width: '80%', textAlign: 'center', margin: 'auto' }}
+              >
+                {err}
+              </Alert>
+              <br />
+              <br />
+            </>
+          )}
           <div style={{ width: '60%', margin: 'auto' }}>
             <Form.Label style={{ textAlign: 'left', width: '100%' }}>
               <b>Student Number</b>
@@ -182,14 +193,6 @@ const CheckInForm = props => {
           </Button>
           <br />
           <br />
-          {err !== '' && (
-            <Alert
-              variant="danger"
-              style={{ width: '80%', textAlign: 'center', margin: 'auto' }}
-            >
-              {err}
-            </Alert>
-          )}
         </>
       );
     }
@@ -214,6 +217,7 @@ function CheckedInUsersTable(props) {
         <TableBody>
           {props.users.map((user: User) => (
             <CheckedInUser
+              key={user.userId}
               user={user}
               removeCheckedInUser={props.removeCheckedInUser}
             />
@@ -251,13 +255,18 @@ function CheckedInUser(props) {
     }
   };
 
+  const formatDate = (date: string) => {
+    const d = new Date(date);
+    return d.toLocaleString();
+  };
+
   return (
     <React.Fragment>
       <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
         <TableCell component="th" scope="row">
           {user.firstName + ' ' + user.lastName}
         </TableCell>
-        <TableCell align="right">{transaction.checkIn}</TableCell>
+        <TableCell align="center">{formatDate(transaction.checkIn)}</TableCell>
         <TableCell align="right">
           <Button onClick={handleCheckout}>
             {!checkoutLoading ? 'Check Out' : 'Checking out user...'}

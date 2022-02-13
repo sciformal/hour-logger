@@ -2,7 +2,7 @@ import { Link, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { ForgotPassword } from './components/auth/ForgotPassword';
 import SignUp from './components/auth/Register';
 import SignInForm from './components/auth/SignInForm';
-import HourLoggerNav from './components/global/Nav';
+import Navbar from './components/global/Nav';
 import { useAuthenticationContext, useUserContext } from './libs/contextLib';
 import { HomePage } from './pages/HoursPage';
 import { RequestsPage } from './pages/RequestsPage';
@@ -16,7 +16,9 @@ export default function HourLoggerRoutes() {
 
   return (
     <div className="page-container">
-      {isAuthenticated && <HourLoggerNav />}
+      {/* {isAuthenticated && <HourLoggerNav />} */}
+      {isAuthenticated && <Navbar />}
+
       <Routes>
         {/* Home Page */}
         <Route
@@ -68,7 +70,7 @@ export default function HourLoggerRoutes() {
 }
 
 const RequireAdmin = ({ children, user }) => {
-  if (user?.type === 'ADMIN') {
+  if (user?.adminType === 'ADMIN') {
     return children;
   } else {
     return <Navigate to="/unauthenticated" replace />;

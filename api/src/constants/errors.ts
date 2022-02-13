@@ -33,6 +33,9 @@ export class ErrorConstants {
   public static readonly DYNAMO_NONUNIQUE_STUDENTNUMBER =
     'DynamoDB query should have only 1 user per studentNumber.';
 
+  public static readonly DYNAMO_STUDENTNUMBER_NOTFOUND =
+    'No user with that student number was found.';
+
   public static readonly DYNAMO_USERID_NOT_FOUND =
     'The userId does not exist in the users table.';
 }

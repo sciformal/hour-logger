@@ -84,7 +84,7 @@ export function UsersTable({ users }) {
         </TableHead>
         <TableBody>
           {users.map((user: User) => (
-            <UserRow user={user} />
+            <UserRow key={user.userId} user={user} />
           ))}
         </TableBody>
       </Table>
@@ -111,9 +111,11 @@ function UserRow(props) {
         <TableCell component="th" scope="row">
           {user.firstName + ' ' + user.lastName}
         </TableCell>
-        <TableCell align="right">{user.hours + user.finalHours}</TableCell>
         <TableCell align="right">
-          {user.regularHoursNeeded + user.finalHoursNeeded}
+          {(user.hours + user.finalHours).toFixed(2)}
+        </TableCell>
+        <TableCell align="right">
+          {(user.regularHoursNeeded + user.finalHoursNeeded).toFixed(2)}
         </TableCell>
         <TableCell align="right">{user.userType}</TableCell>
       </TableRow>
@@ -152,6 +154,13 @@ function UserRow(props) {
 
 function UserTransactions(props) {
   const { transactions } = props;
+  console.log(transactions);
+
+  const formatDate = (date: string) => {
+    const d = new Date(date);
+    return d.toLocaleString();
+  };
+
   return (
     <Table size="small" aria-label="purchases">
       <TableHead>
@@ -166,10 +175,12 @@ function UserTransactions(props) {
         {transactions.map((transaction, idx) => (
           <TableRow key={idx}>
             <TableCell component="th" scope="row">
-              {transaction.checkIn}
+              {formatDate(transaction.checkIn)}
             </TableCell>
-            <TableCell>{transaction.checkOut}</TableCell>
-            <TableCell align="right">100</TableCell>
+            <TableCell>{formatDate(transaction.checkOut)}</TableCell>
+            <TableCell align="right">
+              {transaction.hours ? transaction.hours.toFixed(2) + 'h' : 'N/A'}
+            </TableCell>
           </TableRow>
         ))}
       </TableBody>

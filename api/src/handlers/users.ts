@@ -93,6 +93,7 @@ export const createUser = async (
     adminType,
     isCheckedIn: false,
     transactions: [],
+    requests: [],
   };
 
   const params = {

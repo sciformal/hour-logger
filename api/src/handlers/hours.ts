@@ -44,7 +44,13 @@ export const checkIn = async (
   try {
     const userList = await DynamoUtilities.query(params, dynamoDb);
 
-    if (userList.length !== 1) {
+    // TODO: This should throw a 400
+    if (userList.length === 0) {
+      throw new Error(ErrorConstants.DYNAMO_STUDENTNUMBER_NOTFOUND);
+    }
+
+    // TODO: This should throw a 400
+    if (userList.length > 1) {
       throw new Error(ErrorConstants.DYNAMO_NONUNIQUE_STUDENTNUMBER);
     }
 

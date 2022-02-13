@@ -15,8 +15,8 @@ provider:
   stage: ${opt:stage, 'dev'}
   region: us-west-1
   environment:
-    userTable: users-${opt.stage}
-    requestsTable: requests-${opt.stage}
+    userTable: users-${opt:stage}
+    requestsTable: requests-${opt:stage}
   iamRoleStatements:
     - Effect: Allow
       Action:

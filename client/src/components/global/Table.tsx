@@ -2,6 +2,7 @@ import React from 'react';
 import { Table } from 'react-bootstrap';
 
 // @ts-ignore
+// TODO: Update this table!
 export function HourLoggerTable({ headers, rows }) {
   return (
     <Table bordered>
