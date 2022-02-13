@@ -62,6 +62,6 @@ jobs:
       - name: API Integration Tests
         uses: matt-ball/newman-action@master
         with:
-          collection: postman_collection.json
-          environment: postman_environment.json
+          collection: integration-tests.json
+          environment: beta-environment.json
           working-directory: ${{ env.integration-directory }}
