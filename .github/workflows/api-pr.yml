@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [16.x]
+        node-version: [14.x, 16.x]
     env:
       working-directory: ./api
 
@@ -48,8 +48,10 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ca-central-1
 
+      - name: Serverless Deployment
+        run: npm install -g serverless
+
       - name: Lambda Deployment
-        uses: serverless/github-action@v3
-        with:
-          args: deploy --stage=beta
-          entryPoint: ${{ env.working-directory }}
+        run: |
+          serverless deploy --stage=beta
+        working-directory: ${{ env.working-directory }}
