@@ -64,4 +64,4 @@ jobs:
         with:
           collection: integration-tests.json
           environment: beta-environment.json
-          working-directory: ${{ env.integration-directory }}
+          workingDir: ${{ env.integration-directory }}
