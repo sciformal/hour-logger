@@ -60,5 +60,8 @@ jobs:
         working-directory: ${{ env.api-directory }}
 
       - name: API Integration Tests
-        run: |
-          npx newman run integration/integration-tests.json -e integration/environment.json
+        uses: matt-ball/newman-action@master
+        with:
+          apiKey: ${{ secrets.POSTMAN_API_KEY }}
+          collection: daed7e9a-c02c-4d2d-ab04-88777e536fa7
+          environment: f60d2e18-f172-400e-93a3-2d85b41418b1
