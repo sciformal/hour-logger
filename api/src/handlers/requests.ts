@@ -217,7 +217,7 @@ export const update = async (
     const toUserParams = {
       TableName: process.env.userTable,
       Key: {
-        toUserId,
+        userId: toUserId,
       },
     };
 
@@ -245,15 +245,15 @@ export const update = async (
       ...toUser,
     };
 
-    const currUserHours = Number(updatedUser.regularHours);
-    const currToUserHours = Number(updatedToUser.regularHours);
+    const currUserHours = Number(updatedUser.hours);
+    const currToUserHours = Number(updatedToUser.hours);
     const removalHours = Number(validatedData.numHours);
 
     const newHoursUser = currUserHours - removalHours;
     const newHoursToUser = currToUserHours + removalHours;
 
-    updatedUser.regularHours = newHoursUser;
-    updatedToUser.regularHours = newHoursToUser;
+    updatedUser.hours = newHoursUser;
+    updatedToUser.hours = newHoursToUser;
 
     // update the user in the table
     const updatedUserParams = {
@@ -263,7 +263,7 @@ export const update = async (
 
     const updatedToUserParams = {
       TableName: process.env.userTable,
-      Item: updatedUser,
+      Item: updatedToUser,
     };
 
     try {
@@ -278,7 +278,7 @@ export const update = async (
   const updatedRequestPayload = {
     ...request,
     status: validatedData.status,
-    numHours: validatedData.numHours,
+    numHours: Number(validatedData.numHours),
   };
 
   // update the request in the table
