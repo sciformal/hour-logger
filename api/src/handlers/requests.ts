@@ -6,6 +6,7 @@ import {
   RequestModel,
   RequestStatus,
 } from '../types/database/ReductionRequest';
+import { User } from '../types/database/User';
 import { RequestType } from '../types/requests/Request';
 import { DynamoUtilities } from '../util/dynamo-utilities';
 import { ResponseUtilities } from '../util/response-utilities';
@@ -87,6 +88,7 @@ export const get = async (
     return ResponseUtilities.createSuccessResponse(requests);
   } catch (err) {
     console.log(err);
+    console.log('[requests.ts:L90');
     return ResponseUtilities.createErrorResponse(err.message, 500);
   }
 };
@@ -123,6 +125,8 @@ export const update = async (
     }
   } catch (err) {
     console.log(err);
+    console.log('[requests.ts:L126');
+
     return ResponseUtilities.createErrorResponse(err.message, 500);
   }
 
@@ -148,12 +152,12 @@ export const update = async (
       return ResponseUtilities.createSuccessResponse(updatedRequest);
     } catch (err) {
       console.log(err);
+      console.log('[requests.ts:L151');
       return ResponseUtilities.createErrorResponse(err.message, 500);
     }
   }
 
   if (request.type === RequestType.REDUCTION) {
-    console.log(request);
     const { userId } = request;
 
     // pull in the user
@@ -214,7 +218,7 @@ export const update = async (
     const userParams = {
       TableName: process.env.userTable,
       Key: {
-        userId,
+        userId: userId,
       },
     };
 
@@ -238,19 +242,20 @@ export const update = async (
       }
     } catch (err) {
       console.log(err);
+      console.log('[requests.ts]:L243');
       return ResponseUtilities.createErrorResponse(err.message, 500);
     }
 
-    const updatedUser = {
+    const updatedUser: User = {
       ...user,
     };
 
-    const updatedToUser = {
+    const updatedToUser: User = {
       ...toUser,
     };
 
-    const currUserHours = Number(updatedUser.hours);
-    const currToUserHours = Number(updatedToUser.hours);
+    const currUserHours = Number(updatedUser.hours || 0);
+    const currToUserHours = Number(updatedToUser.hours || 0);
     const removalHours = Number(validatedData.numHours);
 
     const newHoursUser = currUserHours - removalHours;
@@ -275,6 +280,7 @@ export const update = async (
       await DynamoUtilities.put(updatedToUserParams, dynamoDb);
     } catch (err) {
       console.log(err);
+      console.log('[requests.ts]:L279');
       return ResponseUtilities.createErrorResponse(err.message, 500);
     }
   }
@@ -299,6 +305,7 @@ export const update = async (
     return ResponseUtilities.createSuccessResponse(updatedRequest);
   } catch (err) {
     console.log(err);
+    console.log('[requests.ts:L300');
     return ResponseUtilities.createErrorResponse(err.message, 500);
   }
 };

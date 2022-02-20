@@ -75,7 +75,7 @@ export const ForgotPassword = () => {
       await Auth.signIn(emailInput, password);
       userHasAuthenticated(true);
       // @ts-ignore
-      window.location = '/';
+      window.location.href = '/';
     } catch (err: any) {
       setErr(err.message);
       console.log(err);

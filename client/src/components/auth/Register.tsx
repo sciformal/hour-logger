@@ -50,6 +50,7 @@ export default function SignUp() {
   const [signUpStep, setSignUpStep] = useState(1);
 
   const [err, setErr] = useState('');
+  const [confirming, setConfirming] = useState(false);
 
   // @ts-ignore
   const handleFirstNameChange = e => {
@@ -135,6 +136,7 @@ export default function SignUp() {
 
   const handleResendConfirmationCode = async e => {
     e.preventDefault();
+    setErr('');
 
     try {
       await Auth.resendSignUp(email);
@@ -148,6 +150,9 @@ export default function SignUp() {
   // TODO: FIelds here should be taken from Cognito and not assumed frmo form
   const handleConfirmRegister = async e => {
     e.preventDefault();
+    setErr('');
+    setConfirming(true);
+
     try {
       await Auth.confirmSignUp(email, confirmationCode);
       await Auth.signIn(email, password);
@@ -163,14 +168,22 @@ export default function SignUp() {
           userId,
           userType,
         },
+        response: true,
       });
 
       setUser(user);
       userHasAuthenticated(true);
       window.location.href = '/';
     } catch (err: any) {
-      console.log(err);
-      setErr(e.message);
+      if (err.message) {
+        if (err.message.indexOf('Current status is CONFIRMED') >= 0) {
+          window.location.href = '/';
+        } else {
+          setErr(err.message);
+        }
+      }
+    } finally {
+      setConfirming(false);
     }
   };
 
@@ -359,7 +372,7 @@ export default function SignUp() {
               className={classes.submit}
               onClick={handleConfirmRegister}
             >
-              Confirm Account
+              {confirming ? 'Confirming Account...' : 'Confirm Account'}
             </Button>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <Link
