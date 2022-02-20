@@ -61,5 +61,5 @@ jobs:
 
       - name: API Integration Tests
         run: |
-          cd integration/
+          cd $GITHUB_WORKSPACE/integration/
           newman run integration.postman_collection.json -e environment.json
