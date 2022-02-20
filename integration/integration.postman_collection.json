@@ -1,0 +1,1674 @@
+{
+  "info": {
+    "_postman_id": "daed7e9a-c02c-4d2d-ab04-88777e536fa7",
+    "name": "Hour Logger Integration",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Integration Tests",
+      "item": [
+        {
+          "name": "Create User",
+          "item": [
+            {
+              "name": "Validation Tests",
+              "item": []
+            },
+            {
+              "name": "Create A New User",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "var uuid = require(\"uuid\");\r",
+                      "\r",
+                      "var userId = uuid.v4();\r",
+                      "var firstName = pm.variables.replaceIn('{{$randomFirstName}}');\r",
+                      "var lastName = pm.variables.replaceIn('{{$randomLastName}}');\r",
+                      "var email = firstName + lastName + '@example.com'; // built in one uses real emails - https://github.com/postmanlabs/postman-app-support/issues/971#issuecomment-565459035\r",
+                      "var studentNumber = Math.floor(10000000 + Math.random() * 90000000);\r",
+                      "\r",
+                      "pm.collectionVariables.set(\"userId\", userId);\r",
+                      "pm.collectionVariables.set(\"firstName\", firstName);\r",
+                      "pm.collectionVariables.set(\"lastName\", lastName);\r",
+                      "pm.collectionVariables.set(\"email\", email);\r",
+                      "pm.collectionVariables.set(\"studentNumber\", studentNumber);"
+                    ],
+                    "type": "text/javascript"
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", () => {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"User fields are populated correctly\", () => {\r",
+                      "    let response = pm.response.json();\r",
+                      "    pm.expect(response.firstName).to.equal(pm.collectionVariables.get(\"firstName\"));\r",
+                      "    pm.expect(response.lastName).to.equal(pm.collectionVariables.get(\"lastName\"));\r",
+                      "    pm.expect(response.email).to.equal(pm.collectionVariables.get(\"email\"));\r",
+                      "    pm.expect(response.userId).to.equal(pm.collectionVariables.get(\"userId\"));\r",
+                      "    pm.expect(response.studentNumber).to.equal(`${pm.collectionVariables.get(\"studentNumber\")}`);\r",
+                      "    pm.expect(response.hours).to.equal(0);\r",
+                      "    pm.expect(response.finalHours).to.equal(0);\r",
+                      "    pm.expect(response.adminType).to.equal(\"USER\");\r",
+                      "    pm.expect(response.transactions.length).to.equal(0);\r",
+                      "    pm.expect(response.requests.length).to.equal(0);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"firstName\": \"{{firstName}}\",\r\n    \"lastName\": \"{{lastName}}\",\r\n    \"email\": \"{{email}}\",\r\n    \"userId\": \"{{userId}}\",\r\n    \"studentNumber\": \"{{studentNumber}}\",\r\n    \"userType\": \"ENGINEER_ENROLLED\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "https://{{API_URL}}.execute-api.{{API_REGION}}.amazonaws.com/{{API_STAGE}}/users/",
+                  "protocol": "https",
+                  "host": [
+                    "{{API_URL}}",
+                    "execute-api",
+                    "{{API_REGION}}",
+                    "amazonaws",
+                    "com"
+                  ],
+                  "path": ["{{API_STAGE}}", "users", ""]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get Users",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", () => {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"User exists in array\", () => {\r",
+                      "    let response = pm.response.json();\r",
+                      "    const user = response.find(user => user.userId === pm.collectionVariables.get(\"userId\"));\r",
+                      "    pm.expect(user).exist;\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "https://{{API_URL}}.execute-api.{{API_REGION}}.amazonaws.com/{{API_STAGE}}/users/",
+                  "protocol": "https",
+                  "host": [
+                    "{{API_URL}}",
+                    "execute-api",
+                    "{{API_REGION}}",
+                    "amazonaws",
+                    "com"
+                  ],
+                  "path": ["{{API_STAGE}}", "users", ""]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get User by ID",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", () => {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"User fields are populated correctly\", () => {\r",
+                      "    let response = pm.response.json();\r",
+                      "    pm.expect(response.firstName).to.equal(pm.collectionVariables.get(\"firstName\"));\r",
+                      "    pm.expect(response.lastName).to.equal(pm.collectionVariables.get(\"lastName\"));\r",
+                      "    pm.expect(response.email).to.equal(pm.collectionVariables.get(\"email\"));\r",
+                      "    pm.expect(response.userId).to.equal(pm.collectionVariables.get(\"userId\"));\r",
+                      "    pm.expect(response.studentNumber).to.equal(`${pm.collectionVariables.get(\"studentNumber\")}`);\r",
+                      "    pm.expect(response.hours).to.equal(0);\r",
+                      "    pm.expect(response.finalHours).to.equal(0);\r",
+                      "    pm.expect(response.adminType).to.equal(\"USER\");\r",
+                      "    pm.expect(response.transactions.length).to.equal(0);\r",
+                      "    pm.expect(response.requests.length).to.equal(0);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "https://{{API_URL}}.execute-api.{{API_REGION}}.amazonaws.com/{{API_STAGE}}/users/{{userId}}",
+                  "protocol": "https",
+                  "host": [
+                    "{{API_URL}}",
+                    "execute-api",
+                    "{{API_REGION}}",
+                    "amazonaws",
+                    "com"
+                  ],
+                  "path": ["{{API_STAGE}}", "users", "{{userId}}"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete User",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 204\", () => {\r",
+                      "    pm.response.to.have.status(204);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "https://{{API_URL}}.execute-api.{{API_REGION}}.amazonaws.com/{{API_STAGE}}/users/{{userId}}",
+                  "protocol": "https",
+                  "host": [
+                    "{{API_URL}}",
+                    "execute-api",
+                    "{{API_REGION}}",
+                    "amazonaws",
+                    "com"
+                  ],
+                  "path": ["{{API_STAGE}}", "users", "{{userId}}"]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Check In User",
+          "item": [
+            {
+              "name": "Check In Works",
+              "item": [
+                {
+                  "name": "Create A New User",
+                  "event": [
+                    {
+                      "listen": "prerequest",
+                      "script": {
+                        "exec": [
+                          "var uuid = require(\"uuid\");\r",
+                          "\r",
+                          "var userId = uuid.v4();\r",
+                          "var firstName = pm.variables.replaceIn('{{$randomFirstName}}');\r",
+                          "var lastName = pm.variables.replaceIn('{{$randomLastName}}');\r",
+                          "var email = firstName + lastName + '@example.com'; // built in one uses real emails - https://github.com/postmanlabs/postman-app-support/issues/971#issuecomment-565459035\r",
+                          "var studentNumber = Math.floor(10000000 + Math.random() * 90000000);\r",
+                          "\r",
+                          "pm.collectionVariables.set(\"userId\", userId);\r",
+                          "pm.collectionVariables.set(\"firstName\", firstName);\r",
+                          "pm.collectionVariables.set(\"lastName\", lastName);\r",
+                          "pm.collectionVariables.set(\"email\", email);\r",
+                          "pm.collectionVariables.set(\"studentNumber\", studentNumber);"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    },
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Status code is 200\", () => {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});\r",
+                          "\r",
+                          "pm.test(\"User fields are populated correctly\", () => {\r",
+                          "    let response = pm.response.json();\r",
+                          "    pm.expect(response.firstName).to.equal(pm.collectionVariables.get(\"firstName\"));\r",
+                          "    pm.expect(response.lastName).to.equal(pm.collectionVariables.get(\"lastName\"));\r",
+                          "    pm.expect(response.email).to.equal(pm.collectionVariables.get(\"email\"));\r",
+                          "    pm.expect(response.userId).to.equal(pm.collectionVariables.get(\"userId\"));\r",
+                          "    pm.expect(response.studentNumber).to.equal(`${pm.collectionVariables.get(\"studentNumber\")}`);\r",
+                          "    pm.expect(response.hours).to.equal(0);\r",
+                          "    pm.expect(response.finalHours).to.equal(0);\r",
+                          "    pm.expect(response.adminType).to.equal(\"USER\");\r",
+                          "    pm.expect(response.transactions.length).to.equal(0);\r",
+                          "    pm.expect(response.requests.length).to.equal(0);\r",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"firstName\": \"{{firstName}}\",\r\n    \"lastName\": \"{{lastName}}\",\r\n    \"email\": \"{{email}}\",\r\n    \"userId\": \"{{userId}}\",\r\n    \"studentNumber\": \"{{studentNumber}}\",\r\n    \"userType\": \"ENGINEER_ENROLLED\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "https://{{API_URL}}.execute-api.{{API_REGION}}.amazonaws.com/{{API_STAGE}}/users/",
+                      "protocol": "https",
+                      "host": [
+                        "{{API_URL}}",
+                        "execute-api",
+                        "{{API_REGION}}",
+                        "amazonaws",
+                        "com"
+                      ],
+                      "path": ["{{API_STAGE}}", "users", ""]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Get Users",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Status code is 200\", () => {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});\r",
+                          "\r",
+                          "pm.test(\"User exists in array\", () => {\r",
+                          "    let response = pm.response.json();\r",
+                          "    const user = response.find(user => user.userId === pm.collectionVariables.get(\"userId\"));\r",
+                          "    pm.expect(user).exist;\r",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "https://{{API_URL}}.execute-api.{{API_REGION}}.amazonaws.com/{{API_STAGE}}/users/",
+                      "protocol": "https",
+                      "host": [
+                        "{{API_URL}}",
+                        "execute-api",
+                        "{{API_REGION}}",
+                        "amazonaws",
+                        "com"
+                      ],
+                      "path": ["{{API_STAGE}}", "users", ""]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Get User by ID",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Status code is 200\", () => {\r",
+                          "    pm.response.to.have.status(200);\r",
+                          "});\r",
+                          "\r",
+                          "pm.test(\"User fields are populated correctly\", () => {\r",
+                          "    let response = pm.response.json();\r",
+                          "    pm.expect(response.firstName).to.equal(pm.collectionVariables.get(\"firstName\"));\r",
+                          "    pm.expect(response.lastName).to.equal(pm.collectionVariables.get(\"lastName\"));\r",
+                          "    pm.expect(response.email).to.equal(pm.collectionVariables.get(\"email\"));\r",
+                          "    pm.expect(response.userId).to.equal(pm.collectionVariables.get(\"userId\"));\r",
+                          "    pm.expect(response.studentNumber).to.equal(`${pm.collectionVariables.get(\"studentNumber\")}`);\r",
+                          "    pm.expect(response.hours).to.equal(0);\r",
+                          "    pm.expect(response.finalHours).to.equal(0);\r",
+                          "    pm.expect(response.adminType).to.equal(\"USER\");\r",
+                          "    pm.expect(response.transactions.length).to.equal(0);\r",
+                          "    pm.expect(response.requests.length).to.equal(0);\r",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "https://{{API_URL}}.execute-api.{{API_REGION}}.amazonaws.com/{{API_STAGE}}/users/{{userId}}",
+                      "protocol": "https",
+                      "host": [
+                        "{{API_URL}}",
+                        "execute-api",
+                        "{{API_REGION}}",
+                        "amazonaws",
+                        "com"
+                      ],
+                      "path": ["{{API_STAGE}}", "users", "{{userId}}"]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Check In User",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Status code is 200\", () => {",
+                          "    pm.response.to.have.status(200);",
+                          "});",
+                          "",
+                          "pm.test(\"User fields are populated correctly\", () => {",
+                          "    let response = pm.response.json();",
+                          "    pm.expect(response.transactions[response.transactions.length-1].checkOut).to.equal(null);",
+                          "    pm.expect(response.isCheckedIn).to.equal(true)",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"studentNumber\": \"{{studentNumber}}\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "https://{{API_URL}}.execute-api.{{API_REGION}}.amazonaws.com/{{API_STAGE}}/users/check-in",
+                      "protocol": "https",
+                      "host": [
+                        "{{API_URL}}",
+                        "execute-api",
+                        "{{API_REGION}}",
+                        "amazonaws",
+                        "com"
+                      ],
+                      "path": ["{{API_STAGE}}", "users", "check-in"]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Check Out User",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Status code is 200\", () => {",
+                          "    pm.response.to.have.status(200);",
+                          "});",
+                          "",
+                          "pm.test(\"User fields are populated correctly\", () => {",
+                          "    let response = pm.response.json();",
+                          "    console.log(response);",
+                          "    pm.expect(response.transactions[response.transactions.length-1].checkOut).to.not.equal(null);",
+                          "    pm.expect(response.isCheckedIn).to.equal(false);",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"studentNumber\": \"{{studentNumber}}\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "https://{{API_URL}}.execute-api.{{API_REGION}}.amazonaws.com/{{API_STAGE}}/users/check-in",
+                      "protocol": "https",
+                      "host": [
+                        "{{API_URL}}",
+                        "execute-api",
+                        "{{API_REGION}}",
+                        "amazonaws",
+                        "com"
+                      ],
+                      "path": ["{{API_STAGE}}", "users", "check-in"]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Delete User",
+                  "event": [
+                    {
+                      "listen": "test",
+                      "script": {
+                        "exec": [
+                          "pm.test(\"Status code is 204\", () => {\r",
+                          "    pm.response.to.have.status(204);\r",
+                          "});"
+                        ],
+                        "type": "text/javascript"
+                      }
+                    }
+                  ],
+                  "request": {
+                    "method": "DELETE",
+                    "header": [],
+                    "url": {
+                      "raw": "https://{{API_URL}}.execute-api.{{API_REGION}}.amazonaws.com/{{API_STAGE}}/users/{{userId}}",
+                      "protocol": "https",
+                      "host": [
+                        "{{API_URL}}",
+                        "execute-api",
+                        "{{API_REGION}}",
+                        "amazonaws",
+                        "com"
+                      ],
+                      "path": ["{{API_STAGE}}", "users", "{{userId}}"]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Requests",
+          "item": [
+            {
+              "name": "Reduction Requests",
+              "item": [
+                {
+                  "name": "Approval Flow",
+                  "item": [
+                    {
+                      "name": "Create A New User",
+                      "event": [
+                        {
+                          "listen": "prerequest",
+                          "script": {
+                            "exec": [
+                              "var uuid = require(\"uuid\");\r",
+                              "\r",
+                              "var userId = uuid.v4();\r",
+                              "var firstName = pm.variables.replaceIn('{{$randomFirstName}}');\r",
+                              "var lastName = pm.variables.replaceIn('{{$randomLastName}}');\r",
+                              "var email = firstName + lastName + '@example.com'; // built in one uses real emails - https://github.com/postmanlabs/postman-app-support/issues/971#issuecomment-565459035\r",
+                              "var studentNumber = Math.floor(10000000 + Math.random() * 90000000);\r",
+                              "\r",
+                              "pm.collectionVariables.set(\"userId\", userId);\r",
+                              "pm.collectionVariables.set(\"firstName\", firstName);\r",
+                              "pm.collectionVariables.set(\"lastName\", lastName);\r",
+                              "pm.collectionVariables.set(\"email\", email);\r",
+                              "pm.collectionVariables.set(\"studentNumber\", studentNumber);"
+                            ],
+                            "type": "text/javascript"
+                          }
+                        },
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "pm.test(\"Status code is 200\", () => {\r",
+                              "    pm.response.to.have.status(200);\r",
+                              "});\r",
+                              "\r",
+                              "pm.test(\"User fields are populated correctly\", () => {\r",
+                              "    let response = pm.response.json();\r",
+                              "    pm.expect(response.firstName).to.equal(pm.collectionVariables.get(\"firstName\"));\r",
+                              "    pm.expect(response.lastName).to.equal(pm.collectionVariables.get(\"lastName\"));\r",
+                              "    pm.expect(response.email).to.equal(pm.collectionVariables.get(\"email\"));\r",
+                              "    pm.expect(response.userId).to.equal(pm.collectionVariables.get(\"userId\"));\r",
+                              "    pm.expect(response.studentNumber).to.equal(`${pm.collectionVariables.get(\"studentNumber\")}`);\r",
+                              "    pm.expect(response.hours).to.equal(0);\r",
+                              "    pm.expect(response.finalHours).to.equal(0);\r",
+                              "    pm.expect(response.adminType).to.equal(\"USER\");\r",
+                              "    pm.expect(response.transactions.length).to.equal(0);\r",
+                              "    pm.expect(response.requests.length).to.equal(0);\r",
+                              "});"
+                            ],
+                            "type": "text/javascript"
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"firstName\": \"{{firstName}}\",\r\n    \"lastName\": \"{{lastName}}\",\r\n    \"email\": \"{{email}}\",\r\n    \"userId\": \"{{userId}}\",\r\n    \"studentNumber\": \"{{studentNumber}}\",\r\n    \"userType\": \"ENGINEER_ENROLLED\"\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "https://{{API_URL}}.execute-api.{{API_REGION}}.amazonaws.com/{{API_STAGE}}/users/",
+                          "protocol": "https",
+                          "host": [
+                            "{{API_URL}}",
+                            "execute-api",
+                            "{{API_REGION}}",
+                            "amazonaws",
+                            "com"
+                          ],
+                          "path": ["{{API_STAGE}}", "users", ""]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Create Hour Reduction Request",
+                      "event": [
+                        {
+                          "listen": "prerequest",
+                          "script": {
+                            "exec": [
+                              "let message = \"Please reduce my hours!\";",
+                              "pm.collectionVariables.set(\"message\", message);",
+                              " "
+                            ],
+                            "type": "text/javascript"
+                          }
+                        },
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "pm.test(\"Status code is 200\", () => {",
+                              "    pm.response.to.have.status(200);",
+                              "});",
+                              "",
+                              "pm.test(\"Request fields are populated correctly\", () => {",
+                              "    let response = pm.response.json();",
+                              "    pm.expect(response.userId).to.equal(pm.collectionVariables.get(\"userId\"));",
+                              "    pm.expect(response.message).to.equal(pm.collectionVariables.get(\"message\"));",
+                              "    pm.expect(response.type).to.equal(\"REDUCTION\");",
+                              "    pm.expect(response.status).to.equal(\"PENDING\");",
+                              "    pm.expect(response.date).to.be.not.null;",
+                              "    pm.expect(response.requestId).to.be.not.null;",
+                              "    pm.collectionVariables.set(\"requestId\", response.requestId);",
+                              "});"
+                            ],
+                            "type": "text/javascript"
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n    \"userId\": \"{{userId}}\",\n    \"message\": \"Please reduce my hours!\",\n    \"type\": \"REDUCTION\"\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "https://{{API_URL}}.execute-api.{{API_REGION}}.amazonaws.com/{{API_STAGE}}/requests",
+                          "protocol": "https",
+                          "host": [
+                            "{{API_URL}}",
+                            "execute-api",
+                            "{{API_REGION}}",
+                            "amazonaws",
+                            "com"
+                          ],
+                          "path": ["{{API_STAGE}}", "requests"]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Verify request is added to user",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "pm.test(\"Status code is 200\", () => {",
+                              "    pm.response.to.have.status(200);",
+                              "});",
+                              "",
+                              "pm.test(\"User fields are populated correctly\", () => {",
+                              "    let response = pm.response.json();",
+                              "    pm.expect(response.firstName).to.equal(pm.collectionVariables.get(\"firstName\"));",
+                              "    pm.expect(response.lastName).to.equal(pm.collectionVariables.get(\"lastName\"));",
+                              "    pm.expect(response.email).to.equal(pm.collectionVariables.get(\"email\"));",
+                              "    pm.expect(response.userId).to.equal(pm.collectionVariables.get(\"userId\"));",
+                              "    pm.expect(response.studentNumber).to.equal(`${pm.collectionVariables.get(\"studentNumber\")}`);",
+                              "    pm.expect(response.hours).to.equal(0);",
+                              "    pm.expect(response.finalHours).to.equal(0);",
+                              "    pm.expect(response.adminType).to.equal(\"USER\");",
+                              "    pm.expect(response.transactions.length).to.equal(0);",
+                              "    pm.expect(response.requests.length).to.equal(1);",
+                              "});"
+                            ],
+                            "type": "text/javascript"
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "https://{{API_URL}}.execute-api.{{API_REGION}}.amazonaws.com/{{API_STAGE}}/users/{{userId}}",
+                          "protocol": "https",
+                          "host": [
+                            "{{API_URL}}",
+                            "execute-api",
+                            "{{API_REGION}}",
+                            "amazonaws",
+                            "com"
+                          ],
+                          "path": ["{{API_STAGE}}", "users", "{{userId}}"]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Approve Reduction Request",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "pm.test(\"Status code is 200\", () => {",
+                              "    pm.response.to.have.status(200);",
+                              "});",
+                              "",
+                              "pm.test(\"Request fields are populated correctly\", () => {",
+                              "    let response = pm.response.json();",
+                              "    pm.expect(response.userId).to.equal(pm.collectionVariables.get(\"userId\"));",
+                              "    pm.expect(response.message).to.equal(pm.collectionVariables.get(\"message\"));",
+                              "    pm.expect(response.type).to.equal(\"REDUCTION\");",
+                              "    pm.expect(response.status).to.equal(\"APPROVED\");",
+                              "    pm.expect(response.numHours).to.equal(5);",
+                              "    pm.expect(response.date).to.be.not.null;",
+                              "    pm.expect(response.requestId).to.be.not.null;",
+                              "    pm.collectionVariables.set(\"requestId\", response.requestId);",
+                              "});"
+                            ],
+                            "type": "text/javascript"
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n    \"userId\": \"{{userId}}\",\n    \"status\": \"APPROVED\",\n    \"numHours\": \"5\"\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "https://{{API_URL}}.execute-api.{{API_REGION}}.amazonaws.com/{{API_STAGE}}/requests/{{requestId}}",
+                          "protocol": "https",
+                          "host": [
+                            "{{API_URL}}",
+                            "execute-api",
+                            "{{API_REGION}}",
+                            "amazonaws",
+                            "com"
+                          ],
+                          "path": ["{{API_STAGE}}", "requests", "{{requestId}}"]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Verify User Fields",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "pm.test(\"Status code is 200\", () => {",
+                              "    pm.response.to.have.status(200);",
+                              "});",
+                              "",
+                              "pm.test(\"User fields are populated correctly\", () => {",
+                              "    let response = pm.response.json();",
+                              "    pm.expect(response.firstName).to.equal(pm.collectionVariables.get(\"firstName\"));",
+                              "    pm.expect(response.lastName).to.equal(pm.collectionVariables.get(\"lastName\"));",
+                              "    pm.expect(response.email).to.equal(pm.collectionVariables.get(\"email\"));",
+                              "    pm.expect(response.userId).to.equal(pm.collectionVariables.get(\"userId\"));",
+                              "    pm.expect(response.studentNumber).to.equal(`${pm.collectionVariables.get(\"studentNumber\")}`);",
+                              "    pm.expect(response.hours).to.equal(0);",
+                              "    pm.expect(response.finalHours).to.equal(0);",
+                              "    pm.expect(response.regularHoursNeeded).to.equal(3);",
+                              "    pm.expect(response.adminType).to.equal(\"USER\");",
+                              "    pm.expect(response.transactions.length).to.equal(0);",
+                              "    pm.expect(response.requests.length).to.equal(1);",
+                              "});"
+                            ],
+                            "type": "text/javascript"
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "https://{{API_URL}}.execute-api.{{API_REGION}}.amazonaws.com/{{API_STAGE}}/users/{{userId}}",
+                          "protocol": "https",
+                          "host": [
+                            "{{API_URL}}",
+                            "execute-api",
+                            "{{API_REGION}}",
+                            "amazonaws",
+                            "com"
+                          ],
+                          "path": ["{{API_STAGE}}", "users", "{{userId}}"]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Delete User",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "pm.test(\"Status code is 204\", () => {\r",
+                              "    pm.response.to.have.status(204);\r",
+                              "});"
+                            ],
+                            "type": "text/javascript"
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                          "raw": "https://{{API_URL}}.execute-api.{{API_REGION}}.amazonaws.com/{{API_STAGE}}/users/{{userId}}",
+                          "protocol": "https",
+                          "host": [
+                            "{{API_URL}}",
+                            "execute-api",
+                            "{{API_REGION}}",
+                            "amazonaws",
+                            "com"
+                          ],
+                          "path": ["{{API_STAGE}}", "users", "{{userId}}"]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                },
+                {
+                  "name": "Rejection Flow",
+                  "item": [
+                    {
+                      "name": "Create A New User",
+                      "event": [
+                        {
+                          "listen": "prerequest",
+                          "script": {
+                            "exec": [
+                              "var uuid = require(\"uuid\");\r",
+                              "\r",
+                              "var userId = uuid.v4();\r",
+                              "var firstName = pm.variables.replaceIn('{{$randomFirstName}}');\r",
+                              "var lastName = pm.variables.replaceIn('{{$randomLastName}}');\r",
+                              "var email = firstName + lastName + '@example.com'; // built in one uses real emails - https://github.com/postmanlabs/postman-app-support/issues/971#issuecomment-565459035\r",
+                              "var studentNumber = Math.floor(10000000 + Math.random() * 90000000);\r",
+                              "\r",
+                              "pm.collectionVariables.set(\"userId\", userId);\r",
+                              "pm.collectionVariables.set(\"firstName\", firstName);\r",
+                              "pm.collectionVariables.set(\"lastName\", lastName);\r",
+                              "pm.collectionVariables.set(\"email\", email);\r",
+                              "pm.collectionVariables.set(\"studentNumber\", studentNumber);"
+                            ],
+                            "type": "text/javascript"
+                          }
+                        },
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "pm.test(\"Status code is 200\", () => {\r",
+                              "    pm.response.to.have.status(200);\r",
+                              "});\r",
+                              "\r",
+                              "pm.test(\"User fields are populated correctly\", () => {\r",
+                              "    let response = pm.response.json();\r",
+                              "    pm.expect(response.firstName).to.equal(pm.collectionVariables.get(\"firstName\"));\r",
+                              "    pm.expect(response.lastName).to.equal(pm.collectionVariables.get(\"lastName\"));\r",
+                              "    pm.expect(response.email).to.equal(pm.collectionVariables.get(\"email\"));\r",
+                              "    pm.expect(response.userId).to.equal(pm.collectionVariables.get(\"userId\"));\r",
+                              "    pm.expect(response.studentNumber).to.equal(`${pm.collectionVariables.get(\"studentNumber\")}`);\r",
+                              "    pm.expect(response.hours).to.equal(0);\r",
+                              "    pm.expect(response.finalHours).to.equal(0);\r",
+                              "    pm.expect(response.adminType).to.equal(\"USER\");\r",
+                              "    pm.expect(response.transactions.length).to.equal(0);\r",
+                              "    pm.expect(response.requests.length).to.equal(0);\r",
+                              "});"
+                            ],
+                            "type": "text/javascript"
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"firstName\": \"{{firstName}}\",\r\n    \"lastName\": \"{{lastName}}\",\r\n    \"email\": \"{{email}}\",\r\n    \"userId\": \"{{userId}}\",\r\n    \"studentNumber\": \"{{studentNumber}}\",\r\n    \"userType\": \"ENGINEER_ENROLLED\"\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "https://{{API_URL}}.execute-api.{{API_REGION}}.amazonaws.com/{{API_STAGE}}/users/",
+                          "protocol": "https",
+                          "host": [
+                            "{{API_URL}}",
+                            "execute-api",
+                            "{{API_REGION}}",
+                            "amazonaws",
+                            "com"
+                          ],
+                          "path": ["{{API_STAGE}}", "users", ""]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Create Hour Reduction Request",
+                      "event": [
+                        {
+                          "listen": "prerequest",
+                          "script": {
+                            "exec": [
+                              "let message = \"Please reduce my hours!\";",
+                              "pm.collectionVariables.set(\"message\", message);",
+                              " "
+                            ],
+                            "type": "text/javascript"
+                          }
+                        },
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "pm.test(\"Status code is 200\", () => {",
+                              "    pm.response.to.have.status(200);",
+                              "});",
+                              "",
+                              "pm.test(\"Request fields are populated correctly\", () => {",
+                              "    let response = pm.response.json();",
+                              "    pm.expect(response.userId).to.equal(pm.collectionVariables.get(\"userId\"));",
+                              "    pm.expect(response.message).to.equal(pm.collectionVariables.get(\"message\"));",
+                              "    pm.expect(response.type).to.equal(\"REDUCTION\");",
+                              "    pm.expect(response.status).to.equal(\"PENDING\");",
+                              "    pm.expect(response.date).to.be.not.null;",
+                              "    pm.expect(response.requestId).to.be.not.null;",
+                              "    pm.collectionVariables.set(\"requestId\", response.requestId);",
+                              "});"
+                            ],
+                            "type": "text/javascript"
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n    \"userId\": \"{{userId}}\",\n    \"message\": \"Please reduce my hours!\",\n    \"type\": \"REDUCTION\"\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "https://{{API_URL}}.execute-api.{{API_REGION}}.amazonaws.com/{{API_STAGE}}/requests",
+                          "protocol": "https",
+                          "host": [
+                            "{{API_URL}}",
+                            "execute-api",
+                            "{{API_REGION}}",
+                            "amazonaws",
+                            "com"
+                          ],
+                          "path": ["{{API_STAGE}}", "requests"]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Verify request is added to user",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "pm.test(\"Status code is 200\", () => {",
+                              "    pm.response.to.have.status(200);",
+                              "});",
+                              "",
+                              "pm.test(\"User fields are populated correctly\", () => {",
+                              "    let response = pm.response.json();",
+                              "    pm.expect(response.firstName).to.equal(pm.collectionVariables.get(\"firstName\"));",
+                              "    pm.expect(response.lastName).to.equal(pm.collectionVariables.get(\"lastName\"));",
+                              "    pm.expect(response.email).to.equal(pm.collectionVariables.get(\"email\"));",
+                              "    pm.expect(response.userId).to.equal(pm.collectionVariables.get(\"userId\"));",
+                              "    pm.expect(response.studentNumber).to.equal(`${pm.collectionVariables.get(\"studentNumber\")}`);",
+                              "    pm.expect(response.hours).to.equal(0);",
+                              "    pm.expect(response.finalHours).to.equal(0);",
+                              "    pm.expect(response.adminType).to.equal(\"USER\");",
+                              "    pm.expect(response.transactions.length).to.equal(0);",
+                              "    pm.expect(response.requests.length).to.equal(1);",
+                              "});"
+                            ],
+                            "type": "text/javascript"
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "https://{{API_URL}}.execute-api.{{API_REGION}}.amazonaws.com/{{API_STAGE}}/users/{{userId}}",
+                          "protocol": "https",
+                          "host": [
+                            "{{API_URL}}",
+                            "execute-api",
+                            "{{API_REGION}}",
+                            "amazonaws",
+                            "com"
+                          ],
+                          "path": ["{{API_STAGE}}", "users", "{{userId}}"]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Reject Reduction Request",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "pm.test(\"Status code is 200\", () => {",
+                              "    pm.response.to.have.status(200);",
+                              "});",
+                              "",
+                              "pm.test(\"Request fields are populated correctly\", () => {",
+                              "    let response = pm.response.json();",
+                              "    pm.expect(response.userId).to.equal(pm.collectionVariables.get(\"userId\"));",
+                              "    pm.expect(response.message).to.equal(pm.collectionVariables.get(\"message\"));",
+                              "    pm.expect(response.type).to.equal(\"REDUCTION\");",
+                              "    pm.expect(response.status).to.equal(\"DENIED\");",
+                              "    pm.expect(response.numHours).to.equal(0);",
+                              "    pm.expect(response.date).to.be.not.null;",
+                              "    pm.expect(response.requestId).to.be.not.null;",
+                              "    pm.collectionVariables.set(\"requestId\", response.requestId);",
+                              "});"
+                            ],
+                            "type": "text/javascript"
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n    \"userId\": \"{{userId}}\",\n    \"status\": \"DENIED\"\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "https://{{API_URL}}.execute-api.{{API_REGION}}.amazonaws.com/{{API_STAGE}}/requests/{{requestId}}",
+                          "protocol": "https",
+                          "host": [
+                            "{{API_URL}}",
+                            "execute-api",
+                            "{{API_REGION}}",
+                            "amazonaws",
+                            "com"
+                          ],
+                          "path": ["{{API_STAGE}}", "requests", "{{requestId}}"]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Verify User Fields",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "pm.test(\"Status code is 200\", () => {",
+                              "    pm.response.to.have.status(200);",
+                              "});",
+                              "",
+                              "pm.test(\"User fields are populated correctly\", () => {",
+                              "    let response = pm.response.json();",
+                              "    pm.expect(response.firstName).to.equal(pm.collectionVariables.get(\"firstName\"));",
+                              "    pm.expect(response.lastName).to.equal(pm.collectionVariables.get(\"lastName\"));",
+                              "    pm.expect(response.email).to.equal(pm.collectionVariables.get(\"email\"));",
+                              "    pm.expect(response.userId).to.equal(pm.collectionVariables.get(\"userId\"));",
+                              "    pm.expect(response.studentNumber).to.equal(`${pm.collectionVariables.get(\"studentNumber\")}`);",
+                              "    pm.expect(response.hours).to.equal(0);",
+                              "    pm.expect(response.finalHours).to.equal(0);",
+                              "    pm.expect(response.regularHoursNeeded).to.equal(8);",
+                              "    pm.expect(response.adminType).to.equal(\"USER\");",
+                              "    pm.expect(response.transactions.length).to.equal(0);",
+                              "    pm.expect(response.requests.length).to.equal(1);",
+                              "});"
+                            ],
+                            "type": "text/javascript"
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "https://{{API_URL}}.execute-api.{{API_REGION}}.amazonaws.com/{{API_STAGE}}/users/{{userId}}",
+                          "protocol": "https",
+                          "host": [
+                            "{{API_URL}}",
+                            "execute-api",
+                            "{{API_REGION}}",
+                            "amazonaws",
+                            "com"
+                          ],
+                          "path": ["{{API_STAGE}}", "users", "{{userId}}"]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Delete User",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "pm.test(\"Status code is 204\", () => {\r",
+                              "    pm.response.to.have.status(204);\r",
+                              "});"
+                            ],
+                            "type": "text/javascript"
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                          "raw": "https://{{API_URL}}.execute-api.{{API_REGION}}.amazonaws.com/{{API_STAGE}}/users/{{userId}}",
+                          "protocol": "https",
+                          "host": [
+                            "{{API_URL}}",
+                            "execute-api",
+                            "{{API_REGION}}",
+                            "amazonaws",
+                            "com"
+                          ],
+                          "path": ["{{API_STAGE}}", "users", "{{userId}}"]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Transfer Requests",
+              "item": [
+                {
+                  "name": "Approval Flow",
+                  "item": [
+                    {
+                      "name": "Create User A",
+                      "event": [
+                        {
+                          "listen": "prerequest",
+                          "script": {
+                            "exec": [
+                              "var uuid = require(\"uuid\");\r",
+                              "\r",
+                              "var userId = uuid.v4();\r",
+                              "var firstName = pm.variables.replaceIn('{{$randomFirstName}}');\r",
+                              "var lastName = pm.variables.replaceIn('{{$randomLastName}}');\r",
+                              "var email = firstName + lastName + '@example.com'; // built in one uses real emails - https://github.com/postmanlabs/postman-app-support/issues/971#issuecomment-565459035\r",
+                              "var studentNumber = Math.floor(10000000 + Math.random() * 90000000);\r",
+                              "\r",
+                              "pm.collectionVariables.set(\"userIdA\", userId);\r",
+                              "pm.collectionVariables.set(\"firstName\", firstName);\r",
+                              "pm.collectionVariables.set(\"lastName\", lastName);\r",
+                              "pm.collectionVariables.set(\"email\", email);\r",
+                              "pm.collectionVariables.set(\"studentNumberA\", studentNumber);"
+                            ],
+                            "type": "text/javascript"
+                          }
+                        },
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "pm.test(\"Status code is 200\", () => {\r",
+                              "    pm.response.to.have.status(200);\r",
+                              "});\r",
+                              "\r",
+                              "pm.test(\"User fields are populated correctly\", () => {\r",
+                              "    let response = pm.response.json();\r",
+                              "    pm.expect(response.firstName).to.equal(pm.collectionVariables.get(\"firstName\"));\r",
+                              "    pm.expect(response.lastName).to.equal(pm.collectionVariables.get(\"lastName\"));\r",
+                              "    pm.expect(response.email).to.equal(pm.collectionVariables.get(\"email\"));\r",
+                              "    pm.expect(response.userId).to.equal(pm.collectionVariables.get(\"userIdA\"));\r",
+                              "    pm.expect(response.studentNumber).to.equal(`${pm.collectionVariables.get(\"studentNumberA\")}`);\r",
+                              "    pm.expect(response.hours).to.equal(0);\r",
+                              "    pm.expect(response.finalHours).to.equal(0);\r",
+                              "    pm.expect(response.adminType).to.equal(\"USER\");\r",
+                              "    pm.expect(response.transactions.length).to.equal(0);\r",
+                              "    pm.expect(response.requests.length).to.equal(0);\r",
+                              "});"
+                            ],
+                            "type": "text/javascript"
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"firstName\": \"{{firstName}}\",\r\n    \"lastName\": \"{{lastName}}\",\r\n    \"email\": \"{{email}}\",\r\n    \"userId\": \"{{userIdA}}\",\r\n    \"studentNumber\": \"{{studentNumberA}}\",\r\n    \"userType\": \"ENGINEER_ENROLLED\"\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "https://{{API_URL}}.execute-api.{{API_REGION}}.amazonaws.com/{{API_STAGE}}/users/",
+                          "protocol": "https",
+                          "host": [
+                            "{{API_URL}}",
+                            "execute-api",
+                            "{{API_REGION}}",
+                            "amazonaws",
+                            "com"
+                          ],
+                          "path": ["{{API_STAGE}}", "users", ""]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Create User B",
+                      "event": [
+                        {
+                          "listen": "prerequest",
+                          "script": {
+                            "exec": [
+                              "var uuid = require(\"uuid\");\r",
+                              "\r",
+                              "var userId = uuid.v4();\r",
+                              "var firstName = pm.variables.replaceIn('{{$randomFirstName}}');\r",
+                              "var lastName = pm.variables.replaceIn('{{$randomLastName}}');\r",
+                              "var email = firstName + lastName + '@example.com'; // built in one uses real emails - https://github.com/postmanlabs/postman-app-support/issues/971#issuecomment-565459035\r",
+                              "var studentNumber = Math.floor(10000000 + Math.random() * 90000000);\r",
+                              "\r",
+                              "pm.collectionVariables.set(\"userIdB\", userId);\r",
+                              "pm.collectionVariables.set(\"firstName\", firstName);\r",
+                              "pm.collectionVariables.set(\"lastName\", lastName);\r",
+                              "pm.collectionVariables.set(\"email\", email);\r",
+                              "pm.collectionVariables.set(\"studentNumberB\", studentNumber);"
+                            ],
+                            "type": "text/javascript"
+                          }
+                        },
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "pm.test(\"Status code is 200\", () => {\r",
+                              "    pm.response.to.have.status(200);\r",
+                              "});\r",
+                              "\r",
+                              "pm.test(\"User fields are populated correctly\", () => {\r",
+                              "    let response = pm.response.json();\r",
+                              "    pm.expect(response.firstName).to.equal(pm.collectionVariables.get(\"firstName\"));\r",
+                              "    pm.expect(response.lastName).to.equal(pm.collectionVariables.get(\"lastName\"));\r",
+                              "    pm.expect(response.email).to.equal(pm.collectionVariables.get(\"email\"));\r",
+                              "    pm.expect(response.userId).to.equal(pm.collectionVariables.get(\"userIdB\"));\r",
+                              "    pm.expect(response.studentNumber).to.equal(`${pm.collectionVariables.get(\"studentNumberB\")}`);\r",
+                              "    pm.expect(response.hours).to.equal(0);\r",
+                              "    pm.expect(response.finalHours).to.equal(0);\r",
+                              "    pm.expect(response.adminType).to.equal(\"USER\");\r",
+                              "    pm.expect(response.transactions.length).to.equal(0);\r",
+                              "    pm.expect(response.requests.length).to.equal(0);\r",
+                              "});"
+                            ],
+                            "type": "text/javascript"
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"firstName\": \"{{firstName}}\",\r\n    \"lastName\": \"{{lastName}}\",\r\n    \"email\": \"{{email}}\",\r\n    \"userId\": \"{{userIdB}}\",\r\n    \"studentNumber\": \"{{studentNumberB}}\",\r\n    \"userType\": \"ENGINEER_ENROLLED\"\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "https://{{API_URL}}.execute-api.{{API_REGION}}.amazonaws.com/{{API_STAGE}}/users/",
+                          "protocol": "https",
+                          "host": [
+                            "{{API_URL}}",
+                            "execute-api",
+                            "{{API_REGION}}",
+                            "amazonaws",
+                            "com"
+                          ],
+                          "path": ["{{API_STAGE}}", "users", ""]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Create Hour Transfer Request",
+                      "event": [
+                        {
+                          "listen": "prerequest",
+                          "script": {
+                            "exec": [
+                              "let message = \"Please reduce my hours!\";",
+                              "pm.collectionVariables.set(\"message\", message);",
+                              " "
+                            ],
+                            "type": "text/javascript"
+                          }
+                        },
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "pm.test(\"Status code is 200\", () => {",
+                              "    pm.response.to.have.status(200);",
+                              "});",
+                              "",
+                              "pm.test(\"Request fields are populated correctly\", () => {",
+                              "    let response = pm.response.json();",
+                              "    pm.expect(response.userId).to.equal(pm.collectionVariables.get(\"userIdA\"));",
+                              "    pm.expect(response.toUserId).to.equal(pm.collectionVariables.get(\"userIdB\"));",
+                              "    pm.expect(response.message).to.equal(pm.collectionVariables.get(\"message\"));",
+                              "    pm.expect(response.type).to.equal(\"TRANSFER\");",
+                              "    pm.expect(response.status).to.equal(\"PENDING\");",
+                              "    pm.expect(response.date).to.be.not.null;",
+                              "    pm.expect(response.requestId).to.be.not.null;",
+                              "    pm.collectionVariables.set(\"requestId\", response.requestId);",
+                              "});"
+                            ],
+                            "type": "text/javascript"
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n    \"userId\": \"{{userIdA}}\",\n    \"message\": \"Please reduce my hours!\",\n    \"type\": \"TRANSFER\",\n    \"toUserId\": \"{{userIdB}}\",\n    \"numHours\": \"0\"\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "https://{{API_URL}}.execute-api.{{API_REGION}}.amazonaws.com/{{API_STAGE}}/requests",
+                          "protocol": "https",
+                          "host": [
+                            "{{API_URL}}",
+                            "execute-api",
+                            "{{API_REGION}}",
+                            "amazonaws",
+                            "com"
+                          ],
+                          "path": ["{{API_STAGE}}", "requests"]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Approve Transfer Request",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "pm.test(\"Status code is 200\", () => {",
+                              "    pm.response.to.have.status(200);",
+                              "});",
+                              "",
+                              "pm.test(\"Request fields are populated correctly\", () => {",
+                              "    let response = pm.response.json();",
+                              "    pm.expect(response.userId).to.equal(pm.collectionVariables.get(\"userIdA\"));",
+                              "    pm.expect(response.toUserId).to.equal(pm.collectionVariables.get(\"userIdB\"));",
+                              "    pm.expect(response.message).to.equal(pm.collectionVariables.get(\"message\"));",
+                              "    pm.expect(response.type).to.equal(\"TRANSFER\");",
+                              "    pm.expect(response.status).to.equal(\"APPROVED\");",
+                              "    pm.expect(response.numHours).to.equal(5);",
+                              "    pm.expect(response.date).to.be.not.null;",
+                              "    pm.expect(response.requestId).to.be.not.null;",
+                              "    pm.collectionVariables.set(\"requestId\", response.requestId);",
+                              "});"
+                            ],
+                            "type": "text/javascript"
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "PUT",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\n    \"userId\": \"{{userId}}\",\n    \"status\": \"APPROVED\",\n    \"numHours\": \"5\"\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "https://{{API_URL}}.execute-api.{{API_REGION}}.amazonaws.com/{{API_STAGE}}/requests/{{requestId}}",
+                          "protocol": "https",
+                          "host": [
+                            "{{API_URL}}",
+                            "execute-api",
+                            "{{API_REGION}}",
+                            "amazonaws",
+                            "com"
+                          ],
+                          "path": ["{{API_STAGE}}", "requests", "{{requestId}}"]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Verify User Fields A",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "pm.test(\"Status code is 200\", () => {",
+                              "    pm.response.to.have.status(200);",
+                              "});",
+                              "",
+                              "pm.test(\"User fields are populated correctly\", () => {",
+                              "    let response = pm.response.json();",
+                              "    pm.expect(response.userId).to.equal(pm.collectionVariables.get(\"userIdA\"));",
+                              "    pm.expect(response.studentNumber).to.equal(`${pm.collectionVariables.get(\"studentNumberA\")}`);",
+                              "    //  pm.expect(response.hours).to.equal(-5);",
+                              "    pm.expect(response.finalHours).to.equal(0);",
+                              "    pm.expect(response.regularHoursNeeded).to.equal(8);",
+                              "    pm.expect(response.adminType).to.equal(\"USER\");",
+                              "    pm.expect(response.transactions.length).to.equal(0);",
+                              "    pm.expect(response.requests.length).to.equal(1);",
+                              "});"
+                            ],
+                            "type": "text/javascript"
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "https://{{API_URL}}.execute-api.{{API_REGION}}.amazonaws.com/{{API_STAGE}}/users/{{userIdA}}",
+                          "protocol": "https",
+                          "host": [
+                            "{{API_URL}}",
+                            "execute-api",
+                            "{{API_REGION}}",
+                            "amazonaws",
+                            "com"
+                          ],
+                          "path": ["{{API_STAGE}}", "users", "{{userIdA}}"]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Verify User Fields B",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "pm.test(\"Status code is 200\", () => {",
+                              "    pm.response.to.have.status(200);",
+                              "});",
+                              "",
+                              "pm.test(\"User fields are populated correctly\", () => {",
+                              "    let response = pm.response.json();",
+                              "    pm.expect(response.userId).to.equal(pm.collectionVariables.get(\"userIdB\"));",
+                              "    pm.expect(response.studentNumber).to.equal(`${pm.collectionVariables.get(\"studentNumberB\")}`);",
+                              "     pm.expect(response.hours).to.equal(5);",
+                              "    pm.expect(response.finalHours).to.equal(0);",
+                              "    pm.expect(response.regularHoursNeeded).to.equal(8);",
+                              "    pm.expect(response.adminType).to.equal(\"USER\");",
+                              "    pm.expect(response.transactions.length).to.equal(0);",
+                              "    pm.expect(response.requests.length).to.equal(0); // TODO",
+                              "});"
+                            ],
+                            "type": "text/javascript"
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "https://{{API_URL}}.execute-api.{{API_REGION}}.amazonaws.com/{{API_STAGE}}/users/{{userIdB}}",
+                          "protocol": "https",
+                          "host": [
+                            "{{API_URL}}",
+                            "execute-api",
+                            "{{API_REGION}}",
+                            "amazonaws",
+                            "com"
+                          ],
+                          "path": ["{{API_STAGE}}", "users", "{{userIdB}}"]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Delete User A",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "pm.test(\"Status code is 204\", () => {\r",
+                              "    pm.response.to.have.status(204);\r",
+                              "});"
+                            ],
+                            "type": "text/javascript"
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                          "raw": "https://{{API_URL}}.execute-api.{{API_REGION}}.amazonaws.com/{{API_STAGE}}/users/{{userIdA}}",
+                          "protocol": "https",
+                          "host": [
+                            "{{API_URL}}",
+                            "execute-api",
+                            "{{API_REGION}}",
+                            "amazonaws",
+                            "com"
+                          ],
+                          "path": ["{{API_STAGE}}", "users", "{{userIdA}}"]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "Delete User B",
+                      "event": [
+                        {
+                          "listen": "test",
+                          "script": {
+                            "exec": [
+                              "pm.test(\"Status code is 204\", () => {\r",
+                              "    pm.response.to.have.status(204);\r",
+                              "});"
+                            ],
+                            "type": "text/javascript"
+                          }
+                        }
+                      ],
+                      "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                          "raw": "https://{{API_URL}}.execute-api.{{API_REGION}}.amazonaws.com/{{API_STAGE}}/users/{{userIdB}}",
+                          "protocol": "https",
+                          "host": [
+                            "{{API_URL}}",
+                            "execute-api",
+                            "{{API_REGION}}",
+                            "amazonaws",
+                            "com"
+                          ],
+                          "path": ["{{API_STAGE}}", "users", "{{userIdB}}"]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "userId",
+      "value": ""
+    },
+    {
+      "key": "firstName",
+      "value": ""
+    },
+    {
+      "key": "lastName",
+      "value": ""
+    },
+    {
+      "key": "email",
+      "value": ""
+    },
+    {
+      "key": "studentNumber",
+      "value": ""
+    },
+    {
+      "key": "userIdA",
+      "value": ""
+    },
+    {
+      "key": "userIdB",
+      "value": ""
+    },
+    {
+      "key": "message",
+      "value": ""
+    },
+    {
+      "key": "requestId",
+      "value": ""
+    },
+    {
+      "key": "studentNumberA",
+      "value": ""
+    },
+    {
+      "key": "studentNumberB",
+      "value": ""
+    }
+  ]
+}

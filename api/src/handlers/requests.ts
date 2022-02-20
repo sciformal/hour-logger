@@ -179,7 +179,7 @@ export const update = async (
       }
     } catch (err) {
       console.log(err);
-      console.log('[requests.ts:L177');
+      console.log('requests.ts - L177');
       return ResponseUtilities.createErrorResponse(err.message, 500);
     }
 
@@ -207,7 +207,8 @@ export const update = async (
       await DynamoUtilities.put(updatedUserParams, dynamoDb);
     } catch (err) {
       console.log(err);
-      console.log('[requests.ts:L205');
+      console.log(updatedUserParams);
+      console.log('requests.ts - L206');
       return ResponseUtilities.createErrorResponse(err.message, 500);
     }
   } else {
@@ -287,7 +288,7 @@ export const update = async (
   const updatedRequestPayload = {
     ...request,
     status: validatedData.status,
-    numHours: validatedData.numHours,
+    numHours: Number(validatedData.numHours),
   };
 
   // update the request in the table
