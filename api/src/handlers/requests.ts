@@ -152,7 +152,8 @@ export const update = async (
     }
   }
 
-  if (validatedData.type === RequestType.REDUCTION) {
+  if (request.type === RequestType.REDUCTION) {
+    console.log(request);
     const { userId } = request;
 
     // pull in the user
@@ -174,6 +175,7 @@ export const update = async (
       }
     } catch (err) {
       console.log(err);
+      console.log('requests.ts - L177');
       return ResponseUtilities.createErrorResponse(err.message, 500);
     }
 
@@ -201,6 +203,8 @@ export const update = async (
       await DynamoUtilities.put(updatedUserParams, dynamoDb);
     } catch (err) {
       console.log(err);
+      console.log(updatedUserParams);
+      console.log('requests.ts - L206');
       return ResponseUtilities.createErrorResponse(err.message, 500);
     }
   } else {

@@ -1,4 +1,4 @@
-name: Pull Request 🛠️
+name: Pull Request Deployment 🛠️
 
 on:
   pull_request:
@@ -60,8 +60,5 @@ jobs:
         working-directory: ${{ env.api-directory }}
 
       - name: API Integration Tests
-        uses: matt-ball/newman-action@master
-        with:
-          apiKey: ${{ secrets.POSTMAN_API_KEY }}
-          collection: daed7e9a-c02c-4d2d-ab04-88777e536fa7
-          environment: f60d2e18-f172-400e-93a3-2d85b41418b1
+        run: cd integration/
+          newman run integration.postman_collection.json -e environment.json

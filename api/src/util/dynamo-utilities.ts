@@ -6,6 +6,10 @@ export class DynamoUtilities {
     return new Promise((resolve, reject) => {
       db.query(params, (err: AWSError, data) => {
         if (err) {
+          console.error(
+            'Failed to perform QUERY operation on database: ',
+            params,
+          );
           reject(new Error(err.message));
         } else if (data.Items == null) {
           reject(new Error('No item exists'));
@@ -20,6 +24,10 @@ export class DynamoUtilities {
     return new Promise((resolve, reject) => {
       db.put(params, (err: AWSError) => {
         if (err) {
+          console.error(
+            'Failed to perform PUT operation on database: ',
+            params,
+          );
           reject(new Error(err.message));
         } else {
           resolve(params.Item);
@@ -32,6 +40,10 @@ export class DynamoUtilities {
     return new Promise((resolve, reject) => {
       db.get(params, (err: AWSError, data: GetItemOutput) => {
         if (err) {
+          console.error(
+            'Failed to perform GET operation on database: ',
+            params,
+          );
           reject(new Error(err.message));
         } else {
           resolve(data.Item);
@@ -44,6 +56,10 @@ export class DynamoUtilities {
     return new Promise((resolve, reject) => {
       db.scan(params, (err: AWSError, data) => {
         if (err) {
+          console.error(
+            'Failed to perform SCAN operation on database: ',
+            params,
+          );
           reject(new Error(err.message));
         } else {
           resolve(data.Items);

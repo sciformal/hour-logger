@@ -11,7 +11,7 @@ plugins:
 
 provider:
   name: aws
-  runtime: nodejs12.x
+  runtime: nodejs14.x
   stage: ${opt:stage, 'dev'}
   region: us-west-1
   environment:
@@ -26,6 +26,11 @@ provider:
         - dynamodb:Query
         - dynamodb:Scan
       Resource: '*'
+  logs:
+    # Setup logging for API Gateway
+    restApi:
+      accessLogging: true
+      format: '{ "stage" : "$context.stage", "request_id" : "$context.requestId", "user" : "$context.identity.user" }'
 
 custom:
   webpack:
