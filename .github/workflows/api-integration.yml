@@ -8,7 +8,7 @@ on:
       - '.github/**'
 
 jobs:
-  testAndDeployLambda:
+  integrationLambda:
     runs-on: ubuntu-latest
     strategy:
       matrix:
