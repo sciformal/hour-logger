@@ -60,5 +60,6 @@ jobs:
         working-directory: ${{ env.api-directory }}
 
       - name: API Integration Tests
-        run: cd integration/
+        run: |
+          cd integration/
           newman run integration.postman_collection.json -e environment.json
