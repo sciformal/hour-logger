@@ -58,8 +58,3 @@ jobs:
         run: |
           serverless deploy --stage=beta
         working-directory: ${{ env.api-directory }}
-
-      - name: API Integration Tests
-        run: |
-          cd $GITHUB_WORKSPACE
-          npx newman run integration/integration.postman_collection.json -e integration/environment.json
