@@ -6,11 +6,11 @@ import {
   getAllUsers,
   getUser,
 } from '../../src/handlers/users';
-import { UserRequest } from '../../src/types/requests/User';
+import { UserRequest } from '../../src/types/interface/User';
 import { DynamoUtilities } from '../../src/util/dynamo-utilities';
 import { UsersUtilities } from '../../src/util/user-utilities';
 import { sampleApiGatewayEvent } from '../mocks/event';
-import { sampleReductionRequest } from '../mocks/request';
+import { sampleReductionRequestDTO } from '../mocks/request';
 import { sampleUser, sampleUserId, sampleUserRequest } from '../mocks/user';
 
 jest.mock('aws-sdk', () => ({
@@ -257,7 +257,7 @@ describe('User Endpoint Tests', () => {
         },
       };
 
-      const sampleRequests = [sampleReductionRequest];
+      const sampleRequests = [sampleReductionRequestDTO];
 
       const expectedUser = {
         ...sampleUser,

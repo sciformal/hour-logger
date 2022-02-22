@@ -1,6 +1,6 @@
 import { CustomEmails } from '../constants/emails';
 import { ErrorConstants } from '../constants/errors';
-import { UserType } from '../types/database/UserType';
+import { UserType } from '../types/database/User';
 import { ResponseUtilities } from '../util/response-utilities';
 import { UsersUtilities } from '../util/user-utilities';
 

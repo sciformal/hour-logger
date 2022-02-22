@@ -1,12 +1,12 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
 import { ErrorConstants } from '../../src/constants/errors';
 import { create, get, update } from '../../src/handlers/requests';
-import { RequestStatus } from '../../src/types/database/ReductionRequest';
-import { Request, UpdateRequest } from '../../src/types/requests/Request';
+import { RequestDTO, RequestStatus } from '../../src/types/database/Request';
+import { UpdateRequest } from '../../src/types/interface/Request';
 import { DynamoUtilities } from '../../src/util/dynamo-utilities';
 import { sampleApiGatewayEvent } from '../mocks/event';
 import {
-  sampleReductionRequest,
+  sampleReductionRequestBody,
   sampleReductionRequestDTO,
 } from '../mocks/request';
 import { sampleUser } from '../mocks/user';
@@ -23,15 +23,15 @@ jest.mock('aws-sdk', () => ({
 
 describe('Requests API Tests', () => {
   describe('Create Request', () => {
-    let validRequest: Partial<Request>;
+    let validRequestBody: Partial<RequestDTO>;
     beforeEach(() => {
-      validRequest = {
-        ...sampleReductionRequestDTO,
+      validRequestBody = {
+        ...sampleReductionRequestBody,
       };
 
       jest
         .spyOn(DynamoUtilities, 'put')
-        .mockResolvedValue(sampleReductionRequest);
+        .mockResolvedValue(sampleReductionRequestDTO);
       jest.spyOn(DynamoUtilities, 'get').mockResolvedValue(sampleUser);
     });
 
@@ -39,12 +39,12 @@ describe('Requests API Tests', () => {
     it('should return a 200 when creating a request successfully', async () => {
       const mockEvent: APIGatewayProxyEvent = {
         ...sampleApiGatewayEvent,
-        body: JSON.stringify(validRequest),
+        body: JSON.stringify(validRequestBody),
       };
 
       const response = await create(mockEvent);
       expect(response.statusCode).toEqual(200);
-      expect(response.body).toEqual(JSON.stringify(sampleReductionRequest));
+      expect(response.body).toEqual(JSON.stringify(sampleReductionRequestDTO));
     });
 
     it('should return 400 when the request doesnt contain a body', async () => {
@@ -73,11 +73,11 @@ describe('Requests API Tests', () => {
     });
 
     it('should return 400 when the request body doesnt contain a userId', async () => {
-      delete validRequest.userId;
+      delete validRequestBody.userId;
 
       const mockEvent: APIGatewayProxyEvent = {
         ...sampleApiGatewayEvent,
-        body: JSON.stringify(validRequest),
+        body: JSON.stringify(validRequestBody),
       };
 
       const response = await create(mockEvent);
@@ -90,11 +90,11 @@ describe('Requests API Tests', () => {
     });
 
     it('should return 400 when the request body doesnt contain a reductionMessage', async () => {
-      delete validRequest.message;
+      delete validRequestBody.message;
 
       const mockEvent: APIGatewayProxyEvent = {
         ...sampleApiGatewayEvent,
-        body: JSON.stringify(validRequest),
+        body: JSON.stringify(validRequestBody),
       };
 
       const response = await create(mockEvent);
@@ -109,7 +109,7 @@ describe('Requests API Tests', () => {
     it('should return 400 when the user making the request doesnt exist in the users table', async () => {
       const mockEvent: APIGatewayProxyEvent = {
         ...sampleApiGatewayEvent,
-        body: JSON.stringify(validRequest),
+        body: JSON.stringify(validRequestBody),
       };
 
       jest.spyOn(DynamoUtilities, 'get').mockResolvedValue(null);
@@ -126,7 +126,7 @@ describe('Requests API Tests', () => {
     it('should return 500 when Dynamo fails to pull the user', async () => {
       const mockEvent: APIGatewayProxyEvent = {
         ...sampleApiGatewayEvent,
-        body: JSON.stringify(validRequest),
+        body: JSON.stringify(validRequestBody),
       };
 
       const sampleErrorMessage = 'sample error message';
@@ -147,7 +147,7 @@ describe('Requests API Tests', () => {
     it('should return 500 when Dynamo fails to publish the request', async () => {
       const mockEvent: APIGatewayProxyEvent = {
         ...sampleApiGatewayEvent,
-        body: JSON.stringify(validRequest),
+        body: JSON.stringify(validRequestBody),
       };
       const sampleErrorMessage = 'sample error message';
 
@@ -173,11 +173,13 @@ describe('Requests API Tests', () => {
 
       jest
         .spyOn(DynamoUtilities, 'scan')
-        .mockResolvedValue([sampleReductionRequest]);
+        .mockResolvedValue([sampleReductionRequestDTO]);
 
       const response = await get(mockEvent);
       expect(response.statusCode).toEqual(200);
-      expect(response.body).toEqual(JSON.stringify([sampleReductionRequest]));
+      expect(response.body).toEqual(
+        JSON.stringify([sampleReductionRequestDTO]),
+      );
     });
 
     it('should return 500 when Dynamo fails', async () => {
@@ -202,9 +204,9 @@ describe('Requests API Tests', () => {
   });
 
   describe('Update Requests', () => {
-    let validRequest: Partial<UpdateRequest>;
+    let validRequestBody: Partial<UpdateRequest>;
     beforeEach(() => {
-      validRequest = {
+      validRequestBody = {
         status: RequestStatus.APPROVED,
         numHours: 10,
       };
@@ -213,7 +215,7 @@ describe('Requests API Tests', () => {
         async params =>
           new Promise((resolve, reject) => {
             if (params.TableName === process.env.requestsTable) {
-              resolve(sampleReductionRequest);
+              resolve(sampleReductionRequestDTO);
             } else {
               resolve(sampleUser);
             }
@@ -224,7 +226,7 @@ describe('Requests API Tests', () => {
         async params =>
           new Promise((resolve, reject) => {
             if (params.TableName === process.env.requestsTable) {
-              resolve(sampleReductionRequest);
+              resolve(sampleReductionRequestDTO);
             } else {
               resolve(sampleUser);
             }
@@ -232,102 +234,140 @@ describe('Requests API Tests', () => {
       );
     });
 
-    it('should return a 200 and update the request to denied when denied', async () => {
-      const mockEvent: APIGatewayProxyEvent = {
-        ...sampleApiGatewayEvent,
-        pathParameters: {
-          requestId: sampleReductionRequest.requestId,
-        },
-        body: JSON.stringify({
-          status: RequestStatus.DENIED,
-        }),
-      };
+    describe('Validation tests', () => {
+      it('should return 400 when the request is missing the path parameters', async () => {
+        // path parameter is null by default anyways.
+        const mockEvent: APIGatewayProxyEvent = {
+          ...sampleApiGatewayEvent,
+          body: JSON.stringify({
+            status: RequestStatus.APPROVED,
+            numHoursReduced: 10,
+          }),
+        };
 
-      const response = await update(mockEvent);
-      expect(response.statusCode).toEqual(200);
-      expect(response.body).toEqual(JSON.stringify(sampleReductionRequest));
+        const response = await update(mockEvent);
+        expect(response.statusCode).toEqual(400);
+        expect(response.body).toEqual(
+          JSON.stringify({
+            message: ErrorConstants.VALIDATION_PATH_MISSING,
+          }),
+        );
+      });
+
+      it('should return 400 when the request doesnt contain a body', async () => {
+        const mockEvent: APIGatewayProxyEvent = {
+          ...sampleApiGatewayEvent,
+          body: null,
+          pathParameters: {
+            requestId: sampleReductionRequestDTO.requestId,
+          },
+        };
+
+        const response = await update(mockEvent);
+        expect(response.statusCode).toEqual(400);
+        expect(response.body).toEqual(
+          JSON.stringify({
+            message: ErrorConstants.VALIDATION_BODY_MISSING,
+          }),
+        );
+      });
+
+      it('should return 400 when the request contains an invalid body', async () => {});
+
+      it('should return 400 when the request doesnt contain a status', async () => {});
+
+      it('should return 400 when the request contains an invalid status', async () => {});
+
+      it('should return 400 when the request is APPROVED but doesnt contain numHoursReduced', async () => {
+        const mockEvent: APIGatewayProxyEvent = {
+          ...sampleApiGatewayEvent,
+          pathParameters: {
+            requestId: sampleReductionRequestDTO.requestId,
+          },
+          body: JSON.stringify({
+            status: RequestStatus.APPROVED,
+          }),
+        };
+
+        const response = await update(mockEvent);
+        expect(response.statusCode).toEqual(400);
+        expect(response.body).toEqual(
+          JSON.stringify({
+            message: ErrorConstants.createValidationString('numHours'),
+          }),
+        );
+      });
+
+      it('should return 400 when the request doesnt exist', () => {});
     });
 
-    it('should return a 200 and update the user and request when approved', async () => {
-      const mockEvent: APIGatewayProxyEvent = {
-        ...sampleApiGatewayEvent,
-        pathParameters: {
-          requestId: sampleReductionRequest.requestId,
-        },
-        body: JSON.stringify({
-          status: RequestStatus.APPROVED,
-          numHours: 10,
-        }),
-      };
+    describe('Update reduction request', () => {
+      describe('Approve tests', () => {
+        it('should return a 200 and update the user and request when approved', async () => {
+          jest.spyOn(DynamoUtilities, 'get').mockImplementation(
+            (params, db) =>
+              new Promise((resolve, reject) => {
+                if (
+                  params.Key.requestId === sampleReductionRequestDTO.requestId
+                ) {
+                  resolve(sampleReductionRequestDTO);
+                } else if (
+                  params.Key.userId === sampleReductionRequestDTO.userId
+                ) {
+                  resolve(sampleUser);
+                } else {
+                  reject(new Error("doesn't exist"));
+                }
+              }),
+          );
 
-      const response = await update(mockEvent);
-      expect(response.statusCode).toEqual(200);
-      expect(response.body).toEqual(JSON.stringify(sampleReductionRequest));
+          const mockEvent: APIGatewayProxyEvent = {
+            ...sampleApiGatewayEvent,
+            pathParameters: {
+              requestId: sampleReductionRequestDTO.requestId,
+            },
+            body: JSON.stringify({
+              status: RequestStatus.APPROVED,
+              numHours: 10,
+            }),
+          };
+
+          const response = await update(mockEvent);
+          expect(response.statusCode).toEqual(200);
+          expect(response.body).toEqual(
+            JSON.stringify(sampleReductionRequestDTO),
+          );
+        });
+      });
+
+      describe('Reject tests', () => {
+        it('should return a 200 and update the request to denied when denied', async () => {
+          const mockEvent: APIGatewayProxyEvent = {
+            ...sampleApiGatewayEvent,
+            pathParameters: {
+              requestId: sampleReductionRequestDTO.requestId,
+            },
+            body: JSON.stringify({
+              status: RequestStatus.DENIED,
+            }),
+          };
+
+          const response = await update(mockEvent);
+          expect(response.statusCode).toEqual(200);
+          expect(response.body).toEqual(
+            JSON.stringify(sampleReductionRequestDTO),
+          );
+        });
+      });
+    });
+
+    describe('Update transfer request', () => {
+      describe('Approve tests', () => {});
+
+      describe('Reject tests', () => {});
     });
 
     // Test that the reqeustId is in the path parameters
-    it('should return 400 when the request is missing the path parameters', async () => {
-      // path parameter is null by default anyways.
-      const mockEvent: APIGatewayProxyEvent = {
-        ...sampleApiGatewayEvent,
-        body: JSON.stringify({
-          status: RequestStatus.APPROVED,
-          numHoursReduced: 10,
-        }),
-      };
-
-      const response = await update(mockEvent);
-      expect(response.statusCode).toEqual(400);
-      expect(response.body).toEqual(
-        JSON.stringify({
-          message: ErrorConstants.VALIDATION_PATH_MISSING,
-        }),
-      );
-    });
-
-    it('should return 400 when the request doesnt contain a body', async () => {
-      const mockEvent: APIGatewayProxyEvent = {
-        ...sampleApiGatewayEvent,
-        body: null,
-        pathParameters: {
-          requestId: sampleReductionRequest.requestId,
-        },
-      };
-
-      const response = await update(mockEvent);
-      expect(response.statusCode).toEqual(400);
-      expect(response.body).toEqual(
-        JSON.stringify({
-          message: ErrorConstants.VALIDATION_BODY_MISSING,
-        }),
-      );
-    });
-
-    it('should return 400 when the request contains an invalid body', async () => {});
-
-    it('should return 400 when the request doesnt contain a status', async () => {});
-
-    it('should return 400 when the request contains an invalid status', async () => {});
-
-    it('should return 400 when the request is APPROVED but doesnt contain numHoursReduced', async () => {
-      const mockEvent: APIGatewayProxyEvent = {
-        ...sampleApiGatewayEvent,
-        pathParameters: {
-          requestId: sampleReductionRequest.requestId,
-        },
-        body: JSON.stringify({
-          status: RequestStatus.APPROVED,
-        }),
-      };
-
-      const response = await update(mockEvent);
-      expect(response.statusCode).toEqual(400);
-      expect(response.body).toEqual(
-        JSON.stringify({
-          message: ErrorConstants.createValidationString('numHours'),
-        }),
-      );
-    });
 
     it('should return 500 when getting the request from dynamo fails', async () => {});
 

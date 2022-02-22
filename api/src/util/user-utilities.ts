@@ -1,6 +1,5 @@
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
-import { User } from '../types/database/User';
-import { AdminType, UserType } from '../types/database/UserType';
+import { UserDTO, AdminType, UserType } from '../types/database/User';
 import { DynamoUtilities } from './dynamo-utilities';
 
 const dynamoDb = new DocumentClient();
@@ -25,7 +24,7 @@ export class UsersUtilities {
     return true;
   };
 
-  public static totalHours = (userType: UserType): Partial<User> => {
+  public static totalHours = (userType: UserType): Partial<UserDTO> => {
     switch (userType) {
       case UserType.ENGINEER_ENROLLED:
         return {

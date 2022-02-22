@@ -1,12 +1,11 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
 import { updateHours, checkIn } from '../../src/handlers/hours';
-import { UpdateHoursRequest } from '../../src/types/requests/UpdateHoursRequest';
 import { HoursUtilities } from '../../src/util/hours-utilities';
 import { sampleTransaction } from '../mocks/hours';
 import { DynamoUtilities } from '../../src/util/dynamo-utilities';
 import { ErrorConstants } from '../../src/constants/errors';
 import { sampleApiGatewayEvent } from '../mocks/event';
-import { CheckInRequest } from '../../src/types/requests/CheckIn';
+import { CheckInRequest } from '../../src/types/interface/CheckIn';
 import { sampleStudentNumber, sampleUser } from '../mocks/user';
 
 jest.mock('aws-sdk', () => ({
@@ -121,7 +120,7 @@ describe('Hours API Request', () => {
   });
 
   describe('Update hours request', () => {
-    const updateHoursRequest: UpdateHoursRequest = {
+    const updateHoursRequest = {
       studentNumber: sampleStudentNumber,
       checkIn: 'Tue Oct 12 2021 20:57:17 GMT+0000 (Coordinated Universal Time)',
       checkOut:

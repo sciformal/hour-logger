@@ -1,7 +1,6 @@
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { ErrorConstants } from '../constants/errors';
-import { RequestStatus } from '../types/database/ReductionRequest';
-import { RequestType } from '../types/requests/Request';
+import { RequestStatus, RequestType } from '../types/database/Request';
 
 /**
  * Utility Class to validate API Events.
