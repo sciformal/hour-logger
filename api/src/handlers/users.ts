@@ -1,7 +1,7 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { DocumentClient } from 'aws-sdk/clients/dynamodb';
 import { ErrorConstants } from '../constants/errors';
-import { User } from '../types/database/User';
+import { UserDTO } from '../types/database/User';
 import { DynamoUtilities } from '../util/dynamo-utilities';
 import { ResponseUtilities } from '../util/response-utilities';
 import { UsersUtilities } from '../util/user-utilities';
@@ -84,7 +84,7 @@ export const createUser = async (
   const requiredHours = UsersUtilities.totalHours(data.userType);
   const adminType = UsersUtilities.adminLevel(data.studentNumber);
 
-  const userPayload: User = {
+  const userPayload: UserDTO = {
     ...data,
     hours: 0,
     finalHours: 0,

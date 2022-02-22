@@ -5,6 +5,7 @@ import {
   deleteUser,
   getAllUsers,
   getUser,
+  getUsersAndIds,
 } from '../../src/handlers/users';
 import { UserRequest } from '../../src/types/interface/User';
 import { DynamoUtilities } from '../../src/util/dynamo-utilities';
@@ -351,6 +352,46 @@ describe('User Endpoint Tests', () => {
     });
   });
 
+  describe('Get Users and UserIds', () => {
+    it('should return a 200 when getting users successfully', async () => {
+      const mockEvent: APIGatewayProxyEvent = {
+        ...sampleApiGatewayEvent,
+      };
+
+      const sampleUsers = [sampleUser];
+
+      jest.spyOn(DynamoUtilities, 'scan').mockResolvedValue(sampleUsers);
+
+      const response = await getUsersAndIds(mockEvent);
+      expect(response.statusCode).toEqual(200);
+      expect(response.body).toEqual(
+        JSON.stringify([
+          {
+            firstName: sampleUser.firstName,
+            lastName: sampleUser.lastName,
+            userId: sampleUser.userId,
+          },
+        ]),
+      );
+    });
+
+    it('should return a 500 when getting users fails dynamo', async () => {
+      const mockEvent: APIGatewayProxyEvent = {
+        ...sampleApiGatewayEvent,
+      };
+
+      const errorMessage = 'Error message from dynamo';
+
+      jest
+        .spyOn(DynamoUtilities, 'scan')
+        .mockRejectedValue(new Error(errorMessage));
+
+      const response = await getUsersAndIds(mockEvent);
+      expect(response.statusCode).toEqual(500);
+      expect(response.body).toEqual(JSON.stringify({ message: errorMessage }));
+    });
+  });
+
   describe('Get All Users Tests', () => {
     it('should return a 200 when getting all users', async () => {
       const mockEvent: APIGatewayProxyEvent = {
@@ -429,11 +470,14 @@ describe('User Endpoint Tests', () => {
           userId: sampleUserId,
         },
       };
+      const errorMessage = 'Error message from dynamo';
 
-      jest.spyOn(DynamoUtilities, 'delete').mockResolvedValue();
+      jest
+        .spyOn(DynamoUtilities, 'delete')
+        .mockRejectedValue(new Error(errorMessage));
 
       const response = await deleteUser(mockEvent);
-      expect(response.statusCode).toEqual(204);
+      expect(response.statusCode).toEqual(500);
     });
   });
 });

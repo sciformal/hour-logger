@@ -1,4 +1,5 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
+import { reject, resolve } from 'cypress/types/bluebird';
 import { ErrorConstants } from '../../src/constants/errors';
 import { create, get, update } from '../../src/handlers/requests';
 import { RequestDTO, RequestStatus } from '../../src/types/database/Request';
@@ -6,10 +7,14 @@ import { UpdateRequest } from '../../src/types/interface/Request';
 import { DynamoUtilities } from '../../src/util/dynamo-utilities';
 import { sampleApiGatewayEvent } from '../mocks/event';
 import {
+  sampleReductionRequestId,
+  sampleTransferRequestId,
   sampleReductionRequestBody,
   sampleReductionRequestDTO,
+  sampleTransferRequestBody,
+  sampleTransferRequestDTO,
 } from '../mocks/request';
-import { sampleUser } from '../mocks/user';
+import { sampleUser, sampleUserId } from '../mocks/user';
 
 jest.mock('aws-sdk', () => ({
   DynamoDB: {
@@ -36,7 +41,7 @@ describe('Requests API Tests', () => {
     });
 
     // return 200 when everything works
-    it('should return a 200 when creating a request successfully', async () => {
+    it('should return a 200 when creating a reduction request successfully', async () => {
       const mockEvent: APIGatewayProxyEvent = {
         ...sampleApiGatewayEvent,
         body: JSON.stringify(validRequestBody),
@@ -123,6 +128,26 @@ describe('Requests API Tests', () => {
       );
     });
 
+    it('should return 400 when the toUserId missing on transfer request', async () => {
+      const requestBody = {
+        ...sampleTransferRequestBody,
+        toUserId: null,
+      };
+
+      const mockEvent: APIGatewayProxyEvent = {
+        ...sampleApiGatewayEvent,
+        body: JSON.stringify(requestBody),
+      };
+
+      const response = await create(mockEvent);
+      expect(response.statusCode).toEqual(400);
+      expect(response.body).toEqual(
+        JSON.stringify({
+          message: ErrorConstants.createValidationString('toUserId'),
+        }),
+      );
+    });
+
     it('should return 500 when Dynamo fails to pull the user', async () => {
       const mockEvent: APIGatewayProxyEvent = {
         ...sampleApiGatewayEvent,
@@ -144,7 +169,7 @@ describe('Requests API Tests', () => {
       );
     });
 
-    it('should return 500 when Dynamo fails to publish the request', async () => {
+    it('should return 500 when Dynamo fails to create the request', async () => {
       const mockEvent: APIGatewayProxyEvent = {
         ...sampleApiGatewayEvent,
         body: JSON.stringify(validRequestBody),
@@ -225,10 +250,12 @@ describe('Requests API Tests', () => {
       jest.spyOn(DynamoUtilities, 'get').mockResolvedValue(
         async params =>
           new Promise((resolve, reject) => {
-            if (params.TableName === process.env.requestsTable) {
+            if (params.Key.requestId === sampleReductionRequestId) {
               resolve(sampleReductionRequestDTO);
+            } else if (params.Key.requestId === sampleTransferRequestId) {
+              resolve(sampleTransferRequestDTO);
             } else {
-              resolve(sampleUser);
+              reject(new Error('not found'));
             }
           }),
       );
@@ -259,7 +286,7 @@ describe('Requests API Tests', () => {
           ...sampleApiGatewayEvent,
           body: null,
           pathParameters: {
-            requestId: sampleReductionRequestDTO.requestId,
+            requestId: sampleReductionRequestId,
           },
         };
 
@@ -282,7 +309,7 @@ describe('Requests API Tests', () => {
         const mockEvent: APIGatewayProxyEvent = {
           ...sampleApiGatewayEvent,
           pathParameters: {
-            requestId: sampleReductionRequestDTO.requestId,
+            requestId: sampleReductionRequestId,
           },
           body: JSON.stringify({
             status: RequestStatus.APPROVED,
@@ -298,85 +325,291 @@ describe('Requests API Tests', () => {
         );
       });
 
-      it('should return 400 when the request doesnt exist', () => {});
+      it('should return 400 when the request doesnt exist', async () => {
+        const mockEvent: APIGatewayProxyEvent = {
+          ...sampleApiGatewayEvent,
+          pathParameters: {
+            requestId: 'not-a-real-request-id',
+          },
+          body: JSON.stringify(validRequestBody),
+        };
+
+        jest.spyOn(DynamoUtilities, 'get').mockResolvedValue(null);
+
+        const response = await update(mockEvent);
+        expect(response.statusCode).toEqual(400);
+        expect(response.body).toEqual(
+          JSON.stringify({
+            message: ErrorConstants.DYNAMO_REQUESTID_NOT_FOUND,
+          }),
+        );
+      });
+
+      it('should return 500 when the request lookup fails', async () => {
+        const mockEvent: APIGatewayProxyEvent = {
+          ...sampleApiGatewayEvent,
+          pathParameters: {
+            requestId: sampleReductionRequestId,
+          },
+          body: JSON.stringify(validRequestBody),
+        };
+
+        const sampleErrorMessage = 'sample error message';
+
+        jest
+          .spyOn(DynamoUtilities, 'get')
+          .mockRejectedValue(new Error(sampleErrorMessage));
+
+        const response = await update(mockEvent);
+        expect(response.statusCode).toEqual(500);
+        expect(response.body).toEqual(
+          JSON.stringify({
+            message: sampleErrorMessage,
+          }),
+        );
+      });
     });
 
     describe('Update reduction request', () => {
-      describe('Approve tests', () => {
-        it('should return a 200 and update the user and request when approved', async () => {
-          jest.spyOn(DynamoUtilities, 'get').mockImplementation(
-            (params, db) =>
-              new Promise((resolve, reject) => {
-                if (
-                  params.Key.requestId === sampleReductionRequestDTO.requestId
-                ) {
-                  resolve(sampleReductionRequestDTO);
-                } else if (
-                  params.Key.userId === sampleReductionRequestDTO.userId
-                ) {
-                  resolve(sampleUser);
-                } else {
-                  reject(new Error("doesn't exist"));
-                }
-              }),
-          );
+      it('should return a 200 and update the user and request when approved', async () => {
+        const mockEvent: APIGatewayProxyEvent = {
+          ...sampleApiGatewayEvent,
+          pathParameters: {
+            requestId: sampleReductionRequestId,
+          },
+          body: JSON.stringify({
+            status: RequestStatus.APPROVED,
+            numHours: 10,
+          }),
+        };
 
-          const mockEvent: APIGatewayProxyEvent = {
-            ...sampleApiGatewayEvent,
-            pathParameters: {
-              requestId: sampleReductionRequestDTO.requestId,
-            },
-            body: JSON.stringify({
-              status: RequestStatus.APPROVED,
-              numHours: 10,
-            }),
-          };
-
-          const response = await update(mockEvent);
-          expect(response.statusCode).toEqual(200);
-          expect(response.body).toEqual(
-            JSON.stringify(sampleReductionRequestDTO),
-          );
-        });
+        const response = await update(mockEvent);
+        expect(response.statusCode).toEqual(200);
+        expect(response.body).toEqual(
+          JSON.stringify(sampleReductionRequestDTO),
+        );
       });
 
-      describe('Reject tests', () => {
-        it('should return a 200 and update the request to denied when denied', async () => {
-          const mockEvent: APIGatewayProxyEvent = {
-            ...sampleApiGatewayEvent,
-            pathParameters: {
-              requestId: sampleReductionRequestDTO.requestId,
-            },
-            body: JSON.stringify({
-              status: RequestStatus.DENIED,
-            }),
-          };
+      it('should return a 200 and update the request to denied when denied', async () => {
+        const mockEvent: APIGatewayProxyEvent = {
+          ...sampleApiGatewayEvent,
+          pathParameters: {
+            requestId: sampleReductionRequestId,
+          },
+          body: JSON.stringify({
+            status: RequestStatus.DENIED,
+          }),
+        };
 
-          const response = await update(mockEvent);
-          expect(response.statusCode).toEqual(200);
-          expect(response.body).toEqual(
-            JSON.stringify(sampleReductionRequestDTO),
-          );
-        });
+        const response = await update(mockEvent);
+        expect(response.statusCode).toEqual(200);
+        expect(response.body).toEqual(
+          JSON.stringify(sampleReductionRequestDTO),
+        );
+      });
+
+      it('should return a 400 when the user doesnt exist', async () => {
+        const mockEvent: APIGatewayProxyEvent = {
+          ...sampleApiGatewayEvent,
+          pathParameters: {
+            requestId: sampleReductionRequestId,
+          },
+          body: JSON.stringify({
+            status: RequestStatus.APPROVED,
+            numHours: 10,
+          }),
+        };
+
+        jest.spyOn(DynamoUtilities, 'get').mockImplementation(
+          async params =>
+            new Promise((resolve, reject) => {
+              if (params.Key.requestId === sampleReductionRequestId) {
+                resolve(sampleReductionRequestDTO);
+              } else if (params.Key.userId === sampleUserId) {
+                resolve(null);
+              } else {
+                reject(new Error('something happened'));
+              }
+            }),
+        );
+
+        const response = await update(mockEvent);
+        expect(response.statusCode).toEqual(400);
+        expect(response.body).toEqual(
+          JSON.stringify({ message: ErrorConstants.DYNAMO_USERID_NOT_FOUND }),
+        );
+      });
+
+      it('should return a 500 when getting user fails', async () => {
+        const mockEvent: APIGatewayProxyEvent = {
+          ...sampleApiGatewayEvent,
+          pathParameters: {
+            requestId: sampleReductionRequestId,
+          },
+          body: JSON.stringify({
+            status: RequestStatus.APPROVED,
+            numHours: 10,
+          }),
+        };
+        const errorMessage = 'sample error message';
+
+        jest
+          .spyOn(DynamoUtilities, 'get')
+          .mockRejectedValue(new Error(errorMessage));
+
+        const response = await update(mockEvent);
+        expect(response.statusCode).toEqual(500);
+        expect(response.body).toEqual(
+          JSON.stringify({
+            message: errorMessage,
+          }),
+        );
+      });
+
+      it('should return a 500 when updating dynamo fails', async () => {
+        const mockEvent: APIGatewayProxyEvent = {
+          ...sampleApiGatewayEvent,
+          pathParameters: {
+            requestId: sampleReductionRequestId,
+          },
+          body: JSON.stringify({
+            status: RequestStatus.DENIED,
+          }),
+        };
+
+        const errorMessage = 'error to update request';
+
+        jest
+          .spyOn(DynamoUtilities, 'put')
+          .mockRejectedValue(new Error(errorMessage));
+
+        const response = await update(mockEvent);
+        expect(response.statusCode).toEqual(500);
+        expect(response.body).toEqual(
+          JSON.stringify({ message: errorMessage }),
+        );
       });
     });
 
     describe('Update transfer request', () => {
-      describe('Approve tests', () => {});
+      it('should return a 200 and update both users and request when approved', async () => {
+        const mockEvent: APIGatewayProxyEvent = {
+          ...sampleApiGatewayEvent,
+          pathParameters: {
+            requestId: sampleTransferRequestId,
+          },
+          body: JSON.stringify({
+            status: RequestStatus.APPROVED,
+            numHours: 10,
+          }),
+        };
 
-      describe('Reject tests', () => {});
+        const response = await update(mockEvent);
+        expect(response.statusCode).toEqual(200);
+        expect(response.body).toEqual(
+          JSON.stringify(sampleReductionRequestDTO),
+        );
+      });
+
+      it('should return a 200 and update the request to denied when denied', async () => {
+        const mockEvent: APIGatewayProxyEvent = {
+          ...sampleApiGatewayEvent,
+          pathParameters: {
+            requestId: sampleTransferRequestId,
+          },
+          body: JSON.stringify({
+            status: RequestStatus.DENIED,
+          }),
+        };
+
+        const response = await update(mockEvent);
+        expect(response.statusCode).toEqual(200);
+        expect(response.body).toEqual(
+          JSON.stringify(sampleReductionRequestDTO),
+        );
+      });
+
+      it('should return a 400 when the user doesnt exist', async () => {
+        const mockEvent: APIGatewayProxyEvent = {
+          ...sampleApiGatewayEvent,
+          pathParameters: {
+            requestId: sampleTransferRequestId,
+          },
+          body: JSON.stringify({
+            status: RequestStatus.APPROVED,
+            numHours: 10,
+          }),
+        };
+
+        jest.spyOn(DynamoUtilities, 'get').mockImplementation(
+          async params =>
+            new Promise((resolve, reject) => {
+              if (params.Key.requestId === sampleTransferRequestId) {
+                resolve(sampleTransferRequestDTO);
+              } else if (params.Key.userId === sampleUserId) {
+                resolve(null);
+              } else {
+                reject(new Error('something happened'));
+              }
+            }),
+        );
+
+        const response = await update(mockEvent);
+        expect(response.statusCode).toEqual(400);
+        expect(response.body).toEqual(
+          JSON.stringify({ message: ErrorConstants.DYNAMO_USERID_NOT_FOUND }),
+        );
+      });
+
+      it('should return a 500 when getting user fails', async () => {
+        const mockEvent: APIGatewayProxyEvent = {
+          ...sampleApiGatewayEvent,
+          pathParameters: {
+            requestId: sampleTransferRequestId,
+          },
+          body: JSON.stringify({
+            status: RequestStatus.APPROVED,
+            numHours: 10,
+          }),
+        };
+        const errorMessage = 'sample error message';
+
+        jest
+          .spyOn(DynamoUtilities, 'get')
+          .mockRejectedValue(new Error(errorMessage));
+
+        const response = await update(mockEvent);
+        expect(response.statusCode).toEqual(500);
+        expect(response.body).toEqual(
+          JSON.stringify({
+            message: errorMessage,
+          }),
+        );
+      });
+
+      it('should return a 500 when updating dynamo fails', async () => {
+        const mockEvent: APIGatewayProxyEvent = {
+          ...sampleApiGatewayEvent,
+          pathParameters: {
+            requestId: sampleTransferRequestId,
+          },
+          body: JSON.stringify({
+            status: RequestStatus.DENIED,
+          }),
+        };
+
+        const errorMessage = 'error to update request';
+
+        jest
+          .spyOn(DynamoUtilities, 'put')
+          .mockRejectedValue(new Error(errorMessage));
+
+        const response = await update(mockEvent);
+        expect(response.statusCode).toEqual(500);
+        expect(response.body).toEqual(
+          JSON.stringify({ message: errorMessage }),
+        );
+      });
     });
-
-    // Test that the reqeustId is in the path parameters
-
-    it('should return 500 when getting the request from dynamo fails', async () => {});
-
-    it('should return 500 when getting the user from dynamo fails', async () => {});
-
-    it('should return 500 when updating the request fails denied', async () => {});
-
-    it('should return 500 when updating the request fails approved', async () => {});
-
-    it('should return 500 when updating the user fails', async () => {});
   });
 });

@@ -40,6 +40,10 @@ export const preSignUpValidation = async event => {
     );
   }
 
+  if (!Object.values(UserType).includes(data.userType)) {
+    return ResponseUtilities.createErrorResponse('invalid user type');
+  }
+
   const uniqueStudentNumber = await UsersUtilities.uniqueStudentNumber(
     data.studentNumber,
   );
@@ -48,10 +52,6 @@ export const preSignUpValidation = async event => {
     return ResponseUtilities.createErrorResponse(
       ErrorConstants.DYNAMO_NONUNIQUE_STUDENTNUMBER,
     );
-  }
-
-  if (!Object.values(UserType).includes(data.userType)) {
-    return ResponseUtilities.createErrorResponse('invalid user type');
   }
 
   return ResponseUtilities.createSuccessResponse({ message: 'nice' });
@@ -67,7 +67,6 @@ export const preSignUpValidation = async event => {
 export const customEmails = (event, _context, callback) => {
   const name = event.request.userAttributes.given_name;
   const code = event.request.codeParameter;
-  console.log(event.triggerSource);
   if (
     event.triggerSource === 'CustomMessage_SignUp' ||
     event.triggerSource === 'CustomMessage_ResendCode'

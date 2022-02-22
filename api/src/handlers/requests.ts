@@ -230,9 +230,15 @@ export const update = async (
             userId: toUserId,
           },
         };
+
         user = await DynamoUtilities.get(userParams, dynamoDb);
-        toUser = await DynamoUtilities.get(toUserParams, dynamoDb);
         if (!user) {
+          return ResponseUtilities.createErrorResponse(
+            ErrorConstants.DYNAMO_USERID_NOT_FOUND,
+          );
+        }
+        toUser = await DynamoUtilities.get(toUserParams, dynamoDb);
+        if (!toUser) {
           return ResponseUtilities.createErrorResponse(
             ErrorConstants.DYNAMO_USERID_NOT_FOUND,
           );
