@@ -58,3 +58,25 @@ jobs:
         run: |
           serverless deploy --stage=beta
         working-directory: ${{ env.api-directory }}
+
+  integrationLambda:
+    runs-on: ubuntu-latest
+    needs: [testAndDeployLambda]
+    strategy:
+      matrix:
+        node-version: [16.x]
+    env:
+      integration-directory: './integration'
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: API Integration Tests
+        run: |
+          cd integration/
+          newman run integration.postman_collection.json -e environment.json

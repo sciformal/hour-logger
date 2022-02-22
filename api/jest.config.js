@@ -11,4 +11,5 @@ module.exports = {
     },
   },
   coverageReporters: ['json-summary', 'text'],
+  setupFiles: ['dotenv/config', './__tests__/setup.ts'],
 };

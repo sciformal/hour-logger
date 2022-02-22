@@ -1,7 +1,7 @@
-import { User } from '../types/database/User';
+import { UserDTO } from '../types/database/User';
 
 export class HoursUtilities {
-  public static handleCheckInProcess = (user: User): User => {
+  public static handleCheckInProcess = (user: UserDTO): UserDTO => {
     const newUser = { ...user };
 
     if (user.isCheckedIn) {
@@ -51,10 +51,10 @@ export class HoursUtilities {
   };
 
   public static handleUpdateHoursProcess = (
-    user: User,
+    user: UserDTO,
     checkIn: string,
     checkOut: string,
-  ): User => {
+  ): UserDTO => {
     const newUser = { ...user };
     // create new transaction element. add it to user
     newUser.transactions.push({

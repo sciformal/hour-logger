@@ -1,5 +1,4 @@
-import { UserType } from '../../src/types/database/UserType';
-import { User } from '../../src/types/database/User';
+import { UserType, UserDTO } from '../../src/types/database/User';
 import { sampleStudentNumber, sampleUser } from '../mocks/user';
 import { UsersUtilities } from '../../src/util/user-utilities';
 import { DynamoUtilities } from '../../src/util/dynamo-utilities';
@@ -16,7 +15,7 @@ describe('Users Utilities Tests', () => {
       expect(uniqueStudentNumber).toBeTruthy();
     });
     it('should return false when dynamodb returns at least one user', async () => {
-      const testUser: User = {
+      const testUser: UserDTO = {
         ...sampleUser,
       };
       jest.spyOn(DynamoUtilities, 'query').mockResolvedValue([testUser]);

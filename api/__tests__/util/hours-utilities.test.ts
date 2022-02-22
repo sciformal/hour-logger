@@ -5,12 +5,12 @@ import {
 } from '../mocks/hours';
 import { HoursUtilities } from '../../src/util/hours-utilities';
 import { sampleUser } from '../mocks/user';
-import { User } from '../../src/types/database/User';
+import { UserDTO } from '../../src/types/database/User';
 
 describe('Hours Utilities Tests', () => {
   describe('Check In User Tests', () => {
     it("should check in a user that's not checked in, 1st transaction", () => {
-      const checkedOutUser: User = {
+      const checkedOutUser: UserDTO = {
         ...sampleUser,
       };
 
@@ -24,7 +24,7 @@ describe('Hours Utilities Tests', () => {
     });
 
     it("should check in a user that's not checked in, multiple transactions", () => {
-      const checkedOutUser: User = {
+      const checkedOutUser: UserDTO = {
         ...sampleUser,
         transactions: [sampleTransaction],
       };
@@ -41,7 +41,7 @@ describe('Hours Utilities Tests', () => {
     });
 
     it('should check out a user that is checked in', () => {
-      const checkedInUser: User = {
+      const checkedInUser: UserDTO = {
         ...sampleUser,
         isCheckedIn: true,
       };
@@ -54,7 +54,7 @@ describe('Hours Utilities Tests', () => {
 
   describe('Update hours Tests', () => {
     it('should check that new transaction was added', () => {
-      const testUser: User = {
+      const testUser: UserDTO = {
         ...sampleUser,
         transactions: [],
       };

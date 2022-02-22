@@ -1,7 +1,6 @@
 import { v4 as uuid } from 'uuid';
-import { User } from '../../src/types/database/User';
-import { AdminType, UserType } from '../../src/types/database/UserType';
-import { UserRequest } from '../../src/types/requests/User';
+import { UserDTO, AdminType, UserType } from '../../src/types/database/User';
+import { UserRequest } from '../../src/types/interface/User';
 
 export const sampleUserId = uuid();
 
@@ -16,7 +15,7 @@ export const sampleUserRequest: UserRequest = {
   userType: UserType.ENGINEER_ENROLLED,
 };
 
-export const sampleUser: User = {
+export const sampleUser: UserDTO = {
   ...sampleUserRequest,
   hours: 0,
   finalHours: 0,
