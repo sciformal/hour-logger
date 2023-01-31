@@ -38,7 +38,7 @@ jobs:
         working-directory: ${{ env.working-directory }}
         env:
           REACT_APP_REGION: us-west-1
-          REACT_APP_API_URL: bcbyzqp8r3
+          REACT_APP_API_URL: 6zmtzrgyqh
           REACT_APP_API_STAGE: prod
           REACT_APP_COGNITO_USERPOOL_ID: us-west-1_YqFXItxNG
           REACT_APP_COGNITO_APPCLIENT_ID: 2jfr5crb2smk47k480unvd1rem
